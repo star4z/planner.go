@@ -5,10 +5,15 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
 
+    <!-- Icon descriptions-->
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="close">Close</string>
 
+    <!--Default texts for assignmentDetailsDialog -->
+    <string name="default_title">Title</string>
+    <string name="default_class">className</string>
+    <string name="default_date">date</string>
     <string name="lorum_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
         eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,quis
         nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute

@@ -10,7 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:background="@color/colorAccent"
-        android:paddingLeft="4dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="0dp"
         >
 
         <TextView
@@ -23,7 +24,7 @@
             android:textStyle="bold"
             android:textSize="16sp"
             android:layout_weight="1"
-            android:text="Title"
+            android:text="@string/default_title"
             />
 
         <ImageView
@@ -67,13 +68,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textAllCaps="true"
-            android:text="className"/>
+            android:text="@string/default_class"/>
 
         <TextView
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="date"/>
+            android:text="@string/default_date"/>
 
     </LinearLayout>
 
