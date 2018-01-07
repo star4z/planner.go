@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.EOFException;
@@ -47,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
     int upcoming = 3;
     int overdue = 4;
 
+    private String[] drawerOptions;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +60,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         dateFormatter = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
-
         parent = (LinearLayout) findViewById(R.id.body);
 
+        drawerOptions = getResources().getStringArray(R.array.drawer_options_array);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.drawer_list);
+
         assignments = readAssignmentsFromFile();
-
-        Log.v("MainActivity", "Length of 'assignments': " + assignments.size());
-
         for (Assignment assignment : assignments) {
             addAssignmentToLayout(assignment);
         }
@@ -68,8 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
     public ArrayList<Assignment> readAssignmentsFromFile() {
         ArrayList<Assignment> assignments = new ArrayList<>();
-
-        ObjectInputStream inputStream = null;
+        ObjectInputStream inputStream;
 
         boolean cont = true;
         try {
@@ -82,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
                 else
                     cont = false;
             }
-//            Log.v("MA", "Read assignments");
             inputStream.close();
         } catch (EOFException e) {
             Log.v("MainActivity.read", "End of stream reached.");
@@ -96,8 +100,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addAssignmentToLayout(Assignment assignment) {
-        AssignmentCheckBox box = new AssignmentCheckBox(this, assignment);
 
+        AssignmentCheckBox box = new AssignmentCheckBox(this, assignment);
         writeAssignmentsToFile();
 
         //Adds box in appropriate section
@@ -184,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
      * Runs when "+" button is pressed
      * Creates new assignment dialog
      *
-     * @param view
+     * @param view Plus button view
      */
     public void addNewEvent(View view) {
         final NewAssignmentDialog newAssignmentDialog = new NewAssignmentDialog();
