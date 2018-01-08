@@ -7,12 +7,14 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -31,14 +33,17 @@ import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+    HashMap<Assignment, AssignmentCheckBox> assignmentViewHashMap = new HashMap<>();
     ArrayList<Assignment> assignments = new ArrayList<>();
+    ArrayList<Assignment> completedAssignments = new ArrayList<>();
     LinearLayout parent;
 
-    //    EditText date
+    //EditText date
     DatePickerDialog datePickerDialog;
     SimpleDateFormat dateFormatter;
 
@@ -50,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     int overdue = 4;
 
     private String[] drawerOptions;
+    private int[] drawerIcons;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
 
@@ -63,8 +69,30 @@ public class MainActivity extends AppCompatActivity {
         parent = (LinearLayout) findViewById(R.id.body);
 
         drawerOptions = getResources().getStringArray(R.array.drawer_options_array);
+//        drawerIcons = getResources().getIntArray(R.array.drawer_icons_array);
+        TypedArray tArray = getResources().obtainTypedArray(R.array.drawer_icons_array);
+        int count = tArray.length();
+        drawerIcons = new int[count];
+        for (int i = 0; i < drawerIcons.length; i++) {
+            drawerIcons[i] = tArray.getResourceId(i, 0);
+        }
+        //Recycles the TypedArray, to be re-used by a later caller.
+        //After calling this function you must not ever touch the typed array again.
+        tArray.recycle();
+
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.drawer_list);
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new DrawerAdapter(this, drawerOptions, drawerIcons));
+
+        // TODO:Set the list's click listener
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
 
         assignments = readAssignmentsFromFile();
         for (Assignment assignment : assignments) {
@@ -102,15 +130,26 @@ public class MainActivity extends AppCompatActivity {
     public void addAssignmentToLayout(Assignment assignment) {
 
         AssignmentCheckBox box = new AssignmentCheckBox(this, assignment);
+        assignmentViewHashMap.put(assignment, box);
         writeAssignmentsToFile();
 
         //Adds box in appropriate section
-        int addAtIndex;
+        int addAtIndex = parentDateIndex(box);
 
         //TODO: Add assignment type sorting options
-        Calendar today = Calendar.getInstance();
+
         //TODO: Sort list from oldest to newest (Today or newer is first)
         //Use ArrayLists for each section and add them in reverse order (i.e. overdue first)
+
+
+        parent.addView(box.container, addAtIndex);
+    }
+
+    int parentDateIndex(AssignmentCheckBox box){
+        int addAtIndex;
+
+        Calendar today = Calendar.getInstance();
+
         int compareToToday = compareCalendars(box.assignment.dueDate, today);
         if (compareToToday == 0) {
             Log.v("", "Added at today");
@@ -134,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        parent.addView(box.container, addAtIndex);
+        return addAtIndex;
     }
 
     public void checked(View view) {
@@ -156,7 +195,10 @@ public class MainActivity extends AppCompatActivity {
     public void writeAssignmentsToFile() {
         try {
             File file = new File(getFilesDir(), fileName);
-            file.createNewFile();
+            boolean fileCreated = file.createNewFile();
+            if(fileCreated)
+                Log.v("MA","File did not exist and was created.");
+
             FileOutputStream fos = new FileOutputStream(file, false);
             try {
                 ObjectOutputStream oos = new ObjectOutputStream(fos);

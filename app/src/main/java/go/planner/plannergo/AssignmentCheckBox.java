@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -22,7 +22,7 @@ import java.util.Locale;
  * Created by bdphi on 12/22/2017.
  */
 
-class AssignmentCheckBox {
+class AssignmentCheckBox implements Comparable {
 
     LinearLayout container;
 
@@ -36,8 +36,6 @@ class AssignmentCheckBox {
     AssignmentCheckBox(Activity activity, Assignment assignment) {
         LayoutInflater inflater = activity.getLayoutInflater();
         container = (LinearLayout) inflater.inflate(R.layout.assignment_layout, null);
-
-        Log.v("AssignCheckBox", "Children count: " + container.getChildCount());
 
         body = (RelativeLayout) container.findViewById(R.id.body);
         checkBox = (CheckBox) container.findViewById(R.id.checkbox);
@@ -57,6 +55,12 @@ class AssignmentCheckBox {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
         dateView.setText(dateFormat.format(assignment.dueDate.getTime()));
+    }
+
+    @Override
+    public int compareTo(@NonNull Object o) {
+        AssignmentCheckBox box = (AssignmentCheckBox) o;
+        return assignment.dueDate.compareTo(box.assignment.dueDate);
     }
 
     public static class AssignmentDetailsDialog extends DialogFragment {

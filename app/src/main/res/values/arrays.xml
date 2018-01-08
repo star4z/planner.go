@@ -4,4 +4,9 @@
         <item>Incomplete</item>
         <item>Completed</item>
     </string-array>
+
+    <integer-array name="drawer_icons_array">
+        <item>@drawable/ic_clipboard_black_24dp</item>
+        <item>@drawable/ic_trash_black_24dp</item>
+    </integer-array>
 </resources>
