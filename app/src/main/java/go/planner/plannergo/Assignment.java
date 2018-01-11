@@ -16,12 +16,25 @@ public class Assignment implements Comparable, Serializable{
     String className;
     Calendar dueDate;
     String description;
+    boolean completed;
+    HomeworkType type;
 
-    public Assignment(String title, String className, Calendar dueDate, String description) {
+
+    public Assignment(String title, String className, Calendar dueDate, String description, boolean completed, HomeworkType type) {
         this.title = title;
         this.className = className;
         this.dueDate = dueDate;
         this.description = description;
+        this.completed = completed;
+        this.type = type;
+    }
+
+    public Assignment(String title, String className, Calendar dueDate, String description, boolean completed){
+        this(title, className, dueDate, description, completed, HomeworkType.WRITTEN);
+    }
+
+    public Assignment (String title, String className, Calendar dueDate, String description){
+        this(title, className, dueDate, description, false, HomeworkType.WRITTEN);
     }
 
     public Assignment(String unparsedInfoString){
@@ -60,5 +73,9 @@ public class Assignment implements Comparable, Serializable{
         int result = title.hashCode();
         result = 31 * result + (className != null ? className.hashCode() : 0);
         return result;
+    }
+
+    private enum HomeworkType{
+        ONLINE, WRITTEN, PROJECT, STUDYING
     }
 }

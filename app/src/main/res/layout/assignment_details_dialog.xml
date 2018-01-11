@@ -34,7 +34,6 @@
             android:padding="12dp"
             android:src="@drawable/ic_mode_edit_black_24dp"
             android:contentDescription="@string/edit"
-            android:onClick="editAssignment"
             />
 
         <ImageView
@@ -53,7 +52,7 @@
             android:padding="12dp"
             android:src="@drawable/ic_close_black_24dp"
             android:contentDescription="@string/close"
-            android:onClick="closeDetails"/>
+            android:onClick="hideDetails"/>
     </LinearLayout>
 
     <LinearLayout

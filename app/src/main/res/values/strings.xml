@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">planner.go</string>
 
+    <!-- MainActivity headers-->
+    <string name="due_today">Due Today</string>
+    <string name="due_tomorrow">Due Tomorrow</string>
+    <string name="due_upcoming">Upcoming</string>
+    <string name="due_overdue">Overdue</string>
+
+    <!--new_assignment_dialog descriptors-->
     <string name="new_a">New Assignment</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
@@ -13,7 +20,7 @@
     <!--Default texts for assignmentDetailsDialog -->
     <string name="default_title">Title</string>
     <string name="default_class">className</string>
-    <string name="default_date">date</string>
+    <string name="default_date">Wed, Dec 10, 2017</string>
     <string name="lorum_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
         eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,quis
         nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
@@ -21,5 +28,9 @@
         Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
         anim id est laborum.
     </string>
+
+    <string name="enter_class">Enter class</string>
+    <string name="description">Description</string>
+    <string name="enter_title_of_assignment">Enter title of assignment</string>
 
 </resources>

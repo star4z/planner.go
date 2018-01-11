@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="drawer_options_array">
+        <item>Incomplete</item>
+        <item>Completed</item>
+    </string-array>
+
+    <integer-array name="drawer_icons_array">
+        <item>@drawable/ic_clipboard_black_24dp</item>
+        <item>@drawable/ic_trash_black_24dp</item>
+    </integer-array>
+</resources>
