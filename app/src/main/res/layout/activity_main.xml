@@ -28,34 +28,6 @@
                 android:background="#f9f9f9"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/due_today"
-                    style="@style/DueDateHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/due_today" />
-
-                <TextView
-                    android:id="@+id/due_tomorrow"
-                    style="@style/DueDateHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/due_tomorrow" />
-
-                <TextView
-                    android:id="@+id/upcoming"
-                    style="@style/DueDateHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/due_upcoming" />
-
-                <TextView
-                    android:id="@+id/overdue"
-                    style="@style/DueDateHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/due_overdue" />
-
             </LinearLayout>
 
         </ScrollView>
@@ -67,7 +39,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_margin="16dp"
-            android:onClick="addNewEvent"
+            android:onClick="createNew"
             android:src="@drawable/ic_add_black_24dp"
             app:fabSize="normal" />
 

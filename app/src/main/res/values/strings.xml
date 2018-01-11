@@ -29,4 +29,8 @@
         anim id est laborum.
     </string>
 
+    <string name="enter_class">Enter class</string>
+    <string name="description">Description</string>
+    <string name="enter_title_of_assignment">Enter title of assignment</string>
+
 </resources>

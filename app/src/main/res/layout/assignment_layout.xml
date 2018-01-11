@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:id="@+id/assignment_box"
     android:orientation="horizontal"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -8,14 +9,12 @@
     android:background="@android:color/white"
     android:padding="4dp">
 
-    <!-- TODO set checked items as "done"-->
     <CheckBox
         android:id="@+id/checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="8dp"
-        android:onClick="checked"/>
+        android:layout_margin="8dp" />
 
     <RelativeLayout
         android:id="@+id/body"
@@ -24,7 +23,6 @@
         android:layout_weight="1"
         android:layout_gravity="center"
         android:padding="2dp"
-        android:onClick="showDetails"
         >
 
         <TextView
@@ -57,7 +55,4 @@
             android:text="@string/default_date"/>
 
     </RelativeLayout>
-
-
-
 </LinearLayout>

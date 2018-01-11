@@ -17,13 +17,15 @@
         android:id="@+id/hw_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter title of assignment"/>
+        android:inputType="textCapSentences"
+        android:hint="@string/enter_title_of_assignment"/>
 
     <EditText
         android:id="@+id/hw_class"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter class"/>
+        android:inputType="textCapSentences"
+        android:hint="@string/enter_class"/>
 
     <EditText
         android:id="@+id/hw_due_date"
@@ -36,7 +38,8 @@
         android:id="@+id/hw_description"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:hint="Description"
+        android:inputType="textCapSentences"
+        android:hint="@string/description"
         android:layout_weight="1"/>
     
 </LinearLayout>
