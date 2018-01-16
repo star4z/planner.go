@@ -1,6 +1,7 @@
 package go.planner.plannergo;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -8,6 +9,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.DatePicker;
 import android.widget.EditText;
 
 import java.text.SimpleDateFormat;
@@ -21,8 +24,11 @@ import java.util.Locale;
 
 public class EditDetailsDialog extends DialogFragment {
     EditText titleView, classView, dateView, descriptionView;
-    Calendar calendar = Calendar.getInstance();
-    Assignment assignment;
+    //    Calendar calendar = Calendar.getInstance();
+    Assignment oldAssignment;
+    Calendar calendar;
+    SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
+    DatePickerDialog datePickerDialog;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -30,32 +36,12 @@ public class EditDetailsDialog extends DialogFragment {
         // Get the layout inflater
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        final String title = getArguments().getString("title");
-        final String className = getArguments().getString("class");
-        Calendar dueDate = Calendar.getInstance();
-        final int year = getArguments().getInt("year");
-        final int month = getArguments().getInt("month");
-        final int date = getArguments().getInt("dateView");
-        dueDate.set(year, month, date);
-        final String description = getArguments().getString("description");
-        final boolean completed = getArguments().getBoolean("completed");
-
-        assignment = new Assignment(title, className, dueDate, description, completed);
+        oldAssignment = Assignment.getAssignment(getArguments());
+        datePickerDialog = createDatePicker();
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        final View view = inflater.inflate(R.layout.new_assignment_dialog, null);
-
-        //Initialize EditTexts
-        titleView = (EditText) view.findViewById(R.id.hw_title);
-        titleView.setText(title);
-        classView = (EditText) view.findViewById(R.id.hw_class);
-        classView.setText(className);
-        dateView = (EditText) view.findViewById(R.id.hw_due_date);
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
-        dateView.setText(dateFormatter.format(dueDate.getTime()));
-        descriptionView = (EditText) view.findViewById(R.id.hw_description);
-        descriptionView.setText(description);
+        View view = initializeViews();
 
         //Build AlertDialog components
         builder.setView(view)
@@ -64,18 +50,17 @@ public class EditDetailsDialog extends DialogFragment {
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        calendar.set(year, month, date);
                         //add new assignment to page
                         Assignment newAssignment = new Assignment(
                                 titleView.getText().toString(),
                                 classView.getText().toString(),
                                 calendar,
                                 descriptionView.getText().toString(),
-                                completed
+                                oldAssignment.completed
                         );
-//                            ((MainActivity) getActivity()).editAssignment(assignmentView, assignment);
+//                            ((MainActivity) getActivity()).editAssignment(assignmentView, oldAssignment);
                         MainActivity activity = (MainActivity) getActivity();
-                        activity.deleteAssignment(assignment);
+                        activity.deleteAssignment(oldAssignment);
                         activity.addAssignment(newAssignment);
                         activity.writeAssignmentsToFile();
                         activity.loadPanels();
@@ -85,7 +70,7 @@ public class EditDetailsDialog extends DialogFragment {
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        openDetailsDialog(assignment, getFragmentManager());
+                        openDetailsDialog(oldAssignment, getFragmentManager());
                         EditDetailsDialog.this.getDialog().cancel();
                     }
                 });
@@ -93,18 +78,57 @@ public class EditDetailsDialog extends DialogFragment {
         return builder.create();
     } // end onCreateDialog()
 
-    void openDetailsDialog(Assignment assignment, FragmentManager f) {
-        Bundle args = new Bundle();
+    DatePickerDialog createDatePicker() {
+        return new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
 
-        args.putString("title", assignment.title);
-        args.putString("class", assignment.className);
-        args.putInt("year", assignment.dueDate.get(Calendar.YEAR));
-        args.putInt("month", assignment.dueDate.get(Calendar.MONTH));
-        args.putInt("dateView", assignment.dueDate.get(Calendar.DATE));
-        args.putString("description", assignment.description);
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                calendar.set(year, monthOfYear, dayOfMonth);
+                dateView.setText(dateFormat.format(calendar.getTime()));
+            }
+
+        },
+                oldAssignment.dueDate.get(Calendar.YEAR),
+                oldAssignment.dueDate.get(Calendar.MONTH),
+                oldAssignment.dueDate.get(Calendar.DATE));
+
+    }
+
+    View initializeViews() {
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(
+                R.layout.new_assignment_dialog,
+                (ViewGroup) getActivity().findViewById(android.R.id.content), false);
+
+        titleView = (EditText) view.findViewById(R.id.hw_title);
+        classView = (EditText) view.findViewById(R.id.hw_class);
+        dateView = (EditText) view.findViewById(R.id.hw_due_date);
+        descriptionView = (EditText) view.findViewById(R.id.hw_description);
+
+        titleView.setText(oldAssignment.title);
+        classView.setText(oldAssignment.className);
+        dateView.setText(dateFormat.format(oldAssignment.dueDate.getTime()));
+        descriptionView.setText(oldAssignment.description);
+
+        calendar = (Calendar) oldAssignment.dueDate.clone();
+
+        dateView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                datePickerDialog.show();
+            }
+        });
+
+        return view;
+    }
+
+    void openDetailsDialog(Assignment assignment, FragmentManager f) {
+        Bundle args = Assignment.generateBundle(assignment);
 
         DetailsDialog detailsDialog = new DetailsDialog();
         detailsDialog.setArguments(args);
         detailsDialog.show(f, "DetailsDialog");
     }//end openDetailsDialog()
+
+
 }// end EditDetailsDialog class

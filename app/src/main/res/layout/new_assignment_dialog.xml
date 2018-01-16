@@ -5,14 +5,6 @@
     android:padding="16dp"
     android:orientation="vertical">
 
-    <!--
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Assignment Title:"/>
-
-        -->
-
     <EditText
         android:id="@+id/hw_title"
         android:layout_width="match_parent"
@@ -31,8 +23,7 @@
         android:id="@+id/hw_due_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="false"
-        android:onClick="changeDate"/>
+        android:focusable="false" />
 
     <EditText
         android:id="@+id/hw_description"

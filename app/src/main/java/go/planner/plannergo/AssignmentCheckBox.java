@@ -18,7 +18,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 /**
- * Stores assignment GUI info
+ * Stores oldAssignment GUI info
  * Handles checkbox and body OnClickListeners
  * <p>
  * Created by Ben Phillips on 12/22/2017.
@@ -53,6 +53,7 @@ class AssignmentCheckBox implements Comparable<Object> {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //TODO: erratic, especially when dealing with blank titles
                 if (isChecked) {
                     MainActivity mainActivity = (MainActivity) activity;
                     if (!assignment.completed) {
@@ -95,7 +96,7 @@ class AssignmentCheckBox implements Comparable<Object> {
             args.putString("class", assignment.className);
             args.putInt("year", assignment.dueDate.get(Calendar.YEAR));
             args.putInt("month", assignment.dueDate.get(Calendar.MONTH));
-            args.putInt("dateView", assignment.dueDate.get(Calendar.DATE));
+            args.putInt("date", assignment.dueDate.get(Calendar.DATE));
             args.putString("description", assignment.description);
             args.putBoolean("completed", assignment.completed);
 

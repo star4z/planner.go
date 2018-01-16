@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">planner.go</string>
-
+    
     <!-- MainActivity headers-->
     <string name="due_today">Due Today</string>
     <string name="due_tomorrow">Due Tomorrow</string>
@@ -32,5 +32,10 @@
     <string name="enter_class">Enter class</string>
     <string name="description">Description</string>
     <string name="enter_title_of_assignment">Enter title of assignment</string>
+    <string name="search">Search</string>
+    <string name="sort_default">Sort: Default</string>
+    <string name="sort_date">Sort by date</string>
+    <string name="sort_class">Sort by class</string>
+    <string name="sort_type">Sort by type</string>
 
 </resources>

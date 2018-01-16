@@ -1,15 +1,17 @@
 package go.planner.plannergo;
 
-import android.app.DatePickerDialog;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,11 +25,9 @@ import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,10 +39,12 @@ public class MainActivity extends AppCompatActivity {
 
     LinearLayout parent;
 
-    DatePickerDialog datePickerDialog;
-    SimpleDateFormat dateFormatter;
+//    DatePickerDialog datePickerDialog;
+//    SimpleDateFormat dateFormatter;
 
     final String fileName = "assignmentsFile";
+
+    Toolbar myToolbar;
 
     private DrawerLayout mDrawerLayout;
 
@@ -51,10 +53,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dateFormatter = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
         parent = (LinearLayout) findViewById(R.id.body);
 
         setUpNavDrawer();
+
+        myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
 
         readAssignmentsFromFile();
         loadPanels(inProgressAssignments);
@@ -91,6 +95,41 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(Gravity.START);
+                return true;
+
+            case R.id.action_search:
+                return true;
+
+            case R.id.action_sort_by_date:
+
+                return true;
+
+            case R.id.action_sort_by_class:
+                return true;
+
+            case R.id.action_sort_by_type:
+                return true;
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
     public void readAssignmentsFromFile() {
@@ -143,8 +182,8 @@ public class MainActivity extends AppCompatActivity {
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 ArrayList<Assignment> assignments = new ArrayList<>();
                 assignments.addAll(inProgressAssignments);
-//                for (Assignment assignment : completedAssignments)
-//                    assignment.completed = true;
+//                for (Assignment oldAssignment : completedAssignments)
+//                    oldAssignment.completed = true;
                 assignments.addAll(completedAssignments);
                 for (Assignment o : assignments) {
                     try {
@@ -175,6 +214,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadPanels(ArrayList<Assignment> assignments) {
 //        Log.v("MA", "inProgressView=" + inProgressView);
+        if (assignments  == inProgressAssignments) {
+            setTitle("In Progress");
+            myToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+        } else if (assignments == completedAssignments) {
+            setTitle("Completed");
+            myToolbar.setBackgroundColor(getResources().getColor(R.color.colorCompleted));
+            getWindow().setStatusBarColor(getResources().getColor(R.color.colorCompletedDark));
+        }else
+            setTitle("Gravy");
         for (View view : currentViews) {
             parent.removeView(view);
         }
@@ -182,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO: Add pinned assignments
 
-        //TODO: Add sorting options
         sortByDatesWithHeaders(assignments);
 
     }
@@ -256,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Runs when "+" button is pressed
-     * Creates new assignment dialog
+     * Creates new oldAssignment dialog
      *
      * @param view Plus button view
      */
@@ -265,28 +313,14 @@ public class MainActivity extends AppCompatActivity {
 
         newAssignmentDialog.show(getFragmentManager(), "NewAssignmentDialog");
 
-        //DatePicker test code
+        // By default, date is today
         Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
 
 
-        datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
 
-            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Calendar newDate = Calendar.getInstance();
-                newDate.set(year, monthOfYear, dayOfMonth);
-
-                newAssignmentDialog.calendar = newDate;
-                newAssignmentDialog.dateView.setText(dateFormatter.format(newDate.getTime()));
-            }
-
-        }, year, month, day);
-    }
-
-    public void changeDate(View view) {
-        datePickerDialog.show();
     }
 
     public void deleteAssignment(Assignment assignment) {

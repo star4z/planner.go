@@ -10,7 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * Displays all information about an Assignment and gives options to edit & delete it
@@ -18,53 +19,26 @@ import java.util.Calendar;
  */
 
 public class DetailsDialog extends DialogFragment {
-    //Assignment assignment;
+    //Assignment oldAssignment;
     TextView textView, classNameView, dateView, descriptionView;
     Assignment assignment;
+
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        final String title = getArguments().getString("title");
-        final String className = getArguments().getString("class");
-        Calendar dueDate = Calendar.getInstance();
-        final int year = getArguments().getInt("year");
-        final int month = getArguments().getInt("month");
-        final int date = getArguments().getInt("dateView");
-        dueDate.set(year, month, date);
-        final String description = getArguments().getString("description");
-        final boolean completed = getArguments().getBoolean("completed");
+        assignment = Assignment.getAssignment(getArguments());
 
-        assignment = new Assignment(title, className, dueDate, description, completed);
-
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(
-                R.layout.assignment_details_dialog,
-                (ViewGroup) getActivity().findViewById(android.R.id.content), false);
-
-        textView = (TextView) view.findViewById(R.id.title);
-        classNameView = (TextView) view.findViewById(R.id.class_name);
-        dateView = (TextView) view.findViewById(R.id.date);
-        descriptionView = (TextView) view.findViewById(R.id.description);
+        View view = initializeViews();
 
         //editButton functionality
         ImageView editButton = (ImageView) view.findViewById(R.id.edit);
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle args = new Bundle();
-
-                args.putString("title", title);
-                args.putString("class", className);
-                args.putInt("year", year);
-                args.putInt("month", month);
-                args.putInt("dateView", date);
-                args.putString("description", description);
-                args.putBoolean("completed", completed);
-
                 EditDetailsDialog editDetailsDialog = new EditDetailsDialog();
-                editDetailsDialog.setArguments(args);
+                editDetailsDialog.setArguments(Assignment.generateBundle(assignment));
                 editDetailsDialog.show(getFragmentManager(), "DetailsDialog");
                 dismiss();
             }
@@ -96,14 +70,27 @@ public class DetailsDialog extends DialogFragment {
 
     }
 
+    View initializeViews() {
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        View view = inflater.inflate(
+                R.layout.assignment_details_dialog,
+                (ViewGroup) getActivity().findViewById(android.R.id.content), false);
+
+        textView = (TextView) view.findViewById(R.id.title);
+        classNameView = (TextView) view.findViewById(R.id.class_name);
+        dateView = (TextView) view.findViewById(R.id.date);
+        descriptionView = (TextView) view.findViewById(R.id.description);
+
+        return view;
+    }
+
 
     public void updateViews() {
-//            Assignment assignment = ((MainActivity) getActivity()).getAssignment();
         textView.setText(assignment.title);
         classNameView.setText(assignment.className);
-        dateView.setText(
-                ((MainActivity) getActivity()).dateFormatter.format(assignment.dueDate.getTime())
-        );
+        dateView.setText(new SimpleDateFormat("MMM dd, yyyy", Locale.US)
+                .format(assignment.dueDate.getTime()));
         descriptionView.setText(assignment.description);
     }
 }

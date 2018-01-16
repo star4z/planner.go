@@ -1,5 +1,6 @@
 package go.planner.plannergo;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -7,7 +8,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 
 /**
- * Stores info on an assignment for Planner
+ * Stores info on an oldAssignment for Planner
  * Created by bdphi on 10/23/2017.
  */
 
@@ -77,5 +78,33 @@ public class Assignment implements Comparable, Serializable{
 
     private enum HomeworkType{
         ONLINE, WRITTEN, PROJECT, STUDYING
+    }
+
+    public static Assignment getAssignment(Bundle bundle) {
+        String title = bundle.getString("title");
+        String className = bundle.getString("class");
+        Calendar dueDate = Calendar.getInstance();
+        int year = bundle.getInt("year");
+        int month = bundle.getInt("month");
+        int date = bundle.getInt("date");
+        dueDate.set(year, month, date);
+        String description = bundle.getString("description");
+        boolean completed = bundle.getBoolean("completed");
+
+        return new Assignment(title, className, dueDate, description, completed);
+    }
+
+    public static Bundle generateBundle(Assignment assignment) {
+        Bundle args = new Bundle();
+
+        args.putString("title", assignment.title);
+        args.putString("class", assignment.className);
+        args.putInt("year", assignment.dueDate.get(Calendar.YEAR));
+        args.putInt("month", assignment.dueDate.get(Calendar.MONTH));
+        args.putInt("date", assignment.dueDate.get(Calendar.DATE));
+        args.putString("description", assignment.description);
+        args.putBoolean("completed", assignment.completed);
+
+        return args;
     }
 }
