@@ -31,7 +31,6 @@ import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
 
-    //TODO: add snack bars
     ArrayList<Assignment> inProgressAssignments;
     ArrayList<Assignment> completedAssignments;
     ArrayList<View> currentViews = new ArrayList<>();
@@ -332,4 +331,3 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 } // end MainActivity class
-

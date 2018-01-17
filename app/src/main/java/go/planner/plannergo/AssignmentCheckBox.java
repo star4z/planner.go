@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 /**
@@ -53,18 +55,14 @@ class AssignmentCheckBox implements Comparable<Object> {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    MainActivity mainActivity = (MainActivity) activity;
-                    if (!assignment.completed) {
-                        assignment.completed = true;
-                        System.out.println(mainActivity.inProgressAssignments.remove(assignment));
-                        mainActivity.completedAssignments.add(assignment);
-                    } else {
-                        assignment.completed = false;
-                        System.out.println(mainActivity.completedAssignments.remove(assignment));
-                        mainActivity.inProgressAssignments.add(assignment);
-                    }
-                    mainActivity.writeAssignmentsToFile();
-                    mainActivity.loadPanels();
+                    final MainActivity mainActivity = (MainActivity) activity;
+                    ArrayList<Assignment> currentAssignments;
+                    if (assignment.completed)
+                        currentAssignments = mainActivity.completedAssignments;
+                    else
+                        currentAssignments = mainActivity.inProgressAssignments;
+                    toggleCompleted(mainActivity, currentAssignments);
+                    createSnackBarPopup(mainActivity, activity.getFragmentManager(), currentAssignments);
                 }
             }
         });
@@ -96,10 +94,55 @@ class AssignmentCheckBox implements Comparable<Object> {
         }
     }
 
+    private void toggleCompleted(MainActivity mainActivity, ArrayList<Assignment> currentAssignments) {
+        if (assignment.completed = !assignment.completed) {
+            mainActivity.inProgressAssignments.remove(assignment);
+            mainActivity.completedAssignments.add(assignment);
+        } else {
+            mainActivity.completedAssignments.remove(assignment);
+            mainActivity.inProgressAssignments.add(assignment);
+        }
+        mainActivity.loadPanels(currentAssignments);
+        mainActivity.writeAssignmentsToFile();
+    }
+
     @Override
     public int compareTo(@NonNull Object o) {
         AssignmentCheckBox box = (AssignmentCheckBox) o;
         return assignment.dueDate.compareTo(box.assignment.dueDate);
+    }
+
+    /**
+     * SnackBar pops up to make sure user is sure they want to mark assignment.
+     * Disappears after a short length of time.
+     * Recreates assignment if they choose to undo.
+     *
+     * @param activity reference to MainActivity instance
+     * @param manager  reference to current FragmentManager
+     */
+    private void createSnackBarPopup(final MainActivity activity, final FragmentManager manager, final ArrayList<Assignment> currentAssignments) {
+        String title, status;
+        if (assignment.title.equals(""))
+            title = "untitled assignment";
+        else
+            title = "'" + assignment.title + "'";
+        if (assignment.completed)
+            status = "complete.";
+        else
+            status = "in progress.";
+        Snackbar snackbar = Snackbar.make(
+                activity.findViewById(R.id.coordinator),
+                "Marked " + title + " as " + status,
+                Snackbar.LENGTH_SHORT
+        );
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleCompleted(activity, currentAssignments);
+            }
+        });
+
+        snackbar.show();
     }
 
 }

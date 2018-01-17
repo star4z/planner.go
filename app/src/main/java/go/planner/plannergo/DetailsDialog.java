@@ -3,8 +3,9 @@ package go.planner.plannergo;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.FragmentManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +31,6 @@ public class DetailsDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         assignment = new Assignment(getArguments());
-        Log.v("DDialog","assignment="+assignment);
-
 
         View view = initializeViews();
 
@@ -41,7 +40,6 @@ public class DetailsDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
                 EditDetailsDialog editDetailsDialog = new EditDetailsDialog();
-                Log.v("DDialog","settings arguments:");
                 editDetailsDialog.setArguments(assignment.generateBundle());
                 editDetailsDialog.show(getFragmentManager(), "DetailsDialog");
                 dismiss();
@@ -53,7 +51,13 @@ public class DetailsDialog extends DialogFragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity) getActivity()).deleteAssignment(assignment);
+                final MainActivity activity = (MainActivity) getActivity();
+                final FragmentManager manager = getFragmentManager();
+
+                activity.deleteAssignment(assignment);
+
+                createSnackBarPopup(activity, manager);
+
                 dismiss();
             }
         });
@@ -90,12 +94,45 @@ public class DetailsDialog extends DialogFragment {
         return view;
     }
 
-    public void updateViews() {
+    void updateViews() {
         textView.setText(assignment.title);
         classNameView.setText(assignment.className);
         dateView.setText(new SimpleDateFormat("MMM dd, yyyy", Locale.US)
                 .format(assignment.dueDate.getTime()));
         descriptionView.setText(assignment.description);
         typeView.setText(assignment.type);
+    }
+
+    /**
+     * SnackBar pops up to make sure user is sure they want to delete assignment.
+     * Disappears after a short length of time.
+     * Recreates assignment if they choose to undo.
+     *
+     * @param activity reference to MainActivity instance
+     * @param manager reference to current FragmentManager
+     */
+    void createSnackBarPopup(final MainActivity activity, final FragmentManager manager) {
+        String title;
+        if (assignment.title.equals(""))
+            title = "untitled assignment";
+        else
+            title = "'" + assignment.title + "'";
+        Snackbar waitDontDeleteMeYet = Snackbar.make(
+                activity.findViewById(R.id.coordinator),
+                title+ " was deleted.",
+                Snackbar.LENGTH_SHORT
+        );
+        waitDontDeleteMeYet.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activity.addAssignment(assignment);
+                activity.loadPanels();
+                DetailsDialog detailsDialog = new DetailsDialog();
+                detailsDialog.setArguments(getArguments());
+                detailsDialog.show(manager, "DetailsDialog");
+            }
+        });
+
+        waitDontDeleteMeYet.show();
     }
 }

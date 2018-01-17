@@ -8,6 +8,8 @@
     <string name="due_overdue">Overdue</string>
     <string name="no_upcoming_assignments">No upcoming assignments!</string>
 
+    <string name="undo">Undo</string>
+
     <!-- Navigation Pane/Title bar -->
     <string name="header_in_progress">In Progress</string>
     <string name="header_completed">Completed</string>
