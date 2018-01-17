@@ -31,21 +31,14 @@ import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
 
-    //Stores assignments in completed/not completed sets
+    //TODO: add snack bars
     ArrayList<Assignment> inProgressAssignments;
     ArrayList<Assignment> completedAssignments;
-
     ArrayList<View> currentViews = new ArrayList<>();
-
     LinearLayout parent;
-
-//    DatePickerDialog datePickerDialog;
-//    SimpleDateFormat dateFormatter;
-
     final String fileName = "assignmentsFile";
 
     Toolbar myToolbar;
-
     private DrawerLayout mDrawerLayout;
 
     @Override
@@ -105,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        //TODO: add actions to menu items (sort, search)
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(Gravity.START);
@@ -182,8 +175,6 @@ public class MainActivity extends AppCompatActivity {
                 ObjectOutputStream oos = new ObjectOutputStream(fos);
                 ArrayList<Assignment> assignments = new ArrayList<>();
                 assignments.addAll(inProgressAssignments);
-//                for (Assignment oldAssignment : completedAssignments)
-//                    oldAssignment.completed = true;
                 assignments.addAll(completedAssignments);
                 for (Assignment o : assignments) {
                     try {
@@ -213,16 +204,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadPanels(ArrayList<Assignment> assignments) {
-//        Log.v("MA", "inProgressView=" + inProgressView);
-        if (assignments  == inProgressAssignments) {
-            setTitle("In Progress");
+        if (assignments == inProgressAssignments) {
+            setTitle(getResources().getString(R.string.header_in_progress));
             myToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         } else if (assignments == completedAssignments) {
-            setTitle("Completed");
+            setTitle(getResources().getString(R.string.header_completed));
             myToolbar.setBackgroundColor(getResources().getColor(R.color.colorCompleted));
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorCompletedDark));
-        }else
+        } else
             setTitle("Gravy");
         for (View view : currentViews) {
             parent.removeView(view);
@@ -236,10 +226,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void sortByDatesWithHeaders(ArrayList<Assignment> assignments) {
-        addHeading(R.string.due_today);
-        addHeading(R.string.due_tomorrow);
-        addHeading(R.string.due_upcoming);
-        addHeading(R.string.due_overdue);
 
         ArrayList<AssignmentCheckBox> dueToday = new ArrayList<>();
         ArrayList<AssignmentCheckBox> dueTomorrow = new ArrayList<>();
@@ -267,15 +253,36 @@ public class MainActivity extends AppCompatActivity {
                 dueOverdue.add(assignmentCheckBox);
         }
 
-        displayViewsByDate(dueOverdue, 4);
-        displayViewsByDate(dueUpcoming, 3);
-        displayViewsByDate(dueTomorrow, 2);
-        displayViewsByDate(dueToday, 1);
+        boolean empty = true;
+        if (!dueToday.isEmpty()) {
+            empty = false;
+            addHeading(R.string.due_today);
+            displayViewsByDate(dueToday);
+        }
+        if (!dueTomorrow.isEmpty()) {
+            empty = false;
+            addHeading(R.string.due_tomorrow);
+            displayViewsByDate(dueTomorrow);
+        }
+        if (!dueUpcoming.isEmpty()) {
+            empty = false;
+            addHeading(R.string.due_upcoming);
+            displayViewsByDate(dueUpcoming);
+        }
+        if (!dueOverdue.isEmpty()) {
+            empty = false;
+            addHeading(R.string.due_overdue);
+            displayViewsByDate(dueOverdue);
+        }
+        if (empty){
+            addHeading(R.string.no_upcoming_assignments);
+        }
+
     }
 
     void addHeading(int textID) {
         TextView header = (TextView) getLayoutInflater().inflate(
-                R.layout.sorting_header,
+                R.layout.view_sort_header,
                 (ViewGroup) findViewById(android.R.id.content),
                 false
         );
@@ -284,11 +291,10 @@ public class MainActivity extends AppCompatActivity {
         parent.addView(header);
     }
 
-    void displayViewsByDate(ArrayList<AssignmentCheckBox> assignmentCheckBoxes, int index) {
+    void displayViewsByDate(ArrayList<AssignmentCheckBox> assignmentCheckBoxes) {
         Collections.sort(assignmentCheckBoxes);
-        Collections.reverse(assignmentCheckBoxes);
         for (AssignmentCheckBox assignmentCheckBox : assignmentCheckBoxes) {
-            parent.addView(assignmentCheckBox.container, index);
+            parent.addView(assignmentCheckBox.container);
             currentViews.add(assignmentCheckBox.container);
         }
     }
@@ -308,19 +314,10 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param view Plus button view
      */
+    //TODO: pop-up with extra options, define classes
     public void createNew(View view) {
         final NewAssignmentDialog newAssignmentDialog = new NewAssignmentDialog();
-
         newAssignmentDialog.show(getFragmentManager(), "NewAssignmentDialog");
-
-        // By default, date is today
-        Calendar c = Calendar.getInstance();
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-
-
-
     }
 
     public void deleteAssignment(Assignment assignment) {

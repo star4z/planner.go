@@ -10,8 +10,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -19,12 +21,13 @@ import java.util.Locale;
 
 /**
  * Lets user change fields of an Assignment
- * Created by bdphi on 1/11/2018.
+ * Created by Ben Phillips on 1/11/2018.
  */
 
 public class EditDetailsDialog extends DialogFragment {
+
     EditText titleView, classView, dateView, descriptionView;
-    //    Calendar calendar = Calendar.getInstance();
+    Spinner typeView;
     Assignment oldAssignment;
     Calendar calendar;
     SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
@@ -34,9 +37,8 @@ public class EditDetailsDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         // Get the layout inflater
-        LayoutInflater inflater = getActivity().getLayoutInflater();
 
-        oldAssignment = Assignment.getAssignment(getArguments());
+        oldAssignment = new Assignment(getArguments());
         datePickerDialog = createDatePicker();
 
         // Inflate and set the layout for the dialog
@@ -50,13 +52,15 @@ public class EditDetailsDialog extends DialogFragment {
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+//                        oldAssignment.type = Assignment.getHomeworkType(typeView);
                         //add new assignment to page
                         Assignment newAssignment = new Assignment(
                                 titleView.getText().toString(),
                                 classView.getText().toString(),
                                 calendar,
                                 descriptionView.getText().toString(),
-                                oldAssignment.completed
+                                oldAssignment.completed,
+                                typeView.getSelectedItem().toString()
                         );
 //                            ((MainActivity) getActivity()).editAssignment(assignmentView, oldAssignment);
                         MainActivity activity = (MainActivity) getActivity();
@@ -97,18 +101,25 @@ public class EditDetailsDialog extends DialogFragment {
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(
-                R.layout.new_assignment_dialog,
+                R.layout.dialog_new_assignment,
                 (ViewGroup) getActivity().findViewById(android.R.id.content), false);
 
         titleView = (EditText) view.findViewById(R.id.hw_title);
         classView = (EditText) view.findViewById(R.id.hw_class);
         dateView = (EditText) view.findViewById(R.id.hw_due_date);
         descriptionView = (EditText) view.findViewById(R.id.hw_description);
+        typeView = (Spinner) view.findViewById(R.id.hw_type);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.assignment_types_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeView.setAdapter(adapter);
 
         titleView.setText(oldAssignment.title);
         classView.setText(oldAssignment.className);
         dateView.setText(dateFormat.format(oldAssignment.dueDate.getTime()));
         descriptionView.setText(oldAssignment.description);
+        typeView.setSelection(Assignment.spinnerPosition(oldAssignment.type));
 
         calendar = (Calendar) oldAssignment.dueDate.clone();
 
@@ -123,7 +134,7 @@ public class EditDetailsDialog extends DialogFragment {
     }
 
     void openDetailsDialog(Assignment assignment, FragmentManager f) {
-        Bundle args = Assignment.generateBundle(assignment);
+        Bundle args = assignment.generateBundle();
 
         DetailsDialog detailsDialog = new DetailsDialog();
         detailsDialog.setArguments(args);

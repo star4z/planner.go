@@ -50,7 +50,7 @@ public class DrawerAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
         if (convertView == null)
-            view = inflater.inflate(R.layout.drawer_list_item, null);
+            view = inflater.inflate(R.layout.view_drawer_list_item, null);
 
         TextView text = (TextView) view.findViewById(R.id.nBar_item_text);
         ImageView icon = (ImageView) view.findViewById(R.id.nBar_item_icon);

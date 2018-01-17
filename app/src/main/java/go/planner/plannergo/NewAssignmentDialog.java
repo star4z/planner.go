@@ -6,11 +6,14 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -23,8 +26,9 @@ import java.util.Locale;
  */
 
 public class NewAssignmentDialog extends DialogFragment {
-
+    //TODO: rethink GUI
     EditText titleView, classView, dateView, descriptionView;
+    Spinner typeView;
     Assignment assignment;
     SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
     DatePickerDialog datePickerDialog;
@@ -45,7 +49,7 @@ public class NewAssignmentDialog extends DialogFragment {
         // Pass null as the parent view because its going in the dialog layout
         View view = initializeViews();
 
-        assignment = getAssignment();
+        assignment = new Assignment();
 
         datePickerDialog = createDatePicker();
 
@@ -56,13 +60,19 @@ public class NewAssignmentDialog extends DialogFragment {
                 .setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+//                        assignment.type = Assignment.getHomeworkType(typeView);
 
+//                        Log.v("NewAD","assignment="+assignment);
                         //add new oldAssignment to page
+//                        System.out.println(typeView.getSelectedItem().getClass());
                         assignment = new Assignment(
                                 titleView.getText().toString(),
                                 classView.getText().toString(),
                                 assignment.dueDate,
-                                descriptionView.getText().toString());
+                                descriptionView.getText().toString(),
+                                false,
+                                (String) typeView.getSelectedItem());
+                        Log.v("NewAD","assignment="+assignment);
                         MainActivity activity = (MainActivity) getActivity();
                         activity.addAssignment(assignment);
                         activity.writeAssignmentsToFile();
@@ -98,13 +108,14 @@ public class NewAssignmentDialog extends DialogFragment {
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(
-                R.layout.new_assignment_dialog,
+                R.layout.dialog_new_assignment,
                 (ViewGroup) getActivity().findViewById(android.R.id.content), false);
 
         titleView = (EditText) view.findViewById(R.id.hw_title);
         classView = (EditText) view.findViewById(R.id.hw_class);
         dateView = (EditText) view.findViewById(R.id.hw_due_date);
         descriptionView = (EditText) view.findViewById(R.id.hw_description);
+        typeView = (Spinner) view.findViewById(R.id.hw_type);
 
         dateView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,15 +124,12 @@ public class NewAssignmentDialog extends DialogFragment {
             }
         });
 
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.assignment_types_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeView.setAdapter(adapter);
+
         return view;
     }
 
-    Assignment getAssignment() {
-        return new Assignment(
-                titleView.getText().toString(),
-                classView.getText().toString(),
-                Calendar.getInstance(),
-                descriptionView.getText().toString()
-        );
-    }
 }

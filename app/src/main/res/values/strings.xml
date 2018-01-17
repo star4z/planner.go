@@ -6,8 +6,13 @@
     <string name="due_tomorrow">Due Tomorrow</string>
     <string name="due_upcoming">Upcoming</string>
     <string name="due_overdue">Overdue</string>
+    <string name="no_upcoming_assignments">No upcoming assignments!</string>
 
-    <!--new_assignment_dialog descriptors-->
+    <!-- Navigation Pane/Title bar -->
+    <string name="header_in_progress">In Progress</string>
+    <string name="header_completed">Completed</string>
+
+    <!-- dialog_new_assignmentalog descriptors-->
     <string name="new_a">New Assignment</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
@@ -37,5 +42,7 @@
     <string name="sort_date">Sort by date</string>
     <string name="sort_class">Sort by class</string>
     <string name="sort_type">Sort by type</string>
+    <string name="default_type">Type</string>
+    <string name="list_item_icon">List Item Icon</string>
 
 </resources>

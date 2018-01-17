@@ -12,16 +12,25 @@ import java.util.Calendar;
  * Created by bdphi on 10/23/2017.
  */
 
-public class Assignment implements Comparable, Serializable{
+public class Assignment implements Comparable, Serializable {
     String title;
     String className;
     Calendar dueDate;
     String description;
     boolean completed;
-    HomeworkType type;
+    String type;
+
+    Assignment() {
+        title = "";
+        className = "";
+        dueDate = Calendar.getInstance();
+        description = "";
+        completed = false;
+        type = "Written";
+    }
 
 
-    public Assignment(String title, String className, Calendar dueDate, String description, boolean completed, HomeworkType type) {
+    Assignment(String title, String className, Calendar dueDate, String description, boolean completed, String type) {
         this.title = title;
         this.className = className;
         this.dueDate = dueDate;
@@ -30,24 +39,43 @@ public class Assignment implements Comparable, Serializable{
         this.type = type;
     }
 
-    public Assignment(String title, String className, Calendar dueDate, String description, boolean completed){
-        this(title, className, dueDate, description, completed, HomeworkType.WRITTEN);
+    Assignment(String title, String className, Calendar dueDate, String description, boolean completed) {
+        this(title, className, dueDate, description, completed, "Written");
     }
 
-    public Assignment (String title, String className, Calendar dueDate, String description){
-        this(title, className, dueDate, description, false, HomeworkType.WRITTEN);
+    Assignment(String title, String className, Calendar dueDate, String description) {
+        this(title, className, dueDate, description, false);
     }
 
-    public Assignment(String unparsedInfoString){
-        String[] infoPieces = unparsedInfoString.split("z");
-        for (String next: infoPieces)
-            Log.v("Assignment", next);
-
-        title = infoPieces[0].trim();
-        className = infoPieces[1].trim().toUpperCase();
-
+    Assignment(Bundle bundle) {
+        title = bundle.getString("title");
+        className = bundle.getString("class");
         dueDate = Calendar.getInstance();
-        description = infoPieces[3];
+        int year = bundle.getInt("year");
+        int month = bundle.getInt("month");
+        int date = bundle.getInt("date");
+        dueDate.set(year, month, date);
+        description = bundle.getString("description");
+        completed = bundle.getBoolean("completed");
+        type = bundle.getString("type");
+//        Log.v("Assignment", "bundle constructor, type=" + type);
+
+    }
+
+    Bundle generateBundle() {
+        Bundle args = new Bundle();
+
+        args.putString("title", title);
+        args.putString("class", className);
+        args.putInt("year", dueDate.get(Calendar.YEAR));
+        args.putInt("month", dueDate.get(Calendar.MONTH));
+        args.putInt("date", dueDate.get(Calendar.DATE));
+        args.putString("description", description);
+        args.putBoolean("completed", completed);
+//        Log.v("Assignment", "generateBundle, type=" + type);
+        args.putString("type", type);
+
+        return args;
     }
 
     @Override
@@ -65,8 +93,7 @@ public class Assignment implements Comparable, Serializable{
 
         Assignment that = (Assignment) o;
 
-        if (!title.equals(that.title)) return false;
-        return className != null ? className.equals(that.className) : that.className == null;
+        return title.equals(that.title) && (className != null ? className.equals(that.className) : that.className == null);
     }
 
     @Override
@@ -76,35 +103,24 @@ public class Assignment implements Comparable, Serializable{
         return result;
     }
 
-    private enum HomeworkType{
-        ONLINE, WRITTEN, PROJECT, STUDYING
+    @Override
+    public String toString() {
+        return "Assignment[title=" + title + ",className=" + className
+                + ",description=" + description + ",completed=" + completed + ",type=" + type;
     }
 
-    public static Assignment getAssignment(Bundle bundle) {
-        String title = bundle.getString("title");
-        String className = bundle.getString("class");
-        Calendar dueDate = Calendar.getInstance();
-        int year = bundle.getInt("year");
-        int month = bundle.getInt("month");
-        int date = bundle.getInt("date");
-        dueDate.set(year, month, date);
-        String description = bundle.getString("description");
-        boolean completed = bundle.getBoolean("completed");
-
-        return new Assignment(title, className, dueDate, description, completed);
-    }
-
-    public static Bundle generateBundle(Assignment assignment) {
-        Bundle args = new Bundle();
-
-        args.putString("title", assignment.title);
-        args.putString("class", assignment.className);
-        args.putInt("year", assignment.dueDate.get(Calendar.YEAR));
-        args.putInt("month", assignment.dueDate.get(Calendar.MONTH));
-        args.putInt("date", assignment.dueDate.get(Calendar.DATE));
-        args.putString("description", assignment.description);
-        args.putBoolean("completed", assignment.completed);
-
-        return args;
+    static int spinnerPosition(String type) {
+        switch (type) {
+            default:
+                Log.v("SpinnerPosition", "default case");
+            case "Written":
+                return 0;
+            case "Studying":
+                return 1;
+            case "Online":
+                return 2;
+            case "Project":
+                return 3;
+        }
     }
 }

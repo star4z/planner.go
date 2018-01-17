@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,7 @@ import java.util.Locale;
 
 public class DetailsDialog extends DialogFragment {
     //Assignment oldAssignment;
-    TextView textView, classNameView, dateView, descriptionView;
+    TextView textView, classNameView, dateView, descriptionView, typeView;
     Assignment assignment;
 
 
@@ -28,7 +29,9 @@ public class DetailsDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        assignment = Assignment.getAssignment(getArguments());
+        assignment = new Assignment(getArguments());
+        Log.v("DDialog","assignment="+assignment);
+
 
         View view = initializeViews();
 
@@ -38,7 +41,8 @@ public class DetailsDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
                 EditDetailsDialog editDetailsDialog = new EditDetailsDialog();
-                editDetailsDialog.setArguments(Assignment.generateBundle(assignment));
+                Log.v("DDialog","settings arguments:");
+                editDetailsDialog.setArguments(assignment.generateBundle());
                 editDetailsDialog.show(getFragmentManager(), "DetailsDialog");
                 dismiss();
             }
@@ -74,17 +78,17 @@ public class DetailsDialog extends DialogFragment {
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(
-                R.layout.assignment_details_dialog,
+                R.layout.dialog_details,
                 (ViewGroup) getActivity().findViewById(android.R.id.content), false);
 
         textView = (TextView) view.findViewById(R.id.title);
         classNameView = (TextView) view.findViewById(R.id.class_name);
         dateView = (TextView) view.findViewById(R.id.date);
         descriptionView = (TextView) view.findViewById(R.id.description);
+        typeView = (TextView) view.findViewById(R.id.type);
 
         return view;
     }
-
 
     public void updateViews() {
         textView.setText(assignment.title);
@@ -92,5 +96,6 @@ public class DetailsDialog extends DialogFragment {
         dateView.setText(new SimpleDateFormat("MMM dd, yyyy", Locale.US)
                 .format(assignment.dueDate.getTime()));
         descriptionView.setText(assignment.description);
+        typeView.setText(assignment.type);
     }
 }

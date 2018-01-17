@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="drawer_options_array">
-        <item>Incomplete</item>
-        <item>Completed</item>
+        <item>@string/header_in_progress</item>
+        <item>@string/header_completed</item>
+    </string-array>
+    
+    <string-array name="assignment_types_array">
+        <item>Written</item>
+        <item>Studying</item>
+        <item>Online</item>
+        <item>Project</item>
     </string-array>
 
     <integer-array name="drawer_icons_array">
-        <item>@drawable/ic_clipboard_black_24dp</item>
-        <item>@drawable/ic_trash_black_24dp</item>
+        <item>@drawable/ic_clipboard_grey_24dp</item>
+        <item>@drawable/ic_trash_grey_24dp</item>
     </integer-array>
+    
 </resources>

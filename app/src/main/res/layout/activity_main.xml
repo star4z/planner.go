@@ -16,14 +16,14 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentTop="true"
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
-            android:layout_alignParentTop="true"
-            app:navigationIcon="@drawable/ic_dehaze_black_24dp"
-            app:navigationContentDescription="Open Navigation Pane"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            app:titleTextColor="#FFFFFFFF"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            app:navigationContentDescription="Open Navigation Pane"
+            app:navigationIcon="@drawable/ic_dehaze_white_24dp"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:titleTextColor="#FFFFFFFF" />
 
 
         <ScrollView
@@ -55,7 +55,7 @@
             android:layout_alignParentEnd="true"
             android:layout_margin="16dp"
             android:onClick="createNew"
-            android:src="@drawable/ic_add_black_24dp"
+            android:src="@drawable/ic_add_white_24dp"
             app:fabSize="normal" />
     </RelativeLayout>
 
@@ -64,11 +64,9 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start">
-
         <ListView
             android:id="@+id/drawer_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
+            android:layout_height="wrap_content" />
     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

@@ -14,7 +14,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 
 /**
@@ -37,7 +36,7 @@ class AssignmentCheckBox implements Comparable<Object> {
 
         LayoutInflater inflater = activity.getLayoutInflater();
         ViewGroup parent = (ViewGroup) activity.findViewById(android.R.id.content);
-        container = (LinearLayout) inflater.inflate(R.layout.assignment_layout, parent, false);
+        container = (LinearLayout) inflater.inflate(R.layout.view_assignment, parent, false);
 
         RelativeLayout body = (RelativeLayout) container.findViewById(R.id.body);
         CheckBox checkBox = (CheckBox) container.findViewById(R.id.checkbox);
@@ -53,7 +52,6 @@ class AssignmentCheckBox implements Comparable<Object> {
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //TODO: erratic, especially when dealing with blank titles
                 if (isChecked) {
                     MainActivity mainActivity = (MainActivity) activity;
                     if (!assignment.completed) {
@@ -90,15 +88,7 @@ class AssignmentCheckBox implements Comparable<Object> {
 
         @Override
         public void onClick(View v) {
-            Bundle args = new Bundle();
-
-            args.putString("title", assignment.title);
-            args.putString("class", assignment.className);
-            args.putInt("year", assignment.dueDate.get(Calendar.YEAR));
-            args.putInt("month", assignment.dueDate.get(Calendar.MONTH));
-            args.putInt("date", assignment.dueDate.get(Calendar.DATE));
-            args.putString("description", assignment.description);
-            args.putBoolean("completed", assignment.completed);
+            Bundle args = assignment.generateBundle();
 
             DetailsDialog detailsDialog = new DetailsDialog();
             detailsDialog.setArguments(args);
