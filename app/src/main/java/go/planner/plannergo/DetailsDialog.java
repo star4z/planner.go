@@ -97,7 +97,7 @@ public class DetailsDialog extends DialogFragment {
     void updateViews() {
         textView.setText(assignment.title);
         classNameView.setText(assignment.className);
-        dateView.setText(new SimpleDateFormat("MMM dd, yyyy", Locale.US)
+        dateView.setText(new SimpleDateFormat("EEE MM.dd.yyyy", Locale.US)
                 .format(assignment.dueDate.getTime()));
         descriptionView.setText(assignment.description);
         typeView.setText(assignment.type);

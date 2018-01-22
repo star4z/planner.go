@@ -7,6 +7,7 @@
     <string name="due_upcoming">Upcoming</string>
     <string name="due_overdue">Overdue</string>
     <string name="no_upcoming_assignments">No upcoming assignments!</string>
+    <string name="no_completed_assignments">No completed assignments.</string>
 
     <string name="undo">Undo</string>
 
@@ -40,11 +41,12 @@
     <string name="description">Description</string>
     <string name="enter_title_of_assignment">Enter title of assignment</string>
     <string name="search">Search</string>
-    <string name="sort_default">Sort: Default</string>
+    <string name="sort_default">Sort today first</string>
     <string name="sort_date">Sort by date</string>
     <string name="sort_class">Sort by class</string>
     <string name="sort_type">Sort by type</string>
     <string name="default_type">Type</string>
     <string name="list_item_icon">List Item Icon</string>
+    <string name="sort_title">Sort by title</string>
 
 </resources>

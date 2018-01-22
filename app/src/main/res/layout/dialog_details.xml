@@ -1,104 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="320dp"
+    android:layout_height="320dp">
 
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:background="@color/colorAccent"
-        android:paddingStart="4dp"
-        android:paddingEnd="0dp"
-        android:elevation="4dp"
-        >
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
 
-            android:padding="16dp"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:layout_weight="1"
-            android:text="@string/default_title"
-            />
-
-        <ImageView
-            android:id="@+id/edit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_mode_edit_white_24dp"
-            android:contentDescription="@string/edit"
-            />
-
-        <ImageView
-            android:id="@+id/delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_delete_white_24dp"
-            android:contentDescription="@string/delete" />
-
-        <ImageView
-            android:id="@+id/close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:layout_gravity="center"
-            android:src="@drawable/ic_close_white_24dp"
-            android:contentDescription="@string/close" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:elevation="2dp"
-        android:background="@color/backgroundWhite">
-
-        <TextView
-            android:id="@+id/class_name"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textAllCaps="true"
-            android:text="@string/default_class"/>
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/date"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:background="@android:color/black"
+                android:elevation="2dp"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="@string/default_title"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+
+                <TextView
+                    android:id="@+id/class_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/title"
+                    android:maxLines="1"
+                    android:padding="8dp"
+                    android:text="@string/default_class"
+                    android:textAllCaps="true"
+                    android:textColor="@color/iconGrey" />
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/class_name"
+                    android:padding="8dp"
+                    android:text="@string/default_date"
+                    android:textColor="@color/iconGrey" />
+
+            </RelativeLayout>
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="32dp"
+                    android:text="@string/lorum_ipsum"
+                    android:textColor="@android:color/black" />
+            </ScrollView>
+
+            <TextView
+                android:id="@+id/type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/backgroundWhite"
+                android:padding="16dp"
+                android:text="@string/default_type"
+                android:textAlignment="textEnd"
+                android:textColor="@android:color/darker_gray" />
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/default_date"/>
+            android:layout_height="match_parent"
+            android:layout_gravity="top|end"
+            android:background="@color/colorAccent"
+            android:elevation="4dp"
+            android:orientation="vertical"
+            android:paddingEnd="0dp"
+            android:paddingStart="4dp">
 
+            <ImageView
+                android:id="@+id/close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/close"
+                android:padding="12dp"
+                android:src="@drawable/ic_close_white_24dp" />
+
+            <ImageView
+                android:id="@+id/edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/edit"
+                android:padding="12dp"
+                android:src="@drawable/ic_mode_edit_white_24dp" />
+
+            <ImageView
+                android:id="@+id/delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/delete"
+                android:padding="12dp"
+                android:src="@drawable/ic_delete_white_24dp" />
+
+
+        </LinearLayout>
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/description"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="32dp"
-        android:textColor="@android:color/black"
-        android:text="@string/lorum_ipsum"
-        />
-
-    <TextView
-        android:id="@+id/type"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="2dp"
-        android:padding="16dp"
-        android:textAlignment="textEnd"
-        android:background="@color/backgroundWhite"
-        android:text="@string/default_type"/>
-
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

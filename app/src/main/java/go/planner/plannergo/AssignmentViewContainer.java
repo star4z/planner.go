@@ -25,15 +25,16 @@ import java.util.Locale;
  * Created by Ben Phillips on 12/22/2017.
  */
 
-class AssignmentCheckBox implements Comparable<Object> {
+class AssignmentViewContainer implements Comparable<Object> {
 
     LinearLayout container;
 
-    private TextView titleView, classView, dateView;
+    TextView titleView, classView, dateView;
 
     private final Assignment assignment;
 
-    AssignmentCheckBox(final Activity activity, Assignment newAssignment, FragmentManager f) {
+    AssignmentViewContainer(final Activity activity, Assignment newAssignment) {
+        FragmentManager f = activity.getFragmentManager();
         assignment = newAssignment;
 
         LayoutInflater inflater = activity.getLayoutInflater();
@@ -108,7 +109,7 @@ class AssignmentCheckBox implements Comparable<Object> {
 
     @Override
     public int compareTo(@NonNull Object o) {
-        AssignmentCheckBox box = (AssignmentCheckBox) o;
+        AssignmentViewContainer box = (AssignmentViewContainer) o;
         return assignment.dueDate.compareTo(box.assignment.dueDate);
     }
 

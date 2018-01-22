@@ -1,7 +1,11 @@
 package go.planner.plannergo;
 
+import android.app.SearchManager;
+import android.content.Intent;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -25,9 +31,11 @@ import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -92,28 +100,52 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        // Associate searchable configuration with the SearchView
+       /* SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView =
+                (SearchView) menu.findItem(R.id.action_search).getActionView();
+        assert searchManager != null;
+        searchView.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));*/
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //TODO: add actions to menu items (sort, search)
+        ArrayList<Assignment> assignments;
+        if (getTitle().toString().equals(getResources().getString(R.string.header_completed)))
+            assignments = completedAssignments;
+        else
+            assignments = inProgressAssignments;
+
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(Gravity.START);
                 return true;
+//            case R.id.action_search:
+            //TODO: add search function
+//                return true;
 
-            case R.id.action_search:
+            case R.id.action_default_sort:
+                loadPanels(assignments, 0);
                 return true;
 
             case R.id.action_sort_by_date:
-
+                loadPanels(assignments, 1);
                 return true;
 
             case R.id.action_sort_by_class:
+                loadPanels(assignments, 2);
                 return true;
 
             case R.id.action_sort_by_type:
+                loadPanels(assignments, 3);
+                return true;
+
+            case R.id.action_sort_by_title:
+                loadPanels(assignments, 4);
                 return true;
 
             default:
@@ -198,11 +230,71 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY).toLowerCase();
+            //use the query to search your data somehow
+
+            //organize general gui
+            setTitle("Search Results");
+            for (View view : currentViews) {
+                parent.removeView(view);
+            }
+            currentViews.clear();
+
+            //ready data members
+            ArrayList<Assignment> allAssignments = new ArrayList<>();
+            allAssignments.addAll(inProgressAssignments);
+            allAssignments.addAll(completedAssignments);
+            ArrayList<AssignmentViewContainer> foundInClass = new ArrayList<>();
+            ArrayList<Assignment> foundInOther = new ArrayList<>();
+            for (Assignment assignment : allAssignments) {
+                if (assignment.title.toLowerCase().contains(query)) {
+                    AssignmentViewContainer viewContainer = new AssignmentViewContainer(
+                            this, assignment
+                    );
+                    viewContainer.titleView.setTextColor(Color.BLUE);
+                    parent.addView(viewContainer.container);
+                    currentViews.add(viewContainer.container);
+                } else if (assignment.className.toLowerCase().contains(query)) {
+                    AssignmentViewContainer viewContainer = new AssignmentViewContainer(
+                            this, assignment
+                    );
+                    viewContainer.classView.setTextColor(Color.BLUE);
+                    foundInClass.add(viewContainer);
+                } else if (assignment.description.toLowerCase().contains(query)
+                        || assignment.type.toLowerCase().contains(query)) {
+                    foundInOther.add(assignment);
+                }
+            }
+            for (AssignmentViewContainer container : foundInClass) {
+                parent.addView(container.container);
+                currentViews.add(container.container);
+            }
+            for (Assignment assignment : foundInOther) {
+                AssignmentViewContainer container = new AssignmentViewContainer(
+                        this, assignment);
+                parent.addView(container.container);
+                currentViews.add(container.container);
+            }
+        }
+    }
+
     public void loadPanels() {
-        loadPanels(inProgressAssignments);
+        loadPanels(inProgressAssignments, 0);
     }
 
     public void loadPanels(ArrayList<Assignment> assignments) {
+        loadPanels(assignments, 0);
+    }
+
+    public void loadPanels(ArrayList<Assignment> assignments, int sortID) {
         if (assignments == inProgressAssignments) {
             setTitle(getResources().getString(R.string.header_in_progress));
             myToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -220,16 +312,31 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO: Add pinned assignments
 
-        sortByDatesWithHeaders(assignments);
-
+        switch (sortID) {
+            case 0:
+                sortViewsByToday(assignments);
+                break;
+            case 1:
+                sortViewsByDate(assignments, true);
+                break;
+            case 2:
+                sortViewsByClass(assignments);
+                break;
+            case 3:
+                sortViewsByType(assignments);
+                break;
+            case 4:
+                sortViewsByTitle(assignments);
+                break;
+        }
     }
 
-    void sortByDatesWithHeaders(ArrayList<Assignment> assignments) {
+    void sortViewsByToday(ArrayList<Assignment> assignments) {
 
-        ArrayList<AssignmentCheckBox> dueToday = new ArrayList<>();
-        ArrayList<AssignmentCheckBox> dueTomorrow = new ArrayList<>();
-        ArrayList<AssignmentCheckBox> dueUpcoming = new ArrayList<>();
-        ArrayList<AssignmentCheckBox> dueOverdue = new ArrayList<>();
+        ArrayList<Assignment> dueToday = new ArrayList<>();
+        ArrayList<Assignment> dueTomorrow = new ArrayList<>();
+        ArrayList<Assignment> dueUpcoming = new ArrayList<>();
+        ArrayList<Assignment> dueOverdue = new ArrayList<>();
 
         Calendar today = Calendar.getInstance();
         Calendar tomorrow = (Calendar) today.clone();
@@ -237,43 +344,40 @@ public class MainActivity extends AppCompatActivity {
 
         for (Assignment assignment : assignments) {
             int compareToToday = compareCalendars(assignment.dueDate, today);
-            AssignmentCheckBox assignmentCheckBox = new AssignmentCheckBox(
-                    this, assignment, getFragmentManager()
-            );
             if (compareToToday == 0)
-                dueToday.add(assignmentCheckBox);
+                dueToday.add(assignment);
             else if (compareToToday > 0) {
                 int compareToTomorrow = compareCalendars(assignment.dueDate, tomorrow);
                 if (compareToTomorrow == 0)
-                    dueTomorrow.add(assignmentCheckBox);
+                    dueTomorrow.add(assignment);
                 else
-                    dueUpcoming.add(assignmentCheckBox);
+                    dueUpcoming.add(assignment);
             } else
-                dueOverdue.add(assignmentCheckBox);
+                dueOverdue.add(assignment);
         }
 
         boolean empty = true;
         if (!dueToday.isEmpty()) {
             empty = false;
             addHeading(R.string.due_today);
-            displayViewsByDate(dueToday);
+            sortViewsByDate(dueToday, false);
         }
         if (!dueTomorrow.isEmpty()) {
             empty = false;
             addHeading(R.string.due_tomorrow);
-            displayViewsByDate(dueTomorrow);
+            sortViewsByDate(dueTomorrow, false);
         }
         if (!dueUpcoming.isEmpty()) {
             empty = false;
             addHeading(R.string.due_upcoming);
-            displayViewsByDate(dueUpcoming);
+            sortViewsByDate(dueUpcoming, false);
         }
         if (!dueOverdue.isEmpty()) {
             empty = false;
             addHeading(R.string.due_overdue);
-            displayViewsByDate(dueOverdue);
+            sortViewsByDate(dueOverdue, false);
         }
-        if (empty){
+        if (empty) {
             addHeading(R.string.no_upcoming_assignments);
         }
 
@@ -290,12 +394,109 @@ public class MainActivity extends AppCompatActivity {
         parent.addView(header);
     }
 
-    void displayViewsByDate(ArrayList<AssignmentCheckBox> assignmentCheckBoxes) {
-        Collections.sort(assignmentCheckBoxes);
-        for (AssignmentCheckBox assignmentCheckBox : assignmentCheckBoxes) {
-            parent.addView(assignmentCheckBox.container);
-            currentViews.add(assignmentCheckBox.container);
+    void addHeading(String text) {
+        if (text.equals(""))
+            text = "Untitled";
+        TextView header = (TextView) getLayoutInflater().inflate(
+                R.layout.view_sort_header,
+                (ViewGroup) findViewById(android.R.id.content),
+                false
+        );
+        header.setText(text);
+        currentViews.add(header);
+        parent.addView(header);
+    }
+
+    void sortViewsByDate(ArrayList<Assignment> assignments, boolean headings) {
+        if (assignments.isEmpty()) {
+            if (assignments == completedAssignments) {
+                addHeading(R.string.no_completed_assignments);
+            }
+            if (assignments == inProgressAssignments) {
+                addHeading(R.string.no_upcoming_assignments);
+            }
+
+        } else {
+            Collections.sort(assignments);
+            Assignment previous = null;
+            SimpleDateFormat dateFormat = null;
+            if (headings) {
+                previous = assignments.get(0);
+                dateFormat = new SimpleDateFormat("EEE, MMM dd, YYYY", Locale.US);
+                addHeading(dateFormat.format(previous.dueDate.getTime()));
+            }
+            for (Assignment assignment : assignments) {
+                if (headings) {
+                    if (compareCalendars(assignment.dueDate, previous.dueDate) != 0)
+                        addHeading(dateFormat.format(assignment.dueDate.getTime()));
+                    previous = assignment;
+                }
+                AssignmentViewContainer assignmentViewContainer = new AssignmentViewContainer(
+                        this, assignment);
+                parent.addView(assignmentViewContainer.container);
+                currentViews.add(assignmentViewContainer.container);
+
+            }
         }
+    }
+
+    void sortViewsByClass(ArrayList<Assignment> assignments) {
+        ArrayList<String> headings = new ArrayList<>();
+        for (Assignment assignment : assignments) {
+            if (!headings.contains(assignment.className)) {
+                headings.add(assignment.className);
+            }
+        }
+        Collections.sort(headings);
+        for (String heading : headings) {
+            addHeading(heading);
+            for (Assignment assignment : assignments) {
+                if (assignment.className.equals(heading)) {
+                    AssignmentViewContainer view = new AssignmentViewContainer(
+                            this, assignment);
+                    parent.addView(view.container);
+                    currentViews.add(view.container);
+                }
+            }
+        }
+    }
+
+    void sortViewsByType(ArrayList<Assignment> assignments) {
+        String[] types = getResources().getStringArray(R.array.assignment_types_array);
+        Collections.sort(assignments);
+        for (String type : types) {
+            addHeading(type);
+            for (Assignment assignment : assignments) {
+                if (assignment.type.equals(type)) {
+                    AssignmentViewContainer view = new AssignmentViewContainer(
+                            this, assignment);
+                    parent.addView(view.container);
+                    currentViews.add(view.container);
+                }
+            }
+        }
+    }
+
+    void sortViewsByTitle(ArrayList<Assignment> assignments) {
+        for (int i = 0; i < assignments.size(); i++) {
+            int pos = i;
+            for (int j = i; j < assignments.size(); j++) {
+                if (assignments.get(j).title.compareTo(assignments.get(pos).title) < 0) {
+                    pos = j;
+                }
+            }
+
+            Assignment min = assignments.get(pos);
+            assignments.set(pos, assignments.get(i));
+            assignments.set(i, min);
+
+            AssignmentViewContainer viewContainer = new AssignmentViewContainer(
+                    this, min
+            );
+            parent.addView(viewContainer.container);
+            currentViews.add(viewContainer.container);
+        }
+
     }
 
     public int compareCalendars(Calendar c1, Calendar c2) {
@@ -317,6 +518,14 @@ public class MainActivity extends AppCompatActivity {
     public void createNew(View view) {
         final NewAssignmentDialog newAssignmentDialog = new NewAssignmentDialog();
         newAssignmentDialog.show(getFragmentManager(), "NewAssignmentDialog");
+    }
+
+    public void openFABMenu(View view) {
+        FloatingActionButton editClasses = (FloatingActionButton) findViewById(R.id.action_edit_classes);
+        FloatingActionButton customAssignment = (FloatingActionButton) findViewById(R.id.action_custom_assignment);
+
+        Animation button1Animation = AnimationUtils.loadAnimation(getApplication(), R.anim.show_button_1);
+
     }
 
     public void deleteAssignment(Assignment assignment) {

@@ -53,13 +53,14 @@
         </RelativeLayout>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/floatingActionButton"
-            android:layout_width="73dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
             android:onClick="createNew"
             android:src="@drawable/ic_add_white_24dp"
             app:fabSize="normal" />
+        <include layout="@layout/view_action_button_menu"/>
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView

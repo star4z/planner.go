@@ -4,13 +4,17 @@
     <!--xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity" -->
 
+    <!--
     <item
         android:id="@+id/action_search"
         android:icon="@drawable/ic_search_white_24dp"
         android:orderInCategory="100"
-        app:showAsAction="always"
+        app:showAsAction="collapseActionView|ifRoom"
         android:title="@string/search"
+        app:actionViewClass="android.widget.SearchView"
+
         />
+        -->
     <item
         android:id="@+id/action_default_sort"
         android:icon="@drawable/ic_filter_list_white_24dp"
@@ -33,5 +37,10 @@
         android:orderInCategory="500"
         app:showAsAction="never"
         android:title="@string/sort_type"/>
+    <item
+        android:id="@+id/action_sort_by_title"
+        android:orderInCategory="500"
+        app:showAsAction="never"
+        android:title="@string/sort_title"/>
 
 </menu>

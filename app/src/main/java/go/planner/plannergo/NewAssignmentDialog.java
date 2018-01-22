@@ -26,7 +26,6 @@ import java.util.Locale;
  */
 
 public class NewAssignmentDialog extends DialogFragment {
-    //TODO: rethink GUI
     EditText titleView, classView, dateView, descriptionView;
     Spinner typeView;
     Assignment assignment;

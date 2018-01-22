@@ -12,7 +12,7 @@ import java.util.Calendar;
  * Created by bdphi on 10/23/2017.
  */
 
-public class Assignment implements Comparable, Serializable {
+public class Assignment implements Comparable<Assignment>, Serializable {
     String title;
     String className;
     Calendar dueDate;
@@ -78,14 +78,9 @@ public class Assignment implements Comparable, Serializable {
         return args;
     }
 
-    @Override
-    public int compareTo(@NonNull Object o) {
-        if (!o.getClass().equals(Assignment.class))
-            throw new ClassCastException();
-        Assignment other = (Assignment) o;
-        return dueDate.compareTo(other.dueDate);
+    protected Assignment clone(){
+        return new Assignment(title, className, dueDate, description, completed, type);
     }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -122,5 +117,10 @@ public class Assignment implements Comparable, Serializable {
             case "Project":
                 return 3;
         }
+    }
+
+    @Override
+    public int compareTo(@NonNull Assignment o) {
+        return dueDate.compareTo(o.dueDate);
     }
 }
