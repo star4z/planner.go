@@ -20,7 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:layout_alignParentTop="true"
-                android:background="?attr/colorPrimary"
+                app:background="?attr/colorPrimary"
                 android:elevation="4dp"
                 android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
                 app:navigationContentDescription="Open Navigation Pane"
@@ -37,11 +37,12 @@
                 android:orientation="vertical"
                 tools:context="go.planner.plannergo.MainActivity">
 
-
                 <LinearLayout
                     android:id="@+id/body"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingBottom="8dp"
+                    android:clipToPadding="false"
                     android:background="#f9f9f9"
                     android:orientation="vertical">
 

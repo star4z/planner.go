@@ -16,13 +16,11 @@ import android.widget.TextView;
 
 public class DrawerAdapter extends BaseAdapter {
 
-    Activity activity;
     private String[] drawerOptions;
     private int[] drawerIcons;
     private static LayoutInflater inflater = null;
 
-    public DrawerAdapter(Activity activity, String[] drawerOptions, int[] drawerIcons) {
-        this.activity = activity;
+    DrawerAdapter(Activity activity, String[] drawerOptions, int[] drawerIcons) {
         this.drawerOptions = drawerOptions;
         this.drawerIcons = drawerIcons;
         inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -56,7 +54,6 @@ public class DrawerAdapter extends BaseAdapter {
         ImageView icon = (ImageView) view.findViewById(R.id.nBar_item_icon);
 
         text.setText(drawerOptions[position]);
-//        Log.v("DrawAdapter","position="+position+",drawIcons[position]="+drawerIcons[position]);
         icon.setImageResource(drawerIcons[position]);
 
         return view;

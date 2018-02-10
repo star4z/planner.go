@@ -3,6 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorAccentDark">#c60055</color>
     <color name="colorCompleted">#4CAF50</color>
     <color name="colorCompletedDark">#087F23</color>
 
@@ -10,4 +11,7 @@
     <color name="iconGrey">#FFA9A9A9</color>
 
     <color name="backgroundWhite">#FFFFFFFF</color>
+
+    <color name="textBlack">#FF000000</color>
+    <color name="textGrey">#FF555555</color>
 </resources>

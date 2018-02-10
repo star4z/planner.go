@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">planner.go</string>
-    
+
     <!-- MainActivity headers-->
     <string name="due_today">Due Today</string>
     <string name="due_tomorrow">Due Tomorrow</string>
@@ -14,8 +14,9 @@
     <!-- Navigation Pane/Title bar -->
     <string name="header_in_progress">In Progress</string>
     <string name="header_completed">Completed</string>
+    <string name="settings">Settings</string>
 
-    <!-- dialog_new_assignmentalog descriptors-->
+    <!-- dialog_new_assignment descriptors-->
     <string name="new_a">New Assignment</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
@@ -37,6 +38,8 @@
         anim id est laborum.
     </string>
 
+
+    <!-- NewAssignmentDialog text -->
     <string name="enter_class">Enter class</string>
     <string name="description">Description</string>
     <string name="enter_title_of_assignment">Enter title of assignment</string>
@@ -48,5 +51,7 @@
     <string name="default_type">Type</string>
     <string name="list_item_icon">List Item Icon</string>
     <string name="sort_title">Sort by title</string>
+    <string name="title_activity_settings">Settings</string>
+
 
 </resources>
