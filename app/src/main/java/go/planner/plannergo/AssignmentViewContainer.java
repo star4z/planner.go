@@ -29,23 +29,25 @@ class AssignmentViewContainer implements Comparable<Object> {
 
     LinearLayout container;
 
-    TextView titleView, classView, dateView;
+    private TextView titleView, classView, dateView;
+    private int sortIndex;
 
     private final Assignment assignment;
 
-    AssignmentViewContainer(final Activity activity, Assignment newAssignment) {
+    AssignmentViewContainer(final Activity activity, Assignment newAssignment, int sortIndex) {
         FragmentManager f = activity.getFragmentManager();
         assignment = newAssignment;
+        this.sortIndex = sortIndex;
 
         LayoutInflater inflater = activity.getLayoutInflater();
-        ViewGroup parent = (ViewGroup) activity.findViewById(android.R.id.content);
+        ViewGroup parent = activity.findViewById(android.R.id.content);
         container = (LinearLayout) inflater.inflate(R.layout.view_assignment, parent, false);
 
-        RelativeLayout body = (RelativeLayout) container.findViewById(R.id.body);
-        CheckBox checkBox = (CheckBox) container.findViewById(R.id.checkbox);
-        titleView = (TextView) container.findViewById(R.id.title);
-        classView = (TextView) container.findViewById(R.id.class_name);
-        dateView = (TextView) container.findViewById(R.id.date);
+        RelativeLayout body = container.findViewById(R.id.body);
+        CheckBox checkBox = container.findViewById(R.id.checkbox);
+        titleView = container.findViewById(R.id.title);
+        classView = container.findViewById(R.id.class_name);
+        dateView = container.findViewById(R.id.date);
 
         updateData();
 
@@ -88,6 +90,7 @@ class AssignmentViewContainer implements Comparable<Object> {
         @Override
         public void onClick(View v) {
             Bundle args = assignment.generateBundle();
+            args.putInt("sortIndex", sortIndex);
 
             DetailsDialog detailsDialog = new DetailsDialog();
             detailsDialog.setArguments(args);
@@ -103,7 +106,7 @@ class AssignmentViewContainer implements Comparable<Object> {
             mainActivity.completedAssignments.remove(assignment);
             mainActivity.inProgressAssignments.add(assignment);
         }
-        mainActivity.loadPanels(currentAssignments);
+        mainActivity.loadPanels(currentAssignments, sortIndex);
         mainActivity.writeAssignmentsToFile();
     }
 

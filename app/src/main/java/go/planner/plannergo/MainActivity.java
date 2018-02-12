@@ -2,8 +2,8 @@ package go.planner.plannergo;
 
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,8 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -42,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
     //Settings data
     public int defaultSortIndex = 0;
-//    Menu menu;
+    int currentSortIndex = 0;
+    public boolean overDueFirst = true;
 
     //Assignment storage
     ArrayList<Assignment> inProgressAssignments;
@@ -59,21 +58,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        parent = (LinearLayout) findViewById(R.id.body);
+        parent = findViewById(R.id.body);
 
         setUpNavDrawer();
 
         readSettings();
+        currentSortIndex = defaultSortIndex;
 
-        myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
         readAssignmentsFromFile();
         boolean inProgress = getIntent().getBooleanExtra("in_progress", true);
         if (inProgress)
-            loadPanels(inProgressAssignments);
+            loadPanels(inProgressAssignments, defaultSortIndex);
         else
-            loadPanels(completedAssignments);
+            loadPanels(completedAssignments, defaultSortIndex);
     }
 
     //GUI setup methods
@@ -90,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
         //After calling this function you must not ever touch the typed array again.
         tArray.recycle();
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ListView mDrawerList = (ListView) findViewById(R.id.drawer_list);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        ListView mDrawerList = findViewById(R.id.drawer_list);
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new DrawerAdapter(this, drawerOptions, drawerIcons));
@@ -100,12 +100,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    loadPanels(inProgressAssignments);
+                    loadPanels(inProgressAssignments, defaultSortIndex);
                 } else if (position == 1) {
-                    loadPanels(completedAssignments);
+                    loadPanels(completedAssignments, defaultSortIndex);
                 } else if (position == 2) {
-                    Intent intent = new Intent( MainActivity.this, SettingsActivity.class);
-                    startActivity(intent);
+                    startActivity(new Intent( MainActivity.this, SettingsActivity.class));
                 }
                 mDrawerLayout.closeDrawers();
             }
@@ -143,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
         }
         MenuItem item = menu.findItem(id);
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        loadPanels(inProgressAssignments, currentSortIndex);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -201,6 +201,8 @@ public class MainActivity extends AppCompatActivity {
             inputStream = new ObjectInputStream(new FileInputStream(file));
 
             defaultSortIndex = inputStream.readInt();
+            overDueFirst = inputStream.readBoolean();
+            Log.v("MainActivity","overDueFirst="+overDueFirst);
 
             inputStream.close();
         } catch (EOFException e) {
@@ -287,15 +289,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void loadPanels() {
-        loadPanels(inProgressAssignments, 0);
+    public void loadPanels(Assignment assignment, int sortIndex){
+        if (assignment.completed){
+            loadPanels(completedAssignments, sortIndex);
+        } else {
+            loadPanels(inProgressAssignments, sortIndex);
+        }
     }
 
-    public void loadPanels(ArrayList<Assignment> assignments) {
-        loadPanels(assignments, 0);
-    }
-
-    public void loadPanels(ArrayList<Assignment> assignments, int sortID) {
+    public void loadPanels(ArrayList<Assignment> assignments, int sortIndex) {
+        currentSortIndex = sortIndex;
         if (assignments == inProgressAssignments) {
             setTitle(getResources().getString(R.string.header_in_progress));
             myToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -304,8 +307,10 @@ public class MainActivity extends AppCompatActivity {
             setTitle(getResources().getString(R.string.header_completed));
             myToolbar.setBackgroundColor(getResources().getColor(R.color.colorCompleted));
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorCompletedDark));
-        } else
+        } else {
             setTitle("Gravy");
+            myToolbar.setBackgroundColor(Color.YELLOW);
+        }
         for (View view : currentViews) {
             parent.removeView(view);
         }
@@ -313,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO: Add pinned assignments
 
-        switch (sortID) {
+        switch (sortIndex) {
             case 0:
                 sortViewsByDate(assignments);
                 break;
@@ -327,6 +332,7 @@ public class MainActivity extends AppCompatActivity {
                 sortViewsByTitle(assignments);
                 break;
         }
+        addHeading(" ");
     }
 
     //Assignments Sorting methods
@@ -371,23 +377,42 @@ public class MainActivity extends AppCompatActivity {
 
             Collections.sort(assignments);
             Assignment previous = assignments.get(0);
+
             SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, YYYY", Locale.US);
-//                addHeading(dateFormat.format(previous.dueDate.getTime()));
-            addDateHeading(dateFormat, today, tomorrow, previous.dueDate);
+            ArrayList<Assignment> overdue = new ArrayList<>();
+
+            System.out.println(compareCalendars(previous.dueDate, today));
+            if (!overDueFirst && compareCalendars(previous.dueDate, today) < 0){
+                System.out.println("overdue");
+            } else {
+                addDateHeading(dateFormat, today, tomorrow, previous.dueDate);
+            }
 
             for (Assignment assignment : assignments) {
+                if (!overDueFirst && compareCalendars(assignment.dueDate, today) < 0){
+                    System.out.println("Added assignment to overdue: " + assignment.title);
+                    overdue.add(assignment);
+                } else {
+                    if (compareCalendars(assignment.dueDate, previous.dueDate) > 0)
+                        addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
 
-                if (compareCalendars(assignment.dueDate, previous.dueDate) != 0)
-//                    addHeading(dateFormat.format(assignment.dueDate.getTime()));
-                    addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
+                    previous = assignment;
 
-                previous = assignment;
+                    AssignmentViewContainer assignmentViewContainer = new AssignmentViewContainer(
+                            this, assignment, currentSortIndex);
+                    parent.addView(assignmentViewContainer.container);
+                    currentViews.add(assignmentViewContainer.container);
+                }
+            }
 
-                AssignmentViewContainer assignmentViewContainer = new AssignmentViewContainer(
-                        this, assignment);
-                parent.addView(assignmentViewContainer.container);
-                currentViews.add(assignmentViewContainer.container);
-
+            if (!overDueFirst){
+                addHeading(R.string.due_overdue);
+                for (Assignment assignment: overdue){
+                    AssignmentViewContainer assignmentViewContainer = new AssignmentViewContainer(
+                            this, assignment, currentSortIndex);
+                    parent.addView(assignmentViewContainer.container);
+                    currentViews.add(assignmentViewContainer.container);
+                }
             }
         }
     }
@@ -417,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
             for (Assignment assignment : assignments) {
                 if (assignment.className.equals(heading)) {
                     AssignmentViewContainer view = new AssignmentViewContainer(
-                            this, assignment);
+                            this, assignment, currentSortIndex);
                     parent.addView(view.container);
                     currentViews.add(view.container);
                 }
@@ -433,7 +458,7 @@ public class MainActivity extends AppCompatActivity {
             for (Assignment assignment : assignments) {
                 if (assignment.type.equals(type)) {
                     AssignmentViewContainer view = new AssignmentViewContainer(
-                            this, assignment);
+                            this, assignment, currentSortIndex);
                     parent.addView(view.container);
                     currentViews.add(view.container);
                 }
@@ -455,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
             assignments.set(i, min);
 
             AssignmentViewContainer viewContainer = new AssignmentViewContainer(
-                    this, min
+                    this, min, currentSortIndex
             );
             parent.addView(viewContainer.container);
             currentViews.add(viewContainer.container);
@@ -478,29 +503,30 @@ public class MainActivity extends AppCompatActivity {
      * @param view Plus button view
      */
     //TODO: pop-up with extra options, define classes, class colors
-
     public void createNew(View view) {
         final NewAssignmentDialog newAssignmentDialog = new NewAssignmentDialog();
+        Bundle args = new Bundle();
+        args.putInt("sortID",currentSortIndex);
+        newAssignmentDialog.setArguments(args);
         newAssignmentDialog.show(getFragmentManager(), "NewAssignmentDialog");
     }
 
-    public void openFABMenu(View view) {
-        FloatingActionButton editClasses = (FloatingActionButton) findViewById(R.id.action_edit_classes);
-        FloatingActionButton customAssignment = (FloatingActionButton) findViewById(R.id.action_custom_assignment);
+//    public void openFABMenu(View view) {
+//        FloatingActionButton editClasses = (FloatingActionButton) findViewById(R.id.action_edit_classes);
+//        FloatingActionButton customAssignment = (FloatingActionButton) findViewById(R.id.action_custom_assignment);
+//
+//        Animation button1Animation = AnimationUtils.loadAnimation(getApplication(), R.anim.show_button_1);
+//    }
 
-        Animation button1Animation = AnimationUtils.loadAnimation(getApplication(), R.anim.show_button_1);
-
-    }
-
-    public void deleteAssignment(Assignment assignment) {
+    public void deleteAssignment(Assignment assignment, int sortIndex) {
         if (assignment.completed) {
             completedAssignments.remove(assignment);
             writeAssignmentsToFile();
-            loadPanels(completedAssignments);
+            loadPanels(completedAssignments, sortIndex);
         } else {
             inProgressAssignments.remove(assignment);
             writeAssignmentsToFile();
-            loadPanels(inProgressAssignments);
+            loadPanels(inProgressAssignments, sortIndex);
         }
     }
 } // end MainActivity class

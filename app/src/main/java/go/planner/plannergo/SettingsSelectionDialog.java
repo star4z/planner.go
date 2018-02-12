@@ -24,12 +24,13 @@ public class SettingsSelectionDialog extends DialogFragment {
 
 //        View view = initializeViews(getArguments());
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.view_settings_dialog_body,
+        View view = inflater.inflate(R.layout.dialog_settings_body,
                 (ViewGroup) getActivity().findViewById(android.R.id.content), false);
-        LinearLayout parent = (LinearLayout) view.findViewById(R.id.body);
+        LinearLayout parent = view.findViewById(R.id.body);
 
         String[] titles = getArguments().getStringArray("options");
         String[] subtitles = getArguments().getStringArray("descriptions");
+        int selectedIndex = getArguments().getInt("selectedIndex");
 
         assert titles != null && subtitles != null;
 
@@ -42,13 +43,17 @@ public class SettingsSelectionDialog extends DialogFragment {
         for (int i = 0; i < titles.length; i++){
             final int index = i;
             View dialogOption = inflater.inflate(R.layout.view_settings_dialog_option, null);
-            RelativeLayout nextLayout = (RelativeLayout) dialogOption.findViewById(R.id.parent_item);
+            RelativeLayout nextLayout = dialogOption.findViewById(R.id.parent_item);
 
-            RadioButton radio = (RadioButton) nextLayout.findViewById(R.id.radio);
-            TextView title = (TextView) nextLayout.findViewById(R.id.title);
-            TextView subtitle = (TextView) nextLayout.findViewById(R.id.subtitle);
+            RadioButton radio = nextLayout.findViewById(R.id.radio);
+            TextView title = nextLayout.findViewById(R.id.title);
+            TextView subtitle = nextLayout.findViewById(R.id.subtitle);
 
-            radio.setOnClickListener(new View.OnClickListener() {
+            if (index == selectedIndex){
+                radio.toggle();
+            }
+
+            View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     SettingsActivity activity = (SettingsActivity) getActivity();
@@ -56,7 +61,11 @@ public class SettingsSelectionDialog extends DialogFragment {
                     activity.updateViews();
                     SettingsSelectionDialog.this.dismiss();
                 }
-            });
+            };
+
+            nextLayout.setOnClickListener(listener);
+            radio.setOnClickListener(listener);
+
 
             title.setText(titles[i]);
             subtitle.setText(subtitles[i]);

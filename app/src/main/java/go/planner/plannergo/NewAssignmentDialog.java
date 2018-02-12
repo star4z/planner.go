@@ -35,8 +35,7 @@ public class NewAssignmentDialog extends DialogFragment {
     /**
      * Handles the creation of the Dialog
      *
-     * @param savedInstanceState used to restore instance state; bundle contains data to recreate
-     *                           oldAssignment
+     * @param savedInstanceState used to restore instance state
      * @return the Dialog to be displayed
      */
     @Override
@@ -75,7 +74,7 @@ public class NewAssignmentDialog extends DialogFragment {
                         MainActivity activity = (MainActivity) getActivity();
                         activity.addAssignment(assignment);
                         activity.writeAssignmentsToFile();
-                        activity.loadPanels();
+                        activity.loadPanels(assignment, getArguments().getInt("sortID"));
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -110,11 +109,11 @@ public class NewAssignmentDialog extends DialogFragment {
                 R.layout.dialog_new_assignment,
                 (ViewGroup) getActivity().findViewById(android.R.id.content), false);
 
-        titleView = (EditText) view.findViewById(R.id.hw_title);
-        classView = (EditText) view.findViewById(R.id.hw_class);
-        dateView = (EditText) view.findViewById(R.id.hw_due_date);
-        descriptionView = (EditText) view.findViewById(R.id.hw_description);
-        typeView = (Spinner) view.findViewById(R.id.hw_type);
+        titleView = view.findViewById(R.id.hw_title);
+        classView = view.findViewById(R.id.hw_class);
+        dateView = view.findViewById(R.id.hw_due_date);
+        descriptionView = view.findViewById(R.id.hw_description);
+        typeView = view.findViewById(R.id.hw_type);
 
         dateView.setOnClickListener(new View.OnClickListener() {
             @Override

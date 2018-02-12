@@ -24,6 +24,7 @@ public class DetailsDialog extends DialogFragment {
     //Assignment oldAssignment;
     TextView textView, classNameView, dateView, descriptionView, typeView;
     Assignment assignment;
+    int sortIndex;
 
 
     @Override
@@ -31,30 +32,33 @@ public class DetailsDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         assignment = new Assignment(getArguments());
+        sortIndex = getArguments().getInt("sortIndex");
 
         View view = initializeViews();
 
         //editButton functionality
-        ImageView editButton = (ImageView) view.findViewById(R.id.edit);
+        ImageView editButton = view.findViewById(R.id.edit);
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditDetailsDialog editDetailsDialog = new EditDetailsDialog();
-                editDetailsDialog.setArguments(assignment.generateBundle());
+                Bundle args = assignment.generateBundle();
+                args.putInt("sortIndex", sortIndex);
+                editDetailsDialog.setArguments(args);
                 editDetailsDialog.show(getFragmentManager(), "DetailsDialog");
                 dismiss();
             }
         });
 
         //deleteButton functionality
-        ImageView deleteButton = (ImageView) view.findViewById(R.id.delete);
+        ImageView deleteButton = view.findViewById(R.id.delete);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final MainActivity activity = (MainActivity) getActivity();
                 final FragmentManager manager = getFragmentManager();
 
-                activity.deleteAssignment(assignment);
+                activity.deleteAssignment(assignment, sortIndex);
 
                 createSnackBarPopup(activity, manager);
 
@@ -62,7 +66,7 @@ public class DetailsDialog extends DialogFragment {
             }
         });
 
-        ImageView closeButton = (ImageView) view.findViewById(R.id.close);
+        ImageView closeButton = view.findViewById(R.id.close);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,11 +89,11 @@ public class DetailsDialog extends DialogFragment {
                 R.layout.dialog_details,
                 (ViewGroup) getActivity().findViewById(android.R.id.content), false);
 
-        textView = (TextView) view.findViewById(R.id.title);
-        classNameView = (TextView) view.findViewById(R.id.class_name);
-        dateView = (TextView) view.findViewById(R.id.date);
-        descriptionView = (TextView) view.findViewById(R.id.description);
-        typeView = (TextView) view.findViewById(R.id.type);
+        textView = view.findViewById(R.id.title);
+        classNameView = view.findViewById(R.id.class_name);
+        dateView = view.findViewById(R.id.date);
+        descriptionView = view.findViewById(R.id.description);
+        typeView = view.findViewById(R.id.type);
 
         return view;
     }
@@ -126,7 +130,7 @@ public class DetailsDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
                 activity.addAssignment(assignment);
-                activity.loadPanels();
+                activity.loadPanels(assignment, sortIndex);
                 DetailsDialog detailsDialog = new DetailsDialog();
                 detailsDialog.setArguments(getArguments());
                 detailsDialog.show(manager, "DetailsDialog");
