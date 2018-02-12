@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:backgroundTint="@color/colorAccent"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:navigationContentDescription="Back"
+        app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:title="@string/settings"
+        app:titleTextColor="#FFFFFFFF" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/setting_sort_type"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:onClick="openMenuDialog"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/setting_default_sort"
+                    android:layout_width="wrap_content"
+                    style="@style/SettingsItemTitle"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:text="@string/setting_default_sort" />
+
+                <TextView
+                    android:id="@+id/selected_sort_type"
+                    style="@style/SettingsItemSubtitle"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@id/setting_default_sort"
+                    android:text="@string/default_title" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/setting_overdue_placement"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:onClick="overdueSwitchToggle"
+                android:orientation="horizontal"
+                android:padding="16dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    style="@style/SettingsItemTitle"
+                    android:text="@string/overdue_last_setting"/>
+                <Switch
+                    android:id="@+id/overdue_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+                <TextView
+                    android:id="@+id/settings_about"
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    style="@style/SettingsItemTitle"
+                    android:padding="16dp"
+                    android:onClick="about"
+                    android:text="@string/about"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

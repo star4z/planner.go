@@ -1,11 +1,9 @@
 package go.planner.plannergo;
 
-import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,8 +13,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -39,12 +35,21 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
+    final String ASSIGNMENTS_FILE_NAME = "assignmentsFile";
+    final String SETTINGS_FILE_NAME = "planner.settings";
+
+    //Settings data
+    public int defaultSortIndex = 0;
+    int currentSortIndex = 0;
+    public boolean overDueFirst = true;
+
+    //Assignment storage
     ArrayList<Assignment> inProgressAssignments;
     ArrayList<Assignment> completedAssignments;
+    //Stores all views that need to be manipulated for removal when appropriate; unnecessary?
     ArrayList<View> currentViews = new ArrayList<>();
+    //Quick references
     LinearLayout parent;
-    final String fileName = "assignmentsFile";
-
     Toolbar myToolbar;
     private DrawerLayout mDrawerLayout;
 
@@ -53,17 +58,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        parent = (LinearLayout) findViewById(R.id.body);
+        parent = findViewById(R.id.body);
 
         setUpNavDrawer();
 
-        myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        readSettings();
+        currentSortIndex = defaultSortIndex;
+
+        myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
         readAssignmentsFromFile();
-        loadPanels(inProgressAssignments);
+        boolean inProgress = getIntent().getBooleanExtra("in_progress", true);
+        if (inProgress)
+            loadPanels(inProgressAssignments, defaultSortIndex);
+        else
+            loadPanels(completedAssignments, defaultSortIndex);
     }
 
+    //GUI setup methods
     private void setUpNavDrawer() {
         String[] drawerOptions = getResources().getStringArray(R.array.drawer_options_array);
 //        drawerIcons = getResources().getIntArray(R.array.drawer_icons_array);
@@ -77,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
         //After calling this function you must not ever touch the typed array again.
         tArray.recycle();
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ListView mDrawerList = (ListView) findViewById(R.id.drawer_list);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        ListView mDrawerList = findViewById(R.id.drawer_list);
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new DrawerAdapter(this, drawerOptions, drawerIcons));
@@ -87,29 +100,57 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    loadPanels(inProgressAssignments);
+                    loadPanels(inProgressAssignments, defaultSortIndex);
                 } else if (position == 1) {
-                    loadPanels(completedAssignments);
+                    loadPanels(completedAssignments, defaultSortIndex);
+                } else if (position == 2) {
+                    startActivity(new Intent( MainActivity.this, SettingsActivity.class));
                 }
                 mDrawerLayout.closeDrawers();
             }
         });
-
     }
+
+    //
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+//        this.menu = menu;
         getMenuInflater().inflate(R.menu.main_menu, menu);
-
-        // Associate searchable configuration with the SearchView
-       /* SearchManager searchManager =
-                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView =
-                (SearchView) menu.findItem(R.id.action_search).getActionView();
-        assert searchManager != null;
-        searchView.setSearchableInfo(
-                searchManager.getSearchableInfo(getComponentName()));*/
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        int id = 0;
+        switch (defaultSortIndex){
+            case 0:
+                id = R.id.action_sort_by_date;
+                break;
+            case 1:
+                id = R.id.action_sort_by_class;
+                break;
+            case 2:
+                id = R.id.action_sort_by_title;
+                break;
+            case 3:
+                id = R.id.action_sort_by_type;
+                break;
+        }
+        MenuItem item = menu.findItem(id);
+        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        loadPanels(inProgressAssignments, currentSortIndex);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    protected void onResume() {
+        readSettings();
+        invalidateOptionsMenu();
+        super.onResume();
     }
 
     @Override
@@ -128,24 +169,20 @@ public class MainActivity extends AppCompatActivity {
             //TODO: add search function
 //                return true;
 
-            case R.id.action_default_sort:
+            case R.id.action_sort_by_date:
                 loadPanels(assignments, 0);
                 return true;
 
-            case R.id.action_sort_by_date:
+            case R.id.action_sort_by_class:
                 loadPanels(assignments, 1);
                 return true;
 
-            case R.id.action_sort_by_class:
+            case R.id.action_sort_by_type:
                 loadPanels(assignments, 2);
                 return true;
 
-            case R.id.action_sort_by_type:
-                loadPanels(assignments, 3);
-                return true;
-
             case R.id.action_sort_by_title:
-                loadPanels(assignments, 4);
+                loadPanels(assignments, 3);
                 return true;
 
             default:
@@ -156,6 +193,26 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void readSettings() {
+        ObjectInputStream inputStream;
+
+        try {
+            File file = new File(getFilesDir(), SETTINGS_FILE_NAME);
+            inputStream = new ObjectInputStream(new FileInputStream(file));
+
+            defaultSortIndex = inputStream.readInt();
+            overDueFirst = inputStream.readBoolean();
+            Log.v("MainActivity","overDueFirst="+overDueFirst);
+
+            inputStream.close();
+        } catch (EOFException e) {
+            Log.v("MainActivity.read", "End of stream reached.");
+        } catch (IOException e) {
+            Log.v("MainActivity.read", "The file was not to be found.");
+            e.printStackTrace();
+        }
+    }
+
     public void readAssignmentsFromFile() {
         inProgressAssignments = new ArrayList<>();
         completedAssignments = new ArrayList<>();
@@ -163,7 +220,7 @@ public class MainActivity extends AppCompatActivity {
 
         boolean cont = true;
         try {
-            File file = new File(getFilesDir(), fileName);
+            File file = new File(getFilesDir(), ASSIGNMENTS_FILE_NAME);
             inputStream = new ObjectInputStream(new FileInputStream(file));
             while (cont) {
                 Assignment obj = (Assignment) inputStream.readObject();
@@ -196,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void writeAssignmentsToFile() {
         try {
-            File file = new File(getFilesDir(), fileName);
+            File file = new File(getFilesDir(), ASSIGNMENTS_FILE_NAME);
             boolean fileCreated = file.createNewFile();
             if (fileCreated)
                 Log.v("MA", "File did not exist and was created.");
@@ -215,6 +272,8 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+
+                oos.close();
             } catch (IOException e) {
                 Log.v("MA", "File did not process");
 
@@ -230,71 +289,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
-
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY).toLowerCase();
-            //use the query to search your data somehow
-
-            //organize general gui
-            setTitle("Search Results");
-            for (View view : currentViews) {
-                parent.removeView(view);
-            }
-            currentViews.clear();
-
-            //ready data members
-            ArrayList<Assignment> allAssignments = new ArrayList<>();
-            allAssignments.addAll(inProgressAssignments);
-            allAssignments.addAll(completedAssignments);
-            ArrayList<AssignmentViewContainer> foundInClass = new ArrayList<>();
-            ArrayList<Assignment> foundInOther = new ArrayList<>();
-            for (Assignment assignment : allAssignments) {
-                if (assignment.title.toLowerCase().contains(query)) {
-                    AssignmentViewContainer viewContainer = new AssignmentViewContainer(
-                            this, assignment
-                    );
-                    viewContainer.titleView.setTextColor(Color.BLUE);
-                    parent.addView(viewContainer.container);
-                    currentViews.add(viewContainer.container);
-                } else if (assignment.className.toLowerCase().contains(query)) {
-                    AssignmentViewContainer viewContainer = new AssignmentViewContainer(
-                            this, assignment
-                    );
-                    viewContainer.classView.setTextColor(Color.BLUE);
-                    foundInClass.add(viewContainer);
-                } else if (assignment.description.toLowerCase().contains(query)
-                        || assignment.type.toLowerCase().contains(query)) {
-                    foundInOther.add(assignment);
-                }
-            }
-            for (AssignmentViewContainer container : foundInClass) {
-                parent.addView(container.container);
-                currentViews.add(container.container);
-            }
-            for (Assignment assignment : foundInOther) {
-                AssignmentViewContainer container = new AssignmentViewContainer(
-                        this, assignment);
-                parent.addView(container.container);
-                currentViews.add(container.container);
-            }
+    public void loadPanels(Assignment assignment, int sortIndex){
+        if (assignment.completed){
+            loadPanels(completedAssignments, sortIndex);
+        } else {
+            loadPanels(inProgressAssignments, sortIndex);
         }
     }
 
-    public void loadPanels() {
-        loadPanels(inProgressAssignments, 0);
-    }
-
-    public void loadPanels(ArrayList<Assignment> assignments) {
-        loadPanels(assignments, 0);
-    }
-
-    public void loadPanels(ArrayList<Assignment> assignments, int sortID) {
+    public void loadPanels(ArrayList<Assignment> assignments, int sortIndex) {
+        currentSortIndex = sortIndex;
         if (assignments == inProgressAssignments) {
             setTitle(getResources().getString(R.string.header_in_progress));
             myToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -303,8 +307,10 @@ public class MainActivity extends AppCompatActivity {
             setTitle(getResources().getString(R.string.header_completed));
             myToolbar.setBackgroundColor(getResources().getColor(R.color.colorCompleted));
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorCompletedDark));
-        } else
+        } else {
             setTitle("Gravy");
+            myToolbar.setBackgroundColor(Color.YELLOW);
+        }
         for (View view : currentViews) {
             parent.removeView(view);
         }
@@ -312,76 +318,24 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO: Add pinned assignments
 
-        switch (sortID) {
+        switch (sortIndex) {
             case 0:
-                sortViewsByToday(assignments);
+                sortViewsByDate(assignments);
                 break;
             case 1:
-                sortViewsByDate(assignments, true);
-                break;
-            case 2:
                 sortViewsByClass(assignments);
                 break;
-            case 3:
+            case 2:
                 sortViewsByType(assignments);
                 break;
-            case 4:
+            case 3:
                 sortViewsByTitle(assignments);
                 break;
         }
+        addHeading(" ");
     }
 
-    void sortViewsByToday(ArrayList<Assignment> assignments) {
-
-        ArrayList<Assignment> dueToday = new ArrayList<>();
-        ArrayList<Assignment> dueTomorrow = new ArrayList<>();
-        ArrayList<Assignment> dueUpcoming = new ArrayList<>();
-        ArrayList<Assignment> dueOverdue = new ArrayList<>();
-
-        Calendar today = Calendar.getInstance();
-        Calendar tomorrow = (Calendar) today.clone();
-        tomorrow.add(Calendar.DATE, 1);
-
-        for (Assignment assignment : assignments) {
-            int compareToToday = compareCalendars(assignment.dueDate, today);
-            if (compareToToday == 0)
-                dueToday.add(assignment);
-            else if (compareToToday > 0) {
-                int compareToTomorrow = compareCalendars(assignment.dueDate, tomorrow);
-                if (compareToTomorrow == 0)
-                    dueTomorrow.add(assignment);
-                else
-                    dueUpcoming.add(assignment);
-            } else
-                dueOverdue.add(assignment);
-        }
-
-        boolean empty = true;
-        if (!dueToday.isEmpty()) {
-            empty = false;
-            addHeading(R.string.due_today);
-            sortViewsByDate(dueToday, false);
-        }
-        if (!dueTomorrow.isEmpty()) {
-            empty = false;
-            addHeading(R.string.due_tomorrow);
-            sortViewsByDate(dueTomorrow, false);
-        }
-        if (!dueUpcoming.isEmpty()) {
-            empty = false;
-            addHeading(R.string.due_upcoming);
-            sortViewsByDate(dueUpcoming, false);
-        }
-        if (!dueOverdue.isEmpty()) {
-            empty = false;
-            addHeading(R.string.due_overdue);
-            sortViewsByDate(dueOverdue, false);
-        }
-        if (empty) {
-            addHeading(R.string.no_upcoming_assignments);
-        }
-
-    }
+    //Assignments Sorting methods
 
     void addHeading(int textID) {
         TextView header = (TextView) getLayoutInflater().inflate(
@@ -407,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
         parent.addView(header);
     }
 
-    void sortViewsByDate(ArrayList<Assignment> assignments, boolean headings) {
+    void sortViewsByDate(ArrayList<Assignment> assignments) {
         if (assignments.isEmpty()) {
             if (assignments == completedAssignments) {
                 addHeading(R.string.no_completed_assignments);
@@ -417,26 +371,61 @@ public class MainActivity extends AppCompatActivity {
             }
 
         } else {
-            Collections.sort(assignments);
-            Assignment previous = null;
-            SimpleDateFormat dateFormat = null;
-            if (headings) {
-                previous = assignments.get(0);
-                dateFormat = new SimpleDateFormat("EEE, MMM dd, YYYY", Locale.US);
-                addHeading(dateFormat.format(previous.dueDate.getTime()));
-            }
-            for (Assignment assignment : assignments) {
-                if (headings) {
-                    if (compareCalendars(assignment.dueDate, previous.dueDate) != 0)
-                        addHeading(dateFormat.format(assignment.dueDate.getTime()));
-                    previous = assignment;
-                }
-                AssignmentViewContainer assignmentViewContainer = new AssignmentViewContainer(
-                        this, assignment);
-                parent.addView(assignmentViewContainer.container);
-                currentViews.add(assignmentViewContainer.container);
+            Calendar today = Calendar.getInstance();
+            Calendar tomorrow = (Calendar) today.clone();
+            tomorrow.add(Calendar.DATE, 1);
 
+            Collections.sort(assignments);
+            Assignment previous = assignments.get(0);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, YYYY", Locale.US);
+            ArrayList<Assignment> overdue = new ArrayList<>();
+
+            System.out.println(compareCalendars(previous.dueDate, today));
+            if (!overDueFirst && compareCalendars(previous.dueDate, today) < 0){
+                System.out.println("overdue");
+            } else {
+                addDateHeading(dateFormat, today, tomorrow, previous.dueDate);
             }
+
+            for (Assignment assignment : assignments) {
+                if (!overDueFirst && compareCalendars(assignment.dueDate, today) < 0){
+                    System.out.println("Added assignment to overdue: " + assignment.title);
+                    overdue.add(assignment);
+                } else {
+                    if (compareCalendars(assignment.dueDate, previous.dueDate) > 0)
+                        addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
+
+                    previous = assignment;
+
+                    AssignmentViewContainer assignmentViewContainer = new AssignmentViewContainer(
+                            this, assignment, currentSortIndex);
+                    parent.addView(assignmentViewContainer.container);
+                    currentViews.add(assignmentViewContainer.container);
+                }
+            }
+
+            if (!overDueFirst){
+                addHeading(R.string.due_overdue);
+                for (Assignment assignment: overdue){
+                    AssignmentViewContainer assignmentViewContainer = new AssignmentViewContainer(
+                            this, assignment, currentSortIndex);
+                    parent.addView(assignmentViewContainer.container);
+                    currentViews.add(assignmentViewContainer.container);
+                }
+            }
+        }
+    }
+
+    void addDateHeading(SimpleDateFormat dateFormat, Calendar today, Calendar tomorrow, Calendar date) {
+        int compareToToday = compareCalendars(date, today);
+        int compareToTomorrow = compareCalendars(date, tomorrow);
+        if (compareToToday == 0){
+            addHeading(R.string.due_today);
+        } else if (compareToTomorrow == 0){
+            addHeading(R.string.due_tomorrow);
+        } else {
+            addHeading(dateFormat.format(date.getTime()));
         }
     }
 
@@ -453,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
             for (Assignment assignment : assignments) {
                 if (assignment.className.equals(heading)) {
                     AssignmentViewContainer view = new AssignmentViewContainer(
-                            this, assignment);
+                            this, assignment, currentSortIndex);
                     parent.addView(view.container);
                     currentViews.add(view.container);
                 }
@@ -469,7 +458,7 @@ public class MainActivity extends AppCompatActivity {
             for (Assignment assignment : assignments) {
                 if (assignment.type.equals(type)) {
                     AssignmentViewContainer view = new AssignmentViewContainer(
-                            this, assignment);
+                            this, assignment, currentSortIndex);
                     parent.addView(view.container);
                     currentViews.add(view.container);
                 }
@@ -491,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
             assignments.set(i, min);
 
             AssignmentViewContainer viewContainer = new AssignmentViewContainer(
-                    this, min
+                    this, min, currentSortIndex
             );
             parent.addView(viewContainer.container);
             currentViews.add(viewContainer.container);
@@ -507,36 +496,37 @@ public class MainActivity extends AppCompatActivity {
         return c1.get(Calendar.DAY_OF_MONTH) - c2.get(Calendar.DAY_OF_MONTH);
     }
 
-
     /**
      * Runs when "+" button is pressed
      * Creates new oldAssignment dialog
      *
      * @param view Plus button view
      */
-    //TODO: pop-up with extra options, define classes
+    //TODO: pop-up with extra options, define classes, class colors
     public void createNew(View view) {
         final NewAssignmentDialog newAssignmentDialog = new NewAssignmentDialog();
+        Bundle args = new Bundle();
+        args.putInt("sortID",currentSortIndex);
+        newAssignmentDialog.setArguments(args);
         newAssignmentDialog.show(getFragmentManager(), "NewAssignmentDialog");
     }
 
-    public void openFABMenu(View view) {
-        FloatingActionButton editClasses = (FloatingActionButton) findViewById(R.id.action_edit_classes);
-        FloatingActionButton customAssignment = (FloatingActionButton) findViewById(R.id.action_custom_assignment);
+//    public void openFABMenu(View view) {
+//        FloatingActionButton editClasses = (FloatingActionButton) findViewById(R.id.action_edit_classes);
+//        FloatingActionButton customAssignment = (FloatingActionButton) findViewById(R.id.action_custom_assignment);
+//
+//        Animation button1Animation = AnimationUtils.loadAnimation(getApplication(), R.anim.show_button_1);
+//    }
 
-        Animation button1Animation = AnimationUtils.loadAnimation(getApplication(), R.anim.show_button_1);
-
-    }
-
-    public void deleteAssignment(Assignment assignment) {
+    public void deleteAssignment(Assignment assignment, int sortIndex) {
         if (assignment.completed) {
             completedAssignments.remove(assignment);
             writeAssignmentsToFile();
-            loadPanels(completedAssignments);
+            loadPanels(completedAssignments, sortIndex);
         } else {
             inProgressAssignments.remove(assignment);
             writeAssignmentsToFile();
-            loadPanels(inProgressAssignments);
+            loadPanels(inProgressAssignments, sortIndex);
         }
     }
 } // end MainActivity class

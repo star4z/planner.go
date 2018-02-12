@@ -32,6 +32,7 @@ public class EditDetailsDialog extends DialogFragment {
     Calendar calendar;
     SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
     DatePickerDialog datePickerDialog;
+    int sortIndex;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -39,6 +40,7 @@ public class EditDetailsDialog extends DialogFragment {
         // Get the layout inflater
 
         oldAssignment = new Assignment(getArguments());
+       sortIndex = getArguments().getInt("sortIndex");
         datePickerDialog = createDatePicker();
 
         // Inflate and set the layout for the dialog
@@ -64,10 +66,10 @@ public class EditDetailsDialog extends DialogFragment {
                         );
 //                            ((MainActivity) getActivity()).editAssignment(assignmentView, oldAssignment);
                         MainActivity activity = (MainActivity) getActivity();
-                        activity.deleteAssignment(oldAssignment);
+                        activity.deleteAssignment(oldAssignment, sortIndex);
                         activity.addAssignment(newAssignment);
                         activity.writeAssignmentsToFile();
-                        activity.loadPanels();
+                        activity.loadPanels(newAssignment, sortIndex);
                         openDetailsDialog(newAssignment, getFragmentManager());
                         EditDetailsDialog.this.dismiss();
                     }
@@ -104,11 +106,11 @@ public class EditDetailsDialog extends DialogFragment {
                 R.layout.dialog_new_assignment,
                 (ViewGroup) getActivity().findViewById(android.R.id.content), false);
 
-        titleView = (EditText) view.findViewById(R.id.hw_title);
-        classView = (EditText) view.findViewById(R.id.hw_class);
-        dateView = (EditText) view.findViewById(R.id.hw_due_date);
-        descriptionView = (EditText) view.findViewById(R.id.hw_description);
-        typeView = (Spinner) view.findViewById(R.id.hw_type);
+        titleView = view.findViewById(R.id.hw_title);
+        classView = view.findViewById(R.id.hw_class);
+        dateView = view.findViewById(R.id.hw_due_date);
+        descriptionView = view.findViewById(R.id.hw_description);
+        typeView = view.findViewById(R.id.hw_type);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.assignment_types_array, android.R.layout.simple_spinner_item);
@@ -135,6 +137,7 @@ public class EditDetailsDialog extends DialogFragment {
 
     void openDetailsDialog(Assignment assignment, FragmentManager f) {
         Bundle args = assignment.generateBundle();
+        args.putInt("sortIndex", sortIndex);
 
         DetailsDialog detailsDialog = new DetailsDialog();
         detailsDialog.setArguments(args);

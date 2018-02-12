@@ -3,6 +3,7 @@
     <string-array name="drawer_options_array">
         <item>@string/header_in_progress</item>
         <item>@string/header_completed</item>
+        <item>@string/settings</item>
     </string-array>
     
     <string-array name="assignment_types_array">
@@ -15,6 +16,15 @@
     <integer-array name="drawer_icons_array">
         <item>@drawable/ic_clipboard_grey_24dp</item>
         <item>@drawable/ic_trash_grey_24dp</item>
+        <item>@drawable/ic_settings_grey_24dp</item>
     </integer-array>
+
+    <string-array name="sort_types">
+        <item>@string/sort_default</item>
+        <item>@string/sort_date</item>
+        <item>@string/sort_class</item>
+        <item>@string/sort_title</item>
+        <item>@string/sort_type</item>
+    </string-array>
     
 </resources>
