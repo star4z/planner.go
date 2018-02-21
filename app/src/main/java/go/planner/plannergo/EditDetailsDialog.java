@@ -6,10 +6,8 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +19,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -91,11 +90,12 @@ public class EditDetailsDialog extends DialogFragment {
                         assert alarmManager != null;
                         alarmManager.cancel(oldPendingIntent);
 
+                        Toast.makeText(getActivity(), "Updated assignment.", Toast.LENGTH_SHORT).show();
                         //Redisplay notification, if it is displayed
-                        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(
-                                Context.NOTIFICATION_SERVICE);
-                        assert notificationManager != null;
-                        notificationManager.cancel(oldAssignment.hashCode());
+//                        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(
+//                                Context.NOTIFICATION_SERVICE);
+//                        assert notificationManager != null;
+//                        notificationManager.cancel(oldAssignment.hashCode());
 
                         //Create new alarm
                         activity.setNotificationTimer(newAssignment, alarmManager);

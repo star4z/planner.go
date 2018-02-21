@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.EOFException;
 import java.io.File;
@@ -203,11 +204,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onNewIntent(Intent intent) {
-        Log.v("MainActivity","intent action "+ intent.getAction());
-        if (MARK_DONE.equals(intent.getAction())){
+        Log.v("MainActivity", "intent action " + intent.getAction());
+        if (MARK_DONE.equals(intent.getAction())) {
             Assignment doneAssignment = new Assignment(intent.getExtras());
-            for (Assignment assignment: inProgressAssignments){
-                if(doneAssignment.equals(assignment)){
+            for (Assignment assignment : inProgressAssignments) {
+                if (doneAssignment.equals(assignment)) {
                     assignment.completed = true;
                 }
             }
@@ -587,18 +588,18 @@ public class MainActivity extends AppCompatActivity {
     void setNotificationTimers() {
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        for (Assignment assignment: inProgressAssignments) {
+        for (Assignment assignment : inProgressAssignments) {
             setNotificationTimer(assignment, alarmManager);
         }
 
     }
 
-    void setNotificationTimer(Assignment assignment, AlarmManager alarmManager){
+    void setNotificationTimer(Assignment assignment, AlarmManager alarmManager) {
         PendingIntent pendingIntent = AlarmBroadcastReceiver.createPendingIntent(
                 assignment, assignment.hashCode(), timeEnabled, getApplicationContext());
         alarmManager.cancel(pendingIntent);
 
-            long time = alarmTimeFromAssignment(assignment);
+        long time = alarmTimeFromAssignment(assignment);
 //        long time = 0;
         alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
     }
@@ -619,6 +620,11 @@ public class MainActivity extends AppCompatActivity {
         date.set(Calendar.MINUTE, alarmMinuteOfDay);
         date.set(Calendar.SECOND, 0);
         date.set(Calendar.MILLISECOND, 0);
+        Toast.makeText(this,
+                "Reminder set for " + new SimpleDateFormat("h:mm a, EEE, MM/dd/yy", Locale.US).
+                        format(date.getTime()),
+                Toast.LENGTH_SHORT
+        ).show();
         return date.getTimeInMillis();
     }
 
@@ -698,7 +704,7 @@ public class MainActivity extends AppCompatActivity {
         for (Assignment assignment : inProgressAssignments) {
             writeAssignment(assignment, oos);
         }
-        Log.v("MainActivity","File written");
+        Log.v("MainActivity", "File written");
     }
 
     void writeAssignment(Assignment assignment, ObjectOutputStream oos) throws IOException {
