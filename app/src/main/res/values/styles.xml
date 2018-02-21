@@ -16,7 +16,7 @@
     
     <style name="DueDateHeader">
         <item name="android:textSize">14sp</item>
-        <item name="android:layout_margin">12dp</item>
+        <item name="android:padding">12dp</item>
     </style>
 
     <style name="SettingsItemTitle">

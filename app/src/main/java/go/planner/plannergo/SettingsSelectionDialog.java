@@ -35,7 +35,7 @@ public class SettingsSelectionDialog extends DialogFragment {
         assert titles != null && subtitles != null;
 
         /*
-        TODO: Add functionality:
+        xTODO: Add functionality:
         when an item is selected, dialog closes and the activity receives and int position of the selected item.
         When the dialog opens, the already chosen item is selected.
          */

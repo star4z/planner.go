@@ -40,5 +40,4 @@
         app:showAsAction="never"
         android:title="@string/sort_type"/>
 
-
 </menu>

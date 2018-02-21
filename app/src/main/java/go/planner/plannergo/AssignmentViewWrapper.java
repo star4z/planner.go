@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ import java.util.Locale;
  * Created by Ben Phillips on 12/22/2017.
  */
 
-class AssignmentViewContainer implements Comparable<Object> {
+class AssignmentViewWrapper implements Comparable<Object> {
 
     LinearLayout container;
 
@@ -34,7 +35,7 @@ class AssignmentViewContainer implements Comparable<Object> {
 
     private final Assignment assignment;
 
-    AssignmentViewContainer(final Activity activity, Assignment newAssignment, int sortIndex) {
+    AssignmentViewWrapper(final Activity activity, Assignment newAssignment, int sortIndex) {
         FragmentManager f = activity.getFragmentManager();
         assignment = newAssignment;
         this.sortIndex = sortIndex;
@@ -49,15 +50,17 @@ class AssignmentViewContainer implements Comparable<Object> {
         classView = container.findViewById(R.id.class_name);
         dateView = container.findViewById(R.id.date);
 
-        updateData();
+        checkBox.setChecked(assignment.completed);
+
+        updateData((MainActivity) activity);
 
         //click functionality (opens DetailsDialog)
-        body.setOnClickListener(new BodyClickListener(newAssignment, f));
+        body.setOnClickListener(new BodyClickListener(newAssignment, (MainActivity) activity, f));
         //checkBox functionality
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+
                     final MainActivity mainActivity = (MainActivity) activity;
                     ArrayList<Assignment> currentAssignments;
                     if (assignment.completed)
@@ -65,25 +68,32 @@ class AssignmentViewContainer implements Comparable<Object> {
                     else
                         currentAssignments = mainActivity.inProgressAssignments;
                     toggleCompleted(mainActivity, currentAssignments);
-                    createSnackBarPopup(mainActivity, activity.getFragmentManager(), currentAssignments);
-                }
+                    createSnackBarPopup(mainActivity, currentAssignments);
+
             }
         });
     }
 
-    private void updateData() {
+    private void updateData(MainActivity activity) {
         titleView.setText(assignment.title);
         classView.setText(assignment.className);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
+        SimpleDateFormat dateFormat;
+        if (activity.timeEnabled) {
+            dateFormat = new SimpleDateFormat("h:mm a, EEE, MM/dd/yy", Locale.US);
+        } else {
+            dateFormat = new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
+        }
         dateView.setText(dateFormat.format(assignment.dueDate.getTime()));
     }
 
     class BodyClickListener implements View.OnClickListener {
         Assignment assignment;
         FragmentManager f;
+        MainActivity activity;
 
-        BodyClickListener(Assignment assignment, FragmentManager fragmentManager) {
+        BodyClickListener(Assignment assignment, MainActivity activity, FragmentManager fragmentManager) {
             this.assignment = assignment;
+            this.activity = activity;
             f = fragmentManager;
         }
 
@@ -91,6 +101,9 @@ class AssignmentViewContainer implements Comparable<Object> {
         public void onClick(View v) {
             Bundle args = assignment.generateBundle();
             args.putInt("sortIndex", sortIndex);
+            args.putBoolean("timeEnabled", activity.timeEnabled);
+            Log.v("AssignmentViewContainer", "timeEnabled=" + activity.timeEnabled);
+
 
             DetailsDialog detailsDialog = new DetailsDialog();
             detailsDialog.setArguments(args);
@@ -112,7 +125,7 @@ class AssignmentViewContainer implements Comparable<Object> {
 
     @Override
     public int compareTo(@NonNull Object o) {
-        AssignmentViewContainer box = (AssignmentViewContainer) o;
+        AssignmentViewWrapper box = (AssignmentViewWrapper) o;
         return assignment.dueDate.compareTo(box.assignment.dueDate);
     }
 
@@ -122,12 +135,11 @@ class AssignmentViewContainer implements Comparable<Object> {
      * Recreates assignment if they choose to undo.
      *
      * @param activity reference to MainActivity instance
-     * @param manager  reference to current FragmentManager
      */
-    private void createSnackBarPopup(final MainActivity activity, final FragmentManager manager, final ArrayList<Assignment> currentAssignments) {
+    private void createSnackBarPopup(final MainActivity activity, final ArrayList<Assignment> currentAssignments) {
         String title, status;
         if (assignment.title.equals(""))
-            title = "untitled assignment";
+            title = "Untitled assignment";
         else
             title = "'" + assignment.title + "'";
         if (assignment.completed)
