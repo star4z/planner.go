@@ -21,7 +21,6 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.EOFException;
 import java.io.File;
@@ -373,20 +372,29 @@ public class MainActivity extends AppCompatActivity {
         currentViews.clear();
 
         //TODO: Add pinned assignments
+        if (assignments.isEmpty()) {
+            if (assignments == completedAssignments) {
+                addHeading(R.string.no_completed_assignments);
+            }
+            if (assignments == inProgressAssignments) {
+                addHeading(R.string.no_upcoming_assignments);
+            }
+        } else {
 
-        switch (sortIndex) {
-            case 0:
-                sortViewsByDate(assignments);
-                break;
-            case 1:
-                sortViewsByClass(assignments);
-                break;
-            case 2:
-                sortViewsByType(assignments);
-                break;
-            case 3:
-                sortViewsByTitle(assignments);
-                break;
+            switch (sortIndex) {
+                case 0:
+                    sortViewsByDate(assignments);
+                    break;
+                case 1:
+                    sortViewsByClass(assignments);
+                    break;
+                case 2:
+                    sortViewsByType(assignments);
+                    break;
+                case 3:
+                    sortViewsByTitle(assignments);
+                    break;
+            }
         }
         addHeading(" ");
     }
@@ -418,56 +426,48 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void sortViewsByDate(ArrayList<Assignment> assignments) {
-        if (assignments.isEmpty()) {
-            if (assignments == completedAssignments) {
-                addHeading(R.string.no_completed_assignments);
-            }
-            if (assignments == inProgressAssignments) {
-                addHeading(R.string.no_upcoming_assignments);
-            }
 
-        } else {
-            Calendar today = Calendar.getInstance();
-            Calendar tomorrow = (Calendar) today.clone();
-            tomorrow.add(Calendar.DATE, 1);
+        Calendar today = Calendar.getInstance();
+        Calendar tomorrow = (Calendar) today.clone();
+        tomorrow.add(Calendar.DATE, 1);
 
-            Collections.sort(assignments);
-            Assignment previous = assignments.get(0);
+        Collections.sort(assignments);
+        Assignment previous = assignments.get(0);
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
-            ArrayList<Assignment> overdue = new ArrayList<>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
+        ArrayList<Assignment> overdue = new ArrayList<>();
 
-            if (overdueFirst || compareCalendars(previous.dueDate, today) >= 0)
-                addDateHeading(dateFormat, today, tomorrow, previous.dueDate);
+        if (overdueFirst || compareCalendars(previous.dueDate, today) >= 0)
+            addDateHeading(dateFormat, today, tomorrow, previous.dueDate);
 
-            for (Assignment assignment : assignments) {
-                if (!overdueFirst && compareCalendars(assignment.dueDate, today) < 0) {
-                    System.out.println("Added assignment to overdue: " + assignment.title);
-                    overdue.add(assignment);
-                } else {
-                    if (compareCalendars(assignment.dueDate, previous.dueDate) > 0)
-                        addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
+        for (Assignment assignment : assignments) {
+            if (!overdueFirst && compareCalendars(assignment.dueDate, today) < 0) {
+                System.out.println("Added assignment to overdue: " + assignment.title);
+                overdue.add(assignment);
+            } else {
+                if (compareCalendars(assignment.dueDate, previous.dueDate) > 0)
+                    addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
 
-                    previous = assignment;
+                previous = assignment;
 
-                    AssignmentViewWrapper assignmentViewWrapper = new AssignmentViewWrapper(
-                            this, assignment, currentSortIndex);
-                    parent.addView(assignmentViewWrapper.container);
-                    currentViews.add(assignmentViewWrapper.container);
-                }
-            }
-
-            if (!overdueFirst) {
-                if (!overdue.isEmpty())
-                    addHeading(R.string.due_overdue);
-                for (Assignment assignment : overdue) {
-                    AssignmentViewWrapper assignmentViewWrapper = new AssignmentViewWrapper(
-                            this, assignment, currentSortIndex);
-                    parent.addView(assignmentViewWrapper.container);
-                    currentViews.add(assignmentViewWrapper.container);
-                }
+                AssignmentViewWrapper assignmentViewWrapper = new AssignmentViewWrapper(
+                        this, assignment, currentSortIndex);
+                parent.addView(assignmentViewWrapper.container);
+                currentViews.add(assignmentViewWrapper.container);
             }
         }
+
+        if (!overdueFirst) {
+            if (!overdue.isEmpty())
+                addHeading(R.string.due_overdue);
+            for (Assignment assignment : overdue) {
+                AssignmentViewWrapper assignmentViewWrapper = new AssignmentViewWrapper(
+                        this, assignment, currentSortIndex);
+                parent.addView(assignmentViewWrapper.container);
+                currentViews.add(assignmentViewWrapper.container);
+            }
+        }
+
     }
 
     void addDateHeading(SimpleDateFormat dateFormat, Calendar today, Calendar tomorrow, Calendar date) {
@@ -598,10 +598,11 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pendingIntent = AlarmBroadcastReceiver.createPendingIntent(
                 assignment, assignment.hashCode(), timeEnabled, getApplicationContext());
         alarmManager.cancel(pendingIntent);
-
         long time = alarmTimeFromAssignment(assignment);
+        if (time > Calendar.getInstance().getTimeInMillis()) {
 //        long time = 0;
-        alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
+        }
     }
 
     /**
@@ -620,11 +621,7 @@ public class MainActivity extends AppCompatActivity {
         date.set(Calendar.MINUTE, alarmMinuteOfDay);
         date.set(Calendar.SECOND, 0);
         date.set(Calendar.MILLISECOND, 0);
-        Toast.makeText(this,
-                "Reminder set for " + new SimpleDateFormat("h:mm a, EEE, MM/dd/yy", Locale.US).
-                        format(date.getTime()),
-                Toast.LENGTH_SHORT
-        ).show();
+
         return date.getTimeInMillis();
     }
 

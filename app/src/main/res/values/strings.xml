@@ -65,6 +65,7 @@
     <string name="channel_name">Main Channel</string>
     <string name="channel_description">Notification channel for reminders</string>
     <string name="setting_notification_reminder_time_title">Remind me the day before at</string>
+    <string name="due">Due:</string>
 
 
 </resources>

@@ -122,7 +122,7 @@ class DetailsDialog : DialogFragment() {
         val waitDontDeleteMeYet = Snackbar.make(
                 activity.findViewById(R.id.coordinator),
                 title + " was deleted.",
-                Snackbar.LENGTH_SHORT
+                Snackbar.LENGTH_LONG
         )
         waitDontDeleteMeYet.setAction(R.string.undo) {
             activity.addAssignment(assignment)

@@ -17,6 +17,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -83,6 +84,12 @@ public class NewAssignmentDialog extends DialogFragment {
                         activity.addAssignment(assignment);
                         activity.writeAssignmentsToFile();
                         activity.loadPanels(assignment, getArguments().getInt("sortIndex"));
+                        Toast.makeText(activity,
+                                "Reminder set for " + new SimpleDateFormat("h:mm a, EEE, MM/dd/yy", Locale.US).
+                                        format(activity.alarmTimeFromAssignment(assignment)),
+                                Toast.LENGTH_SHORT
+                        ).show();
+
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -95,7 +102,7 @@ public class NewAssignmentDialog extends DialogFragment {
         if (timeEnabled)
             timeView.setText(timeFormat.format(assignment.dueDate.getTime()));
         else
-            timeView.setWidth(0);
+            timeView.setVisibility(View.GONE);
 
         return builder.create();
     } // end onCreateDialog()

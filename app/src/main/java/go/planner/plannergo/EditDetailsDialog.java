@@ -86,7 +86,7 @@ public class EditDetailsDialog extends DialogFragment {
                         AlarmManager alarmManager = (AlarmManager) activity.getSystemService(ALARM_SERVICE);
                         PendingIntent oldPendingIntent = AlarmBroadcastReceiver.createPendingIntent(
                                 oldAssignment, oldAssignment.hashCode(), timeEnabled, activity.getApplicationContext());
-                        Log.v("EditDetailsDialog","alarmManager="+alarmManager);
+                        Log.v("EditDetailsDialog", "alarmManager=" + alarmManager);
                         assert alarmManager != null;
                         alarmManager.cancel(oldPendingIntent);
 
@@ -176,10 +176,17 @@ public class EditDetailsDialog extends DialogFragment {
         typeView.setSelection(Assignment.spinnerPosition(oldAssignment.type));
 
         //display time if enabled
-        if (timeEnabled)
+        if (timeEnabled) {
+            //TODO: this changes the time to now since Assignment doesn't restore time, just date
             timeView.setText(timeFormat.format(oldAssignment.dueDate.getTime()));
-        else
-            timeView.setWidth(0);
+            timeView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    timePickerDialog.show();
+                }
+            });
+        } else
+            timeView.setVisibility(View.GONE);
 
         //prepare Calendar object with old value for manipulation by Date/Time Pickers
         calendar = (Calendar) oldAssignment.dueDate.clone();
@@ -190,17 +197,6 @@ public class EditDetailsDialog extends DialogFragment {
                 datePickerDialog.show();
             }
         });
-
-        if (timeEnabled) {
-            timeView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    timePickerDialog.show();
-                }
-            });
-        } else {
-            timeView.setWidth(0);
-        }
 
         return view;
     }

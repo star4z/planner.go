@@ -149,7 +149,7 @@ class AssignmentViewWrapper implements Comparable<Object> {
         Snackbar snackbar = Snackbar.make(
                 activity.findViewById(R.id.coordinator),
                 "Marked " + title + " as " + status,
-                Snackbar.LENGTH_SHORT
+                Snackbar.LENGTH_LONG
         );
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
