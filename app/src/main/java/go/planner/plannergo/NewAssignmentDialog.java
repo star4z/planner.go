@@ -78,15 +78,18 @@ public class NewAssignmentDialog extends DialogFragment {
                                 false,
                                 (String) typeView.getSelectedItem());
                         Log.v("NewAD", "assignment=" + assignment);
+
                         MainActivity activity = (MainActivity) getActivity();
+                        Bundle settings = FileIO.readSettings(getActivity());
+
                         AlarmManager alarmManager = (AlarmManager) activity.getSystemService(ALARM_SERVICE);
-                        activity.setNotificationTimer(assignment, alarmManager);
-                        activity.addAssignment(assignment);
-                        activity.writeAssignmentsToFile();
+                        NotificationAlarms.setNotificationTimer(getActivity(), assignment, alarmManager, settings);
+                        FileIO.addAssignment(assignment);
+                        FileIO.writeAssignmentsToFile(getActivity());
                         activity.loadPanels(assignment, getArguments().getInt("sortIndex"));
                         Toast.makeText(activity,
                                 "Reminder set for " + new SimpleDateFormat("h:mm a, EEE, MM/dd/yy", Locale.US).
-                                        format(activity.alarmTimeFromAssignment(assignment)),
+                                        format(NotificationAlarms.alarmTimeFromAssignment(assignment, settings)),
                                 Toast.LENGTH_SHORT
                         ).show();
 

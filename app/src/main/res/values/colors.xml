@@ -3,9 +3,27 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="colorAccentDark">#c60055</color>
-    <color name="colorCompleted">#4CAF50</color>
-    <color name="colorCompletedDark">#087F23</color>
+
+    <!-- Palette 1: Bright -->
+    <color name="p1_primary">#3F51B5</color>
+    <color name="p1_primary_dark">#303F9F</color>
+    <color name="p1_secondary">#FF4081</color>
+    <color name="p1_secondary_dark">#c60055</color>
+    <color name="p1_completed">#4CAF50</color>
+    <color name="p1_completed_dark">#087F23</color>
+    <color name="p1_assignment">#ffa726</color>
+    <color name="p1_assignment_dark">#c77800</color>
+
+    <!--TODO: implement color palette options -->
+    <!-- Palette 2: Earthy -->
+
+    <!-- Palette 3: Ice Cream-->
+
+    <!-- Palette 4: Monochrome -->
+
+    <!-- Palette 5: Patriotic -->
+    <color name="p5_secondary">#f44336</color>
+    <color name="p5_secondary_dark">#ba000d</color>
 
     <color name="iconWhite">#FFFFFFFF</color>
     <color name="iconGrey">#FFA9A9A9</color>

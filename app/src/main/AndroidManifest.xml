@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="go.planner.plannergo">
 
-    <uses-permission android:name="alarm.permission.SET_ALARM"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -45,11 +46,23 @@
                 android:value=".SettingsActivity" />
         </activity>
 
-        <receiver android:name=".AlarmBroadcastReceiver"
+        <receiver
+            android:name=".AlarmBroadcastReceiver"
             android:permission="alarm.permission.SET_ALARM">
             <intent-filter>
                 <action android:name="planner.app.Alarm1" />
+                <action android:name="planner.app.MarkDone" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".BootBroadcastReceiver"
+            android:permission="android.permission.BOOT_COMPLETED">
+            <intent-filter>
+                <action android:name="planner.app.startedUp" />
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".NewAssignmentActivity"></activity>
     </application>
+
 </manifest>

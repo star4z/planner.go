@@ -5,7 +5,6 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,12 +63,11 @@ class AssignmentViewWrapper implements Comparable<Object> {
                     final MainActivity mainActivity = (MainActivity) activity;
                     ArrayList<Assignment> currentAssignments;
                     if (assignment.completed)
-                        currentAssignments = mainActivity.completedAssignments;
+                        currentAssignments = FileIO.completedAssignments;
                     else
-                        currentAssignments = mainActivity.inProgressAssignments;
+                        currentAssignments = FileIO.inProgressAssignments;
                     toggleCompleted(mainActivity, currentAssignments);
                     createSnackBarPopup(mainActivity, currentAssignments);
-
             }
         });
     }
@@ -78,7 +76,8 @@ class AssignmentViewWrapper implements Comparable<Object> {
         titleView.setText(assignment.title);
         classView.setText(assignment.className);
         SimpleDateFormat dateFormat;
-        if (activity.timeEnabled) {
+        Bundle settings = FileIO.readSettings(activity);
+        if (settings.getBoolean("timeEnabled", false)) {
             dateFormat = new SimpleDateFormat("h:mm a, EEE, MM/dd/yy", Locale.US);
         } else {
             dateFormat = new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
@@ -100,9 +99,11 @@ class AssignmentViewWrapper implements Comparable<Object> {
         @Override
         public void onClick(View v) {
             Bundle args = assignment.generateBundle();
-            args.putInt("sortIndex", sortIndex);
-            args.putBoolean("timeEnabled", activity.timeEnabled);
-            Log.v("AssignmentViewContainer", "timeEnabled=" + activity.timeEnabled);
+//            args.putInt("sortIndex", sortIndex);
+//            args.putBoolean("timeEnabled", activity.timeEnabled);
+//            Log.v("AssignmentViewContainer", "timeEnabled=" + activity.timeEnabled);
+            Bundle settings = FileIO.readSettings(activity);
+            args.putAll(settings);
 
 
             DetailsDialog detailsDialog = new DetailsDialog();
@@ -113,14 +114,14 @@ class AssignmentViewWrapper implements Comparable<Object> {
 
     private void toggleCompleted(MainActivity mainActivity, ArrayList<Assignment> currentAssignments) {
         if (assignment.completed = !assignment.completed) {
-            mainActivity.inProgressAssignments.remove(assignment);
-            mainActivity.completedAssignments.add(assignment);
+            FileIO.inProgressAssignments.remove(assignment);
+            FileIO.completedAssignments.add(assignment);
         } else {
-            mainActivity.completedAssignments.remove(assignment);
-            mainActivity.inProgressAssignments.add(assignment);
+            FileIO.completedAssignments.remove(assignment);
+            FileIO.inProgressAssignments.add(assignment);
         }
         mainActivity.loadPanels(currentAssignments, sortIndex);
-        mainActivity.writeAssignmentsToFile();
+        FileIO.writeAssignmentsToFile(mainActivity);
     }
 
     @Override

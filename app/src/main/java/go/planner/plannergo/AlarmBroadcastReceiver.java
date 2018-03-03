@@ -16,18 +16,7 @@ import android.support.v4.app.NotificationCompat.Action;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.NotSerializableException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -45,18 +34,18 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-//        Log.v("AlarmBroadcastReceiver", "alarm was received");
+        Log.v("AlarmBroadcastReceiver", "alarm was received");
         if (ACTION_ALARM.equals(intent.getAction())) {
             Assignment assignment = new Assignment(intent.getExtras());
             int uniqueID = intent.getIntExtra("uniqueID", 1);
             boolean timeEnabled = intent.getBooleanExtra("timeEnabled", false);
-
             Calendar dueDate = getCalendar(intent);
 
             createNotification(assignment, uniqueID, dueDate, timeEnabled, context);
-        } else if (MARK_DONE.equals(intent.getAction())) {
 
+        } else if (MARK_DONE.equals(intent.getAction())) {
             Assignment doneAssignment = new Assignment(intent.getExtras());
+            Log.v("AlarmBR","doneAssignment=" + doneAssignment);
 
             //cancel notification
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(
@@ -64,32 +53,16 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             assert notificationManager != null;
             notificationManager.cancel(doneAssignment.hashCode());
 
-            ArrayList<Assignment> assignments = readAssignmentsFromFile(context);
-            for (Assignment nextAssignment : assignments) {
+//            ArrayList<Assignment> assignments = FileIO.readAssignmentsFromFile(context);
+            FileIO.readAssignmentsFromFile(context);
+            for (Assignment nextAssignment : FileIO.inProgressAssignments) {
                 if (doneAssignment.equals(nextAssignment)) {
                     nextAssignment.completed = true;
                     break;
                 }
             }
-            try {
-                MainActivity.getActivity().recreate();
-                Log.v("AlarmBR", "successfully recreated");
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            }
-            writeAssignmentsToFile(context, assignments);
-//            Intent activityIntent = new Intent(context, MainActivity.class);
-//            intent.setAction(MainActivity.MARK_DONE);
-//            intent.putExtras(intent.getExtras());
-//            context.startActivity(activityIntent);
+
+            FileIO.writeAssignmentsToFile(context);
         }
     }
 
@@ -167,14 +140,6 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                         setAutoCancel(true).
                         build();
 
-        //Expanded notification
-//        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle().
-//                setBigContentTitle(assignment.title).
-//                addLine(assignment.className).
-//                addLine(dateString).
-//                addLine(assignment.description);
-//        notification.setStyle(inboxStyle);
-
         assert notificationManager != null;
         notificationManager.notify(uniqueID, notification);
 
@@ -199,84 +164,5 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         public void onReceive(Context context, Intent intent) {
 
         }
-    }
-
-
-    public ArrayList<Assignment> readAssignmentsFromFile(Context context) {
-//        try {
-//            readAssignments();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        }
-        ArrayList<Assignment> assignments = new ArrayList<>();
-
-        ObjectInputStream inputStream;
-
-        boolean cont = true;
-        try {
-            File file = new File(context.getFilesDir(), MainActivity.ASSIGNMENTS_FILE_NAME);
-            inputStream = new ObjectInputStream(new FileInputStream(file));
-            while (cont) {
-                Assignment obj = (Assignment) inputStream.readObject();
-                if (obj != null)
-                    assignments.add(obj);
-                else
-                    cont = false;
-            }
-            inputStream.close();
-        } catch (EOFException e) {
-            Log.v("MainActivity.read", "End of stream reached.");
-        } catch (ClassNotFoundException e) {
-            Log.v("MainActivity.read", "No more objects to be had in the file.");
-        } catch (IOException e) {
-            Log.v("MainActivity.read", "The file was not to be found.");
-            e.printStackTrace();
-        }
-        return assignments;
-    }
-
-
-    public void writeAssignmentsToFile(Context context, ArrayList<Assignment> assignments) {
-        //TODO: enable new read write implementation
-//        try {
-//            writeAssignments();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-        try {
-            File file = new File(context.getFilesDir(), MainActivity.ASSIGNMENTS_FILE_NAME);
-            boolean fileCreated = file.createNewFile();
-            if (fileCreated)
-                Log.v("MA", "File did not exist and was created.");
-
-            FileOutputStream fos = new FileOutputStream(file, false);
-            try {
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                for (Assignment o : assignments) {
-                    try {
-                        oos.writeObject(o);
-                    } catch (NotSerializableException e) {
-                        Log.v("MA", "An object was not serializable, it has not been saved.");
-                        e.printStackTrace();
-                    }
-                }
-
-                oos.close();
-                fos.close();
-            } catch (IOException e) {
-                Log.v("MA", "File did not process");
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            Log.v("MA", "File not found to write");
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.v("MA", "Could not create file for some reason");
-            e.printStackTrace();
-        }
-
     }
 }

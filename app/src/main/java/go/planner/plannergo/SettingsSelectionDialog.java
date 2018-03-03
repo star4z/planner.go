@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,18 +31,20 @@ public class SettingsSelectionDialog extends DialogFragment {
 
         String[] titles = getArguments().getStringArray("options");
         String[] subtitles = getArguments().getStringArray("descriptions");
-        int selectedIndex = getArguments().getInt("selectedIndex");
+        int selectedIndex = getArguments().getInt("defaultSortIndex");
+        Log.v("SettingsSelectionDialog", "selectedIndex=" + selectedIndex);
 
         assert titles != null && subtitles != null;
 
         /*
-        xTODO: Add functionality:
+        TODO: Restore functionality:
         when an item is selected, dialog closes and the activity receives and int position of the selected item.
         When the dialog opens, the already chosen item is selected.
          */
 
-        for (int i = 0; i < titles.length; i++){
+        for (int i = 0; i < titles.length; i++) {
             final int index = i;
+            //Setting the root as null fixes an error
             View dialogOption = inflater.inflate(R.layout.view_settings_dialog_option, null);
             RelativeLayout nextLayout = dialogOption.findViewById(R.id.parent_item);
 
@@ -49,7 +52,7 @@ public class SettingsSelectionDialog extends DialogFragment {
             TextView title = nextLayout.findViewById(R.id.title);
             TextView subtitle = nextLayout.findViewById(R.id.subtitle);
 
-            if (index == selectedIndex){
+            if (index == selectedIndex) {
                 radio.toggle();
             }
 
@@ -57,7 +60,10 @@ public class SettingsSelectionDialog extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     SettingsActivity activity = (SettingsActivity) getActivity();
-                    activity.defaultSortIndex = index;
+
+                    activity.settings.putInt("defaultSortIndex", index);
+                    Log.v("SettingsSelectionDialog", "index=" + index);
+
                     activity.updateViews();
                     SettingsSelectionDialog.this.dismiss();
                 }

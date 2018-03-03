@@ -13,16 +13,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 
 /**
@@ -32,13 +22,13 @@ import java.util.Locale;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    final String FILE_NAME = "planner.settings";
+    Bundle settings;
 
-    int defaultSortIndex = 0;
-    boolean overdueFirst = true;
-    String sortOptions[] = new String[]{"Sort by date", "Sort by class", "Sort by title", "Sort by type"};
-    boolean timeEnabled = false;
-    Calendar notificationTime;
+    //    int defaultSortIndex = 0;
+//    boolean overdueFirst = true;
+    final String sortOptions[] = new String[]{"Sort by date", "Sort by class", "Sort by title", "Sort by type"};
+//    boolean timeEnabled = false;
+//    Calendar notificationDate;
 
     TimePickerDialog timePickerDialog;
 
@@ -47,13 +37,13 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        readSettings();
+        settings = FileIO.readSettings(this);
         updateViews();
         timePickerDialog = createTimePickerDialog();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-        getWindow().setStatusBarColor(getResources().getColor(R.color.colorAccentDark));
+        getWindow().setStatusBarColor(getResources().getColor(R.color.p1_secondary_dark));
         setSupportActionBar(toolbar);
 
     }
@@ -77,10 +67,10 @@ public class SettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    void save(){
-        overdueFirst = !((Switch) findViewById(R.id.overdue_switch)).isChecked();
-        timeEnabled = ((Switch) findViewById(R.id.enable_time_switch)).isChecked();
-        writeSettings();
+    void save() {
+        settings.putBoolean("overdueFirst", !((Switch) findViewById(R.id.overdue_switch)).isChecked());
+        settings.putBoolean("timeEnabled", ((Switch) findViewById(R.id.enable_time_switch)).isChecked());
+        FileIO.writeSettings(this, settings);
     }
 
     @Override
@@ -89,63 +79,6 @@ public class SettingsActivity extends AppCompatActivity {
         super.finish();
     }
 
-    public void writeSettings() {
-        try {
-            File file = new File(getFilesDir(), FILE_NAME);
-            boolean fileCreated = file.createNewFile();
-            if (fileCreated)
-                Log.v("MA", "File did not exist and was created.");
-
-            FileOutputStream fos = new FileOutputStream(file, false);
-            try {
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-
-                oos.writeInt(defaultSortIndex);
-                oos.writeBoolean(overdueFirst);
-                oos.writeBoolean(timeEnabled);
-                oos.writeObject(notificationTime);
-
-                oos.close();
-
-            } catch (IOException e) {
-                Log.v("MA", "File did not process");
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            Log.v("MA", "File not found to write");
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.v("MA", "Could not create file for some reason");
-            e.printStackTrace();
-        }
-    }
-
-    public void readSettings() {
-        ObjectInputStream inputStream;
-
-        notificationTime = Calendar.getInstance();
-        notificationTime.set(2000,1,1,8,0);
-
-        try {
-            File file = new File(getFilesDir(), FILE_NAME);
-            inputStream = new ObjectInputStream(new FileInputStream(file));
-
-            defaultSortIndex = inputStream.readInt();
-            overdueFirst = inputStream.readBoolean();
-            timeEnabled = inputStream.readBoolean();
-            notificationTime = (Calendar) inputStream.readObject();
-
-            inputStream.close();
-        } catch (EOFException e) {
-            Log.v("SettingsActivity.read", "End of stream reached.");
-        } catch (IOException e) {
-            Log.v("SettingsActivity.read", "The file was not to be found.");
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            Log.v("SettingsActivity.read", "Could not parse object");
-            e.printStackTrace();
-        }
-    }
 
     /**
      * Opens a dialog with a series of titles, descriptions, with radio button to indicate last
@@ -161,12 +94,13 @@ public class SettingsActivity extends AppCompatActivity {
         String tag = "";
 
         SettingsSelectionDialog dialog = new SettingsSelectionDialog();
-        Bundle bundle = new Bundle();
+        Bundle bundle = (Bundle) settings.clone();
 
         //TODO: add option to enable notifications (necessary?)
 
         switch (view.getId()) {
             case (R.id.setting_sort_type):
+//                Log.v("SettingsActivity","settings.defaultSortIndex=" + );
                 options = sortOptions;
                 descriptions = new String[]{
                         "Assignments are grouped by date; \nEarliest assignment is listed first.",
@@ -177,7 +111,6 @@ public class SettingsActivity extends AppCompatActivity {
                 bundle.putStringArray("options", options);
                 bundle.putStringArray("descriptions", descriptions);
                 bundle.putString("title", "Default Sort");
-                bundle.putInt("selectedIndex", defaultSortIndex);
 
                 tag = "Settings: Sort Type";
                 break;
@@ -192,23 +125,29 @@ public class SettingsActivity extends AppCompatActivity {
         aSwitch.toggle();
     }
 
-    TimePickerDialog createTimePickerDialog(){
-            return new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+    TimePickerDialog createTimePickerDialog() {
+//        final Calendar notificationTime = (Calendar) settings.get("notificationDate");
+//        final long notificationTime = settings.getLong("notificationDate");
+//        final Calendar notificationCalendar = new GregorianCalendar();
+//        notificationCalendar.setTimeInMillis(notificationTime);
 
-                @Override
-                public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
-                    notificationTime.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                    notificationTime.set(Calendar.MINUTE, minute);
-                    updateViews();
-                }
+        return new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
 
-            },
-                    notificationTime.get(Calendar.HOUR_OF_DAY),
-                    notificationTime.get(Calendar.MINUTE),
-                    false);
+            @Override
+            public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
+                Log.v("SettingsActivity", "timePicker time: " + hourOfDay + ":" + minute);
+                settings.putInt("alarmHour", hourOfDay);
+                settings.putInt("alarmMinute", minute);
+                updateViews();
+            }
+
+        },
+                settings.getInt("alarmHour"),
+                settings.getInt("alarmMinute"),
+                false);
     }
 
-    public void showDatePickerDialog(View view){
+    public void showDatePickerDialog(View view) {
         timePickerDialog.show();
     }
 
@@ -222,20 +161,35 @@ public class SettingsActivity extends AppCompatActivity {
      * has been opened.
      */
     public void updateViews() {
-        writeSettings();
+        FileIO.writeSettings(this, settings);
+        Bundle nSettings = FileIO.readSettings(this);
+        Log.v("SettingsActivity","alarmHour=" + nSettings.getInt("alarmHour")
+                + "alarmMinute=" + nSettings.getInt("alarmMinute"));
+
 
         TextView defaultSortSelection = findViewById(R.id.selected_sort_type);
-        defaultSortSelection.setText(sortOptions[defaultSortIndex]);
+        defaultSortSelection.setText(sortOptions[settings.getInt("defaultSortIndex")]);
 
         Switch overdueSwitch = findViewById(R.id.overdue_switch);
-        overdueSwitch.setChecked(!overdueFirst);
+        overdueSwitch.setChecked(!settings.getBoolean("overdueFirst"));
 
         Switch enableTimeSwitch = findViewById(R.id.enable_time_switch);
-        enableTimeSwitch.setChecked(timeEnabled);
+        enableTimeSwitch.setChecked(settings.getBoolean("timeEnabled"));
 
         TextView currentNotifTime = findViewById(R.id.notification_time_current);
-        SimpleDateFormat format = new SimpleDateFormat("h:mm a", Locale.US);
-        currentNotifTime.setText(format.format(notificationTime.getTime()).toLowerCase(Locale.US));
+//        SimpleDateFormat format = new SimpleDateFormat("h:mm a", Locale.US);
+//        long notificationDate = settings.getLong("notificationDate");
+        int hour = settings.getInt("alarmHour");
+        String minute = String.format(Locale.US, "%02d", settings.getInt("alarmMinute"));
+
+        String notifTime;
+
+        String ampm = (hour / 12 == 1)? "pm":"am";
+        hour = hour % 12 == 0? 12 : hour % 12;
+
+        notifTime = hour + ":" + minute + ampm;
+
+        currentNotifTime.setText(notifTime);
     }
 
     public void about(View view) {

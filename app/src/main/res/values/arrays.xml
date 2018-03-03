@@ -26,5 +26,25 @@
         <item>@string/sort_title</item>
         <item>@string/sort_type</item>
     </string-array>
+
+    <string-array name="color_palettes">
+        <item>Bright</item>
+        <item>Earthy</item>
+        <item>Ice Cream</item>
+        <item>Monochrome</item>
+        <item>Patriotic</item>
+    </string-array>
+
+    <integer-array name="bright_palette">
+        <item>@color/p1_primary</item>
+        <item>@color/p1_primary_dark</item>
+        <item>@color/p1_secondary</item>
+        <item>@color/p1_secondary_dark</item>
+        <item>@color/p1_completed</item>
+        <item>@color/p1_completed_dark</item>
+        <item>@color/p1_assignment</item>
+        <item>@color/p1_assignment_dark</item>
+    </integer-array>
+
     
 </resources>

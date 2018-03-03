@@ -1,8 +1,5 @@
 package go.planner.plannergo;
 
-import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -22,44 +19,30 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.NotSerializableException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String ASSIGNMENTS_FILE_NAME = "assignmentsFile";
-    final String SETTINGS_FILE_NAME = "planner.settings";
     public static final String MARK_DONE = "app.planner.MARK_DONE";
 
     //Settings data
-    public int defaultSortIndex = 0;
+    Bundle settings;
+//    public int defaultSortIndex = 0;
     int currentSortIndex = 0;
-    public boolean overdueFirst = true;
-    public int alarmHourOfDay = 8;
-    public int alarmMinuteOfDay = 0;
-    public int daysBeforeDueDate = 1;
-    public boolean timeEnabled = false;
-    Calendar notificationTime;
+//    public boolean overdueFirst = true;
+//    public int alarmHourOfDay = 8;
+//    public int alarmMinuteOfDay = 0;
+//    public int daysBeforeDueDate = 1;
+//    public boolean timeEnabled = false;
 
     //Assignment storage
-    ArrayList<Assignment> inProgressAssignments = new ArrayList<>();
-    ArrayList<Assignment> completedAssignments = new ArrayList<>();
+//    ArrayList<Assignment> inProgressAssignments = new ArrayList<>();
+//    ArrayList<Assignment> completedAssignments = new ArrayList<>();
+
     //Stores all views that need to be manipulated for removal when appropriate; unnecessary?
     ArrayList<View> currentViews = new ArrayList<>();
     //Quick references
@@ -76,17 +59,25 @@ public class MainActivity extends AppCompatActivity {
 
         parent = findViewById(R.id.body);
 
-        setUpNavDrawer();
+//        setUpNavDrawer();
 
         checkFirstRun();
 
-        readSettings();
-        currentSortIndex = defaultSortIndex;
+        currentSortIndex = settings.getInt("defaultSortIndex");
 
         myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
-        readAssignmentsFromFile();
+//        readAssignmentsFromFile();
+        FileIO.readAssignmentsFromFile(this);
+    }
+
+    @Override
+    protected void onResume() {
+        settings = FileIO.readSettings(this);
+        invalidateOptionsMenu();
+        setUpNavDrawer();
+        super.onResume();
     }
 
     //GUI setup methods
@@ -113,9 +104,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    loadPanels(inProgressAssignments, defaultSortIndex);
+                    loadPanels(FileIO.inProgressAssignments, settings.getInt("defaultSortIndex"));
                 } else if (position == 1) {
-                    loadPanels(completedAssignments, defaultSortIndex);
+                    loadPanels(FileIO.completedAssignments, settings.getInt("defaultSortIndex"));
                 } else if (position == 2) {
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 }
@@ -126,15 +117,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-//        this.menu = menu;
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         int id = 0;
-        switch (defaultSortIndex) {
+        switch (settings.getInt("defaultSortIndex")) {
             case 0:
                 id = R.id.action_sort_by_date;
                 break;
@@ -150,24 +140,19 @@ public class MainActivity extends AppCompatActivity {
         }
         MenuItem item = menu.findItem(id);
         item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        loadPanels(inProgressAssignments, currentSortIndex);
+        loadPanels(FileIO.inProgressAssignments, currentSortIndex);
         return super.onPrepareOptionsMenu(menu);
     }
 
-    @Override
-    protected void onResume() {
-        readSettings();
-        invalidateOptionsMenu();
-        super.onResume();
-    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         ArrayList<Assignment> assignments;
         if (getTitle().toString().equals(getResources().getString(R.string.header_completed)))
-            assignments = completedAssignments;
+            assignments = FileIO.completedAssignments;
         else
-            assignments = inProgressAssignments;
+            assignments = FileIO.inProgressAssignments;
 
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -200,168 +185,42 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        Log.v("MainActivity", "intent action " + intent.getAction());
-        if (MARK_DONE.equals(intent.getAction())) {
-            Assignment doneAssignment = new Assignment(intent.getExtras());
-            for (Assignment assignment : inProgressAssignments) {
-                if (doneAssignment.equals(assignment)) {
-                    assignment.completed = true;
-                }
-            }
-            loadPanels(inProgressAssignments, defaultSortIndex);
-            writeAssignmentsToFile();
-        }
-        super.onNewIntent(intent);
-    }
-
-    public void readSettings() {
-        ObjectInputStream inputStream;
-
-        try {
-            File file = new File(getFilesDir(), SETTINGS_FILE_NAME);
-            inputStream = new ObjectInputStream(new FileInputStream(file));
-
-            defaultSortIndex = inputStream.readInt();
-            overdueFirst = inputStream.readBoolean();
-            timeEnabled = inputStream.readBoolean();
-            notificationTime = (Calendar) inputStream.readObject();
-
-            Log.v("MainActivity", "timeEnabled=" + timeEnabled);
-
-            if (notificationTime == null) {
-                notificationTime = Calendar.getInstance();
-                notificationTime.set(0, 0, 0, 8, 0);
-            }
-
-            alarmHourOfDay = notificationTime.get(Calendar.HOUR_OF_DAY);
-            alarmMinuteOfDay = notificationTime.get(Calendar.MINUTE);
-
-
-            Log.v("MainActivity", "overdueFirst=" + overdueFirst);
-
-            inputStream.close();
-        } catch (EOFException e) {
-            Log.v("MainActivity.read", "End of stream reached.");
-        } catch (IOException e) {
-            Log.v("MainActivity.read", "The file was not to be found.");
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //TODO: enable new read implementation
-    public void readAssignmentsFromFile() {
-//        try {
-//            readAssignments();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
+//
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        Log.v("MainActivity", "intent action " + intent.getAction());
+//        if (MARK_DONE.equals(intent.getAction())) {
+//            Assignment doneAssignment = new Assignment(intent.getExtras());
+//            for (Assignment assignment : FileIO.inProgressAssignments) {
+//                if (doneAssignment.equals(assignment)) {
+//                    assignment.completed = true;
+//                }
+//            }
+//            loadPanels(FileIO.inProgressAssignments, settings.getInt("defaultSortIndex"));
+//            FileIO.writeAssignmentsToFile(this);
 //        }
-        inProgressAssignments = new ArrayList<>();
-        completedAssignments = new ArrayList<>();
-        ObjectInputStream inputStream;
-
-        boolean cont = true;
-        try {
-            File file = new File(getFilesDir(), ASSIGNMENTS_FILE_NAME);
-            inputStream = new ObjectInputStream(new FileInputStream(file));
-            while (cont) {
-                Assignment obj = (Assignment) inputStream.readObject();
-                if (obj != null)
-                    addAssignment(obj);
-                else
-                    cont = false;
-            }
-            inputStream.close();
-        } catch (EOFException e) {
-            Log.v("MainActivity.read", "End of stream reached.");
-        } catch (ClassNotFoundException e) {
-            Log.v("MainActivity.read", "No more objects to be had in the file.");
-        } catch (IOException e) {
-            Log.v("MainActivity.read", "The file was not to be found.");
-            e.printStackTrace();
-        }
-    }
-
-    public void addAssignment(Assignment assignment) {
-        if (assignment.dueDate == null) {
-            Log.v("MA", "null dateView");
-        } else {
-            if (assignment.completed)
-                completedAssignments.add(assignment);
-            else
-                inProgressAssignments.add(assignment);
-        }
-    }
-
-    public void writeAssignmentsToFile() {
-        //TODO: enable new read write implementation
-//        try {
-//            writeAssignments();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        try {
-            File file = new File(getFilesDir(), ASSIGNMENTS_FILE_NAME);
-            boolean fileCreated = file.createNewFile();
-            if (fileCreated)
-                Log.v("MA", "File did not exist and was created.");
-
-            FileOutputStream fos = new FileOutputStream(file, false);
-            try {
-                ObjectOutputStream oos = new ObjectOutputStream(fos);
-                ArrayList<Assignment> assignments = new ArrayList<>();
-                assignments.addAll(inProgressAssignments);
-                assignments.addAll(completedAssignments);
-                for (Assignment o : assignments) {
-                    try {
-                        oos.writeObject(o);
-                    } catch (NotSerializableException e) {
-                        Log.v("MA", "An object was not serializable, it has not been saved.");
-                        e.printStackTrace();
-                    }
-                }
-
-                oos.close();
-                fos.close();
-            } catch (IOException e) {
-                Log.v("MA", "File did not process");
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            Log.v("MA", "File not found to write");
-            e.printStackTrace();
-        } catch (IOException e) {
-            Log.v("MA", "Could not create file for some reason");
-            e.printStackTrace();
-        }
-
-    }
+//        super.onNewIntent(intent);
+//    }
 
     public void loadPanels(Assignment assignment, int sortIndex) {
         if (assignment.completed) {
-            loadPanels(completedAssignments, sortIndex);
+            loadPanels(FileIO.completedAssignments, sortIndex);
         } else {
-            loadPanels(inProgressAssignments, sortIndex);
+            loadPanels(FileIO.inProgressAssignments, sortIndex);
         }
     }
 
     public void loadPanels(ArrayList<Assignment> assignments, int sortIndex) {
-        setNotificationTimers();
+        NotificationAlarms.setNotificationTimers(this);
         currentSortIndex = sortIndex;
-        if (assignments == inProgressAssignments) {
+        if (assignments == FileIO.inProgressAssignments) {
             setTitle(getResources().getString(R.string.header_in_progress));
             myToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
-        } else if (assignments == completedAssignments) {
+        } else if (assignments == FileIO.completedAssignments) {
             setTitle(getResources().getString(R.string.header_completed));
-            myToolbar.setBackgroundColor(getResources().getColor(R.color.colorCompleted));
-            getWindow().setStatusBarColor(getResources().getColor(R.color.colorCompletedDark));
+            myToolbar.setBackgroundColor(getResources().getColor(R.color.p1_completed));
+            getWindow().setStatusBarColor(getResources().getColor(R.color.p1_completed_dark));
         } else {
             setTitle("Gravy");
             myToolbar.setBackgroundColor(Color.YELLOW);
@@ -373,10 +232,10 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO: Add pinned assignments
         if (assignments.isEmpty()) {
-            if (assignments == completedAssignments) {
+            if (assignments == FileIO.completedAssignments) {
                 addHeading(R.string.no_completed_assignments);
             }
-            if (assignments == inProgressAssignments) {
+            if (assignments == FileIO.inProgressAssignments) {
                 addHeading(R.string.no_upcoming_assignments);
             }
         } else {
@@ -437,11 +296,11 @@ public class MainActivity extends AppCompatActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
         ArrayList<Assignment> overdue = new ArrayList<>();
 
-        if (overdueFirst || compareCalendars(previous.dueDate, today) >= 0)
+        if (settings.getBoolean("overdueFirst") || compareCalendars(previous.dueDate, today) >= 0)
             addDateHeading(dateFormat, today, tomorrow, previous.dueDate);
 
         for (Assignment assignment : assignments) {
-            if (!overdueFirst && compareCalendars(assignment.dueDate, today) < 0) {
+            if (!settings.getBoolean("overdueFirst") && compareCalendars(assignment.dueDate, today) < 0) {
                 System.out.println("Added assignment to overdue: " + assignment.title);
                 overdue.add(assignment);
             } else {
@@ -457,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (!overdueFirst) {
+        if (!settings.getBoolean("overdueFirst")) {
             if (!overdue.isEmpty())
                 addHeading(R.string.due_overdue);
             for (Assignment assignment : overdue) {
@@ -560,94 +419,9 @@ public class MainActivity extends AppCompatActivity {
         final NewAssignmentDialog newAssignmentDialog = new NewAssignmentDialog();
         Bundle args = new Bundle();
         args.putInt("sortIndex", currentSortIndex);
-        args.putBoolean("timeEnabled", timeEnabled);
+        args.putBoolean("timeEnabled", settings.getBoolean("timeEnabled"));
         newAssignmentDialog.setArguments(args);
         newAssignmentDialog.show(getFragmentManager(), "NewAssignmentDialog");
-    }
-
-//    public void openFABMenu(View view) {
-//        FloatingActionButton editClasses = (FloatingActionButton) findViewById(R.id.action_edit_classes);
-//        FloatingActionButton customAssignment = (FloatingActionButton) findViewById(R.id.action_custom_assignment);
-//
-//        Animation button1Animation = AnimationUtils.loadAnimation(getApplication(), R.anim.show_button_1);
-//    }
-
-    public void deleteAssignment(Assignment assignment, int sortIndex) {
-        if (assignment.completed) {
-            completedAssignments.remove(assignment);
-            writeAssignmentsToFile();
-            loadPanels(completedAssignments, sortIndex);
-        } else {
-            inProgressAssignments.remove(assignment);
-            writeAssignmentsToFile();
-            loadPanels(inProgressAssignments, sortIndex);
-        }
-    }
-
-
-    void setNotificationTimers() {
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-        for (Assignment assignment : inProgressAssignments) {
-            setNotificationTimer(assignment, alarmManager);
-        }
-
-    }
-
-    void setNotificationTimer(Assignment assignment, AlarmManager alarmManager) {
-        PendingIntent pendingIntent = AlarmBroadcastReceiver.createPendingIntent(
-                assignment, assignment.hashCode(), timeEnabled, getApplicationContext());
-        alarmManager.cancel(pendingIntent);
-        long time = alarmTimeFromAssignment(assignment);
-        if (time > Calendar.getInstance().getTimeInMillis()) {
-//        long time = 0;
-            alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
-        }
-    }
-
-    /**
-     * returns the date, in milliseconds, at x daysBeforeDueDate
-     * at time alarmHourOfDay : alarmMinuteOfDay
-     *
-     * @param assignment assignment to retrieve date from
-     * @return time for alarm to go off, in milliseconds
-     */
-    long alarmTimeFromAssignment(Assignment assignment) {
-        Calendar dueDate = assignment.dueDate;
-        Calendar date = new GregorianCalendar();
-        date.set(dueDate.get(Calendar.YEAR), dueDate.get(Calendar.MONTH),
-                dueDate.get(Calendar.DATE) - daysBeforeDueDate);
-        date.set(Calendar.HOUR_OF_DAY, alarmHourOfDay);
-        date.set(Calendar.MINUTE, alarmMinuteOfDay);
-        date.set(Calendar.SECOND, 0);
-        date.set(Calendar.MILLISECOND, 0);
-
-        return date.getTimeInMillis();
-    }
-
-    public static Activity getActivity() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
-        Class activityThreadClass = Class.forName("android.app.ActivityThread");
-        Object activityThread = activityThreadClass.getMethod("currentActivityThread").invoke(null);
-        Field activitiesField = activityThreadClass.getDeclaredField("mActivities");
-        activitiesField.setAccessible(true);
-
-        Map<Object, Object> activities = (Map<Object, Object>) activitiesField.get(activityThread);
-        if (activities == null)
-            return null;
-
-        for (Object activityRecord : activities.values()) {
-            Class activityRecordClass = activityRecord.getClass();
-            Field pausedField = activityRecordClass.getDeclaredField("paused");
-            pausedField.setAccessible(true);
-            if (!pausedField.getBoolean(activityRecord)) {
-                Field activityField = activityRecordClass.getDeclaredField("activity");
-                activityField.setAccessible(true);
-                Activity activity = (Activity) activityField.get(activityRecord);
-                return activity;
-            }
-        }
-
-        return null;
     }
 
 
@@ -668,17 +442,22 @@ public class MainActivity extends AppCompatActivity {
         if (currentVersionCode == savedVersionCode) {
 
             // This is just a normal run
+            Log.v("MainActivity","Regular Read");
+            settings = FileIO.readSettings(this);
             return;
 
         } else if (savedVersionCode == DOESNT_EXIST) {
 
             // TODO This is a new install (or the user cleared the shared preferences)
+            Log.v("MainActivity","New Install");
+            settings = FileIO.createNewSettings(this);
             return;
 
         } else if (currentVersionCode > savedVersionCode) {
 
             // TODO This is an upgrade
-            readAssignmentsOld();
+            Log.v("MainActivity","Upgrade");
+            settings = FileIO.readSettingsOld(this);
 
         }
 
@@ -686,53 +465,4 @@ public class MainActivity extends AppCompatActivity {
         prefs.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
     }
 
-    void readAssignmentsOld() {
-
-    }
-
-    void writeAssignments() throws IOException {
-        File file = new File(getFilesDir(), ASSIGNMENTS_FILE_NAME);
-        if (file.createNewFile())
-            Log.v("MainActivity", "writeAssignments() new file created");
-        FileOutputStream fos = new FileOutputStream(file);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        int totalThings = inProgressAssignments.size() + completedAssignments.size();
-        oos.writeInt(totalThings);
-        for (Assignment assignment : inProgressAssignments) {
-            writeAssignment(assignment, oos);
-        }
-        Log.v("MainActivity", "File written");
-    }
-
-    void writeAssignment(Assignment assignment, ObjectOutputStream oos) throws IOException {
-        oos.writeObject(assignment.title);
-        oos.writeObject(assignment.className);
-        oos.writeObject(assignment.dueDate);
-        oos.writeObject(assignment.description);
-        oos.writeBoolean(assignment.completed);
-        oos.writeObject(assignment.type);
-    }
-
-    void readAssignments() throws IOException, ClassNotFoundException {
-        File file = new File(getFilesDir(), ASSIGNMENTS_FILE_NAME);
-        FileInputStream fis = new FileInputStream(file);
-        ObjectInputStream ois = new ObjectInputStream(fis);
-
-        int total = ois.readInt();
-        for (int i = 0; i < total; i++) {
-            addAssignment(readAssignment(ois));
-        }
-        Log.v("MainActivity", "readAssignments()");
-    }
-
-    Assignment readAssignment(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-        return new Assignment(
-                (String) ois.readObject(), //title
-                (String) ois.readObject(), //className
-                (Calendar) ois.readObject(), //dueDate
-                (String) ois.readObject(), //description
-                ois.readBoolean(), //completed
-                (String) ois.readObject() //type
-        );
-    }
 } // end MainActivity class

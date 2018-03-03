@@ -98,11 +98,15 @@ public class EditDetailsDialog extends DialogFragment {
 //                        notificationManager.cancel(oldAssignment.hashCode());
 
                         //Create new alarm
-                        activity.setNotificationTimer(newAssignment, alarmManager);
+                        NotificationAlarms.setNotificationTimer(
+                                getActivity(), newAssignment, alarmManager,
+                                FileIO.readSettings(getActivity())
+                        );
 
-                        activity.deleteAssignment(oldAssignment, sortIndex);
-                        activity.addAssignment(newAssignment);
-                        activity.writeAssignmentsToFile();
+                        FileIO.deleteAssignment(activity, oldAssignment);
+                        activity.loadPanels(oldAssignment, sortIndex);
+                        FileIO.addAssignment(newAssignment);
+                        FileIO.writeAssignmentsToFile(activity);
                         activity.loadPanels(newAssignment, sortIndex);
                         openDetailsDialog(newAssignment, getFragmentManager());
                         EditDetailsDialog.this.dismiss();
