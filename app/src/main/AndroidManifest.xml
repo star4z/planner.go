@@ -62,7 +62,12 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".NewAssignmentActivity"></activity>
+        <activity android:name=".NewAssignmentActivity"
+            android:label="@string/new_a"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" /></activity>
     </application>
 
 </manifest>

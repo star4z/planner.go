@@ -81,7 +81,7 @@ public class FileIO {
             File file = new File(context.getFilesDir(), ASSIGNMENTS_FILE_NAME);
             boolean fileCreated = file.createNewFile();
             if (fileCreated)
-                Log.v("MA", "File did not exist and was created.");
+                Log.v("FileIO", "Assignments file did not exist and was created.");
 
             FileOutputStream fos = new FileOutputStream(file, false);
             try {
@@ -118,7 +118,7 @@ public class FileIO {
     public static void writeAssignments(Context context) throws IOException {
         File file = new File(context.getFilesDir(), ASSIGNMENTS_FILE_NAME);
         if (file.createNewFile())
-            Log.v("MainActivity", "writeAssignments() new file created");
+            Log.v("FileIO", "writeAssignments() new file created");
         FileOutputStream fos = new FileOutputStream(file);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         int totalThings = inProgressAssignments.size() + completedAssignments.size();
@@ -126,7 +126,7 @@ public class FileIO {
         for (Assignment assignment : inProgressAssignments) {
             writeAssignment(assignment, oos);
         }
-        Log.v("MainActivity", "File written");
+        Log.v("FileIO", "File written");
     }
 
     private static void writeAssignment(Assignment assignment, ObjectOutputStream oos) throws IOException {
@@ -147,7 +147,7 @@ public class FileIO {
         for (int i = 0; i < total; i++) {
             addAssignment(readAssignment(ois));
         }
-        Log.v("MainActivity", "readAssignments()");
+        Log.v("FileIO", "readAssignments()");
     }
 
     private static Assignment readAssignment(ObjectInputStream ois) throws IOException, ClassNotFoundException {
@@ -163,7 +163,7 @@ public class FileIO {
 
     public static void addAssignment(Assignment assignment) {
         if (assignment.dueDate == null) {
-            Log.v("MA", "null dateView");
+            Log.v("FileIO", "null dateView");
         } else {
             if (assignment.completed)
                 completedAssignments.add(assignment);
@@ -185,7 +185,7 @@ public class FileIO {
             File file = new File(context.getFilesDir(), SETTINGS_FILE_NAME);
             boolean fileCreated = file.createNewFile();
             if (fileCreated)
-                Log.v("MA", "File did not exist and was created.");
+                Log.v("FileIO", "File did not exist and was created.");
 
             FileOutputStream fos = new FileOutputStream(file, false);
             try {
@@ -194,7 +194,6 @@ public class FileIO {
                 oos.writeInt(settings.getInt("defaultSortIndex"));
                 oos.writeBoolean(settings.getBoolean("overdueFirst"));
                 oos.writeBoolean(settings.getBoolean("timeEnabled"));
-                oos.writeLong(settings.getLong("notificationDate"));
 //                oos.writeObject(settings.getSerializable("notificationDate"));
                 //Days before due date
                 oos.writeInt(1);
@@ -204,14 +203,14 @@ public class FileIO {
                 oos.close();
 
             } catch (IOException e) {
-                Log.v("MA", "File did not process");
+                Log.v("FileIO", "File did not process");
                 e.printStackTrace();
             }
         } catch (FileNotFoundException e) {
-            Log.v("MA", "File not found to write");
+            Log.v("FileIO", "File not found to write");
             e.printStackTrace();
         } catch (IOException e) {
-            Log.v("MA", "Could not create file for some reason");
+            Log.v("FileIO", "Could not create file for some reason");
             e.printStackTrace();
         }
     }
@@ -237,7 +236,6 @@ public class FileIO {
             settings.putInt("defaultSortIndex", inputStream.readInt());
             settings.putBoolean("overdueFirst", inputStream.readBoolean());
             settings.putBoolean("timeEnabled", inputStream.readBoolean());
-            inputStream.readLong();
             settings.putInt("daysBeforeDueDate", inputStream.readInt());
             settings.putInt("alarmHour", inputStream.readInt());
             settings.putInt("alarmMinute", inputStream.readInt());
@@ -251,10 +249,6 @@ public class FileIO {
             Log.v("FileIO", "readSettings IOException");
             e.printStackTrace();
         }
-
-
-        Log.v("FileIO","alarmHour=" + settings.getInt("alarmHour")
-                + "alarmMinute=" + settings.getInt("alarmMinute") + "context=" + context);
         return settings;
     }
 
@@ -272,6 +266,7 @@ public class FileIO {
             settings.putInt("defaultSortIndex", inputStream.readInt());
             settings.putBoolean("overdueFirst", inputStream.readBoolean());
             settings.putBoolean("timeEnabled", inputStream.readBoolean());
+            inputStream.readLong();
             settings.putInt("daysBeforeDueDate", 1);
             settings.putInt("alarmHour", 8);
             settings.putInt("alarmMinute", 0);
@@ -279,9 +274,9 @@ public class FileIO {
 
             inputStream.close();
         } catch (EOFException e) {
-            Log.v("SettingsActivity.read", "End of stream reached.");
+            Log.v("FileIO", "End of stream reached.");
         } catch (IOException e) {
-            Log.v("SettingsActivity.read", "The file was not to be found.");
+            Log.v("FileIO", "The file was not to be found.");
             e.printStackTrace();
         }
 

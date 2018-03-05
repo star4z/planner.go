@@ -162,10 +162,6 @@ public class SettingsActivity extends AppCompatActivity {
      */
     public void updateViews() {
         FileIO.writeSettings(this, settings);
-        Bundle nSettings = FileIO.readSettings(this);
-        Log.v("SettingsActivity","alarmHour=" + nSettings.getInt("alarmHour")
-                + "alarmMinute=" + nSettings.getInt("alarmMinute"));
-
 
         TextView defaultSortSelection = findViewById(R.id.selected_sort_type);
         defaultSortSelection.setText(sortOptions[settings.getInt("defaultSortIndex")]);
@@ -177,8 +173,7 @@ public class SettingsActivity extends AppCompatActivity {
         enableTimeSwitch.setChecked(settings.getBoolean("timeEnabled"));
 
         TextView currentNotifTime = findViewById(R.id.notification_time_current);
-//        SimpleDateFormat format = new SimpleDateFormat("h:mm a", Locale.US);
-//        long notificationDate = settings.getLong("notificationDate");
+
         int hour = settings.getInt("alarmHour");
         String minute = String.format(Locale.US, "%02d", settings.getInt("alarmMinute"));
 

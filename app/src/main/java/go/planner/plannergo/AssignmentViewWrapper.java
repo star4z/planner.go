@@ -56,7 +56,7 @@ class AssignmentViewWrapper implements Comparable<Object> {
         //click functionality (opens DetailsDialog)
         body.setOnClickListener(new BodyClickListener(newAssignment, (MainActivity) activity, f));
         //checkBox functionality
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        checkBox.setOnCheckedChangeListener(   new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 

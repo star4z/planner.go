@@ -23,8 +23,6 @@ class NotificationAlarms {
     static void setNotificationTimers(Context context) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
         Bundle settings = FileIO.readSettings(context);
-        Log.v("NotificationAlarms","alarmHour=" + settings.getInt("alarmHour")
-                + "alarmMinute=" + settings.getInt("alarmMinute"));
 
         for (Assignment assignment : FileIO.inProgressAssignments) {
             setNotificationTimer(context, assignment, alarmManager, settings);
@@ -58,7 +56,6 @@ class NotificationAlarms {
         SimpleDateFormat format = new SimpleDateFormat("h:mm:ss a, EEE, MM/dd/yy", Locale.US);
 
         Calendar dueDate = assignment.dueDate;
-        Log.v("NotificationAlarms", "assignment.dueDate=" + format.format(assignment.dueDate.getTime()));
         Calendar date = new GregorianCalendar();
         date.set(dueDate.get(Calendar.YEAR),
                 dueDate.get(Calendar.MONTH),
@@ -68,24 +65,6 @@ class NotificationAlarms {
         date.set(Calendar.SECOND, 0);
         date.set(Calendar.MILLISECOND, 0);
         Log.v("NotificationAlarms", "date=" + format.format(date.getTime()));
-
-//
-//        long notificationDate = settings.getLong("notificationDate", 0);
-//        Log.v("NotificationAlarms", "notificationDate=" + format.format(notificationDate));
-//        Log.v("NotificationAlarms", "notificationDate=" + notificationDate);
-//
-//        long dateL = assignment.dueDate.getTimeInMillis();
-//        Log.v("NotificationAlarms", "dateLong=" + format.format(dateL));
-//
-//        long date = dateL - notificationDate;
-//        Log.v("NotificationAlarms", "date=" + format.format(date));
-
-//        dateL -= (daysBeforeDueDate * 24 * 60 * 60 * 1000);
-//        Log.v("NotificationAlarms", "long=" + format.format(dateL));
-//        long currentHour = dateL / 60/60/1000;
-//        Log.v("NotificationAlarms", "currentH=" + format.format(currentHour));
-//        long currentDay = dateL / 24 / 60 / 60 / 1000;
-//        Log.v("NotificationAlarms", "currentD=" + format.format(currentDay));
 
         return date.getTimeInMillis();
     }
