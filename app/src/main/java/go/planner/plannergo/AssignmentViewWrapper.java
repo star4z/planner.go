@@ -124,6 +124,11 @@ class AssignmentViewWrapper implements Comparable<Object> {
         FileIO.writeAssignmentsToFile(mainActivity);
     }
 
+    /**
+     * Makes for easy sorting by due date
+     * @param o other object; should be an AssignmentViewWrapper
+     * @return this.dueDate.compareTo(that.dueDate)
+     */
     @Override
     public int compareTo(@NonNull Object o) {
         AssignmentViewWrapper box = (AssignmentViewWrapper) o;

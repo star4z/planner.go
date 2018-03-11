@@ -13,7 +13,7 @@
     <style name="OverflowMenuButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="android:src">@drawable/ic_more_vert_black_24dp</item>
     </style>
-    
+
     <style name="DueDateHeader">
         <item name="android:textSize">14sp</item>
         <item name="android:padding">12dp</item>
@@ -31,5 +31,13 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/textGrey</item>
         <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="AssignmentDetails">
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/textGrey</item>
+        <item name="android:textStyle">normal</item>
     </style>
 </resources>

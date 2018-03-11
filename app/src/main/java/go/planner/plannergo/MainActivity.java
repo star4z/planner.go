@@ -154,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
         else
             assignments = FileIO.inProgressAssignments;
 
+        loadPanels(assignments, currentSortIndex);
+
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(Gravity.START);

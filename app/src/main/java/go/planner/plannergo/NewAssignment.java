@@ -14,6 +14,7 @@ public class NewAssignment extends Assignment {
     int priority = 0;
     boolean customNotification;
     long notificationDate = 0L;
+    long notificationDate2 = -1L;
     long uniqueID;
 
 

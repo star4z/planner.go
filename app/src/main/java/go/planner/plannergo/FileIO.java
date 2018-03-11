@@ -27,6 +27,8 @@ public class FileIO {
     final static ArrayList<Assignment> inProgressAssignments = new ArrayList<>();
     final static ArrayList<Assignment> completedAssignments = new ArrayList<>();
 
+    static ArrayList<String> classNames = new ArrayList<>();
+
     private static final String ASSIGNMENTS_FILE_NAME = "assignmentsFile";
     private static final String SETTINGS_FILE_NAME = "planner.settings";
 

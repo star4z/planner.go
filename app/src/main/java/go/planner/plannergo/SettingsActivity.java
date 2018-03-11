@@ -126,10 +126,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     TimePickerDialog createTimePickerDialog() {
-//        final Calendar notificationTime = (Calendar) settings.get("notificationDate");
-//        final long notificationTime = settings.getLong("notificationDate");
-//        final Calendar notificationCalendar = new GregorianCalendar();
-//        notificationCalendar.setTimeInMillis(notificationTime);
 
         return new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
 
