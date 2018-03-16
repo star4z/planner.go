@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,21 +31,13 @@ public class MainActivity extends AppCompatActivity {
     public static final String MARK_DONE = "app.planner.MARK_DONE";
 
     //Settings data
-    Bundle settings;
-//    public int defaultSortIndex = 0;
+//    Bundle settings;
+    SharedPreferences sharedPref;
     int currentSortIndex = 0;
-//    public boolean overdueFirst = true;
-//    public int alarmHourOfDay = 8;
-//    public int alarmMinuteOfDay = 0;
-//    public int daysBeforeDueDate = 1;
-//    public boolean timeEnabled = false;
-
-    //Assignment storage
-//    ArrayList<Assignment> inProgressAssignments = new ArrayList<>();
-//    ArrayList<Assignment> completedAssignments = new ArrayList<>();
 
     //Stores all views that need to be manipulated for removal when appropriate; unnecessary?
     ArrayList<View> currentViews = new ArrayList<>();
+
     //Quick references
     LinearLayout parent;
     Toolbar myToolbar;
@@ -59,11 +52,14 @@ public class MainActivity extends AppCompatActivity {
 
         parent = findViewById(R.id.body);
 
-//        setUpNavDrawer();
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
+//        setUpNavDrawer();
         checkFirstRun();
 
-        currentSortIndex = settings.getInt("defaultSortIndex");
+//        currentSortIndex = settings.getInt("defaultSortIndex");
+        currentSortIndex = SettingsActivity.getInt(
+                sharedPref.getString(SettingsActivity.defaultSort, ""), this);
 
         myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
@@ -74,7 +70,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        settings = FileIO.readSettings(this);
+//        settings = FileIO.readSettings(this);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         invalidateOptionsMenu();
         setUpNavDrawer();
         super.onResume();
@@ -100,13 +97,15 @@ public class MainActivity extends AppCompatActivity {
         // Set the adapter for the list view
         mDrawerList.setAdapter(new DrawerAdapter(this, drawerOptions, drawerIcons));
 
+        final String defaultSort = sharedPref.getString(SettingsActivity.defaultSort, "");
+
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    loadPanels(FileIO.inProgressAssignments, settings.getInt("defaultSortIndex"));
+                    loadPanels(FileIO.inProgressAssignments, defaultSort);
                 } else if (position == 1) {
-                    loadPanels(FileIO.completedAssignments, settings.getInt("defaultSortIndex"));
+                    loadPanels(FileIO.completedAssignments, defaultSort);
                 } else if (position == 2) {
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 }
@@ -124,7 +123,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         int id = 0;
-        switch (settings.getInt("defaultSortIndex")) {
+        int sort = SettingsActivity.getInt(
+                sharedPref.getString(SettingsActivity.defaultSort, ""), this);
+        switch (sort) {
+
             case 0:
                 id = R.id.action_sort_by_date;
                 break;
@@ -143,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
         loadPanels(FileIO.inProgressAssignments, currentSortIndex);
         return super.onPrepareOptionsMenu(menu);
     }
-
 
 
     @Override
@@ -187,22 +188,11 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-//
-//    @Override
-//    protected void onNewIntent(Intent intent) {
-//        Log.v("MainActivity", "intent action " + intent.getAction());
-//        if (MARK_DONE.equals(intent.getAction())) {
-//            Assignment doneAssignment = new Assignment(intent.getExtras());
-//            for (Assignment assignment : FileIO.inProgressAssignments) {
-//                if (doneAssignment.equals(assignment)) {
-//                    assignment.completed = true;
-//                }
-//            }
-//            loadPanels(FileIO.inProgressAssignments, settings.getInt("defaultSortIndex"));
-//            FileIO.writeAssignmentsToFile(this);
-//        }
-//        super.onNewIntent(intent);
-//    }
+
+    public void loadPanels(ArrayList<Assignment> assignments, String sort) {
+        loadPanels(assignments, SettingsActivity.getInt(sort, this));
+
+    }
 
     public void loadPanels(Assignment assignment, int sortIndex) {
         if (assignment.completed) {
@@ -214,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadPanels(ArrayList<Assignment> assignments, int sortIndex) {
         NotificationAlarms.setNotificationTimers(this);
+
         currentSortIndex = sortIndex;
         if (assignments == FileIO.inProgressAssignments) {
             setTitle(getResources().getString(R.string.header_in_progress));
@@ -298,11 +289,11 @@ public class MainActivity extends AppCompatActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
         ArrayList<Assignment> overdue = new ArrayList<>();
 
-        if (settings.getBoolean("overdueFirst") || compareCalendars(previous.dueDate, today) >= 0)
+        if (!sharedPref.getBoolean(SettingsActivity.overdueLast, false) || compareCalendars(previous.dueDate, today) >= 0)
             addDateHeading(dateFormat, today, tomorrow, previous.dueDate);
 
         for (Assignment assignment : assignments) {
-            if (!settings.getBoolean("overdueFirst") && compareCalendars(assignment.dueDate, today) < 0) {
+            if (sharedPref.getBoolean(SettingsActivity.overdueLast, false) && compareCalendars(assignment.dueDate, today) < 0) {
                 System.out.println("Added assignment to overdue: " + assignment.title);
                 overdue.add(assignment);
             } else {
@@ -318,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (!settings.getBoolean("overdueFirst")) {
+        if (sharedPref.getBoolean(SettingsActivity.overdueLast, false)) {
             if (!overdue.isEmpty())
                 addHeading(R.string.due_overdue);
             for (Assignment assignment : overdue) {
@@ -421,7 +412,7 @@ public class MainActivity extends AppCompatActivity {
         final NewAssignmentDialog newAssignmentDialog = new NewAssignmentDialog();
         Bundle args = new Bundle();
         args.putInt("sortIndex", currentSortIndex);
-        args.putBoolean("timeEnabled", settings.getBoolean("timeEnabled"));
+        args.putBoolean("timeEnabled", sharedPref.getBoolean(SettingsActivity.timeEnabled, true));
         newAssignmentDialog.setArguments(args);
         newAssignmentDialog.show(getFragmentManager(), "NewAssignmentDialog");
     }
@@ -444,22 +435,21 @@ public class MainActivity extends AppCompatActivity {
         if (currentVersionCode == savedVersionCode) {
 
             // This is just a normal run
-            Log.v("MainActivity","Regular Read");
-            settings = FileIO.readSettings(this);
+            Log.v("MainActivity", "Regular Read");
+
             return;
 
         } else if (savedVersionCode == DOESNT_EXIST) {
 
-            // TODO This is a new install (or the user cleared the shared preferences)
-            Log.v("MainActivity","New Install");
-            settings = FileIO.createNewSettings(this);
+            Log.v("MainActivity", "New Install");
+
             return;
 
         } else if (currentVersionCode > savedVersionCode) {
 
             // TODO This is an upgrade
-            Log.v("MainActivity","Upgrade");
-            settings = FileIO.readSettingsOld(this);
+            Log.v("MainActivity", "Upgrade");
+
 
         }
 

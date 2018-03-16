@@ -18,7 +18,6 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.v("BootBR","intent.getAction()=" + intent.getAction());
         if (ON_START.equals(intent.getAction())) {
-            FileIO.readSettings(context);
             FileIO.readAssignmentsFromFile(context);
             NotificationAlarms.setNotificationTimers(context);
         }

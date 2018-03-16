@@ -2,7 +2,9 @@ package go.planner.plannergo;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
@@ -76,8 +78,8 @@ class AssignmentViewWrapper implements Comparable<Object> {
         titleView.setText(assignment.title);
         classView.setText(assignment.className);
         SimpleDateFormat dateFormat;
-        Bundle settings = FileIO.readSettings(activity);
-        if (settings.getBoolean("timeEnabled", false)) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+        if (prefs.getBoolean(SettingsActivity.timeEnabled, false)) {
             dateFormat = new SimpleDateFormat("h:mm a, EEE, MM/dd/yy", Locale.US);
         } else {
             dateFormat = new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
@@ -102,8 +104,8 @@ class AssignmentViewWrapper implements Comparable<Object> {
 //            args.putInt("sortIndex", sortIndex);
 //            args.putBoolean("timeEnabled", activity.timeEnabled);
 //            Log.v("AssignmentViewContainer", "timeEnabled=" + activity.timeEnabled);
-            Bundle settings = FileIO.readSettings(activity);
-            args.putAll(settings);
+//            Bundle settings = FileIO.readSettings(activity);
+//            args.putAll(settings);
 
 
             DetailsDialog detailsDialog = new DetailsDialog();

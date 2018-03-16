@@ -20,11 +20,17 @@
     </integer-array>
 
     <string-array name="sort_types">
-        <item>@string/sort_default</item>
         <item>@string/sort_date</item>
         <item>@string/sort_class</item>
         <item>@string/sort_title</item>
         <item>@string/sort_type</item>
+    </string-array>
+
+    <string-array name="sort_type_values">
+        <item>date</item>
+        <item>class</item>
+        <item>title</item>
+        <item>type</item>
     </string-array>
 
     <string-array name="color_palettes">

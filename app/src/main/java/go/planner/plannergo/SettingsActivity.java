@@ -1,190 +1,91 @@
 package go.planner.plannergo;
 
-import android.app.TimePickerDialog;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Switch;
-import android.widget.TextView;
-import android.widget.TimePicker;
 
-import java.util.Locale;
+public class SettingsActivity extends AppCompatActivity implements SettingsFragment.Callback {
 
-/**
- * Enables user to modify settings for app
- * Created by bdphi on 1/30/2018.
- */
+    public static final String defaultSort = "pref_default_sort";
+    public static final String timeEnabled = "pref_time_enabled";
+    public static final String overdueLast = "pref_overdue_last";
 
-public class SettingsActivity extends AppCompatActivity {
+    private static final String TAG_NESTED = "TAG_NESTED";
 
-    Bundle settings;
-
-    //    int defaultSortIndex = 0;
-//    boolean overdueFirst = true;
-    final String sortOptions[] = new String[]{"Sort by date", "Sort by class", "Sort by title", "Sort by type"};
-//    boolean timeEnabled = false;
-//    Calendar notificationDate;
-
-    TimePickerDialog timePickerDialog;
+    private Toolbar toolbar;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
 
-        settings = FileIO.readSettings(this);
-        updateViews();
-        timePickerDialog = createTimePickerDialog();
+        setContentView(R.layout.activity_prefs);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-        getWindow().setStatusBarColor(getResources().getColor(R.color.p1_secondary_dark));
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setBackgroundColor(getResources().getColor(R.color.p1_secondary));
+        getWindow().setStatusBarColor(getResources().getColor(R.color.p1_secondary_dark));
 
+
+        if (savedInstanceState == null) {
+            // Display the fragment
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.body, new SettingsFragment())
+                    .commit();
+        }
     }
 
-    /**
-     * Handles any option menu items; probably will only handle up functionality
-     * Handles storing data in file that was manipulated.
-     *
-     * @param item selected item; will always be home unless menu is defined
-     * @return true if action performed; else calls super
-     */
+    @Override
+    public void onBackPressed() {
+        Log.v("SettingsActivity","backStackEntryCount=" + getFragmentManager().getBackStackEntryCount());
+        if(getFragmentManager().getBackStackEntryCount()==0){
+            super.onBackPressed();
+        } else {
+            toolbar.setTitle("Settings");
+            getFragmentManager().popBackStack();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            //Returns to the Main activity
+            // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                save();
-                NavUtils.navigateUpFromSameTask(this);
+                if(getFragmentManager().getBackStackEntryCount()==0){
+                    NavUtils.navigateUpFromSameTask(this);
+                } else {
+                    toolbar.setTitle("Settings");
+                    getFragmentManager().popBackStack();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    void save() {
-        settings.putBoolean("overdueFirst", !((Switch) findViewById(R.id.overdue_switch)).isChecked());
-        settings.putBoolean("timeEnabled", ((Switch) findViewById(R.id.enable_time_switch)).isChecked());
-        FileIO.writeSettings(this, settings);
-    }
-
     @Override
-    public void finish() {
-        save();
-        super.finish();
+    public void onNestedPreferenceSelected(int key) {
+        //if multiple nested preference screens are made, this needs to be rewritten
+        toolbar.setTitle("Notifications");
+        getFragmentManager().beginTransaction().replace(
+                R.id.body,
+                NestedPreferencesFragment.newInstance(key),
+                TAG_NESTED).
+                addToBackStack(TAG_NESTED).
+                commit();
     }
 
-
-    /**
-     * Opens a dialog with a series of titles, descriptions, with radio button to indicate last
-     * checked item.
-     * For use with items that have more than two possible states.
-     * Method should be called from xml
-     *
-     * @param view View that received click
-     */
-    public void openMenuDialog(View view) {
-        String[] options;
-        String[] descriptions;
-        String tag = "";
-
-        SettingsSelectionDialog dialog = new SettingsSelectionDialog();
-        Bundle bundle = (Bundle) settings.clone();
-
-        //TODO: add option to enable notifications (necessary?)
-
-        switch (view.getId()) {
-            case (R.id.setting_sort_type):
-//                Log.v("SettingsActivity","settings.defaultSortIndex=" + );
-                options = sortOptions;
-                descriptions = new String[]{
-                        "Assignments are grouped by date; \nEarliest assignment is listed first.",
-                        "Assignments are grouped by class. \nClasses are listed alphabetically.",
-                        "Assignments are listed alphabetically by title.",
-                        "Assignments are grouped by type."};
-
-                bundle.putStringArray("options", options);
-                bundle.putStringArray("descriptions", descriptions);
-                bundle.putString("title", "Default Sort");
-
-                tag = "Settings: Sort Type";
-                break;
-        }
-
-        dialog.setArguments(bundle);
-        dialog.show(getFragmentManager(), tag);
-    }
-
-    public void overdueSwitchToggle(View view) {
-        Switch aSwitch = findViewById(R.id.overdue_switch);
-        aSwitch.toggle();
-    }
-
-    TimePickerDialog createTimePickerDialog() {
-
-        return new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-
-            @Override
-            public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
-                Log.v("SettingsActivity", "timePicker time: " + hourOfDay + ":" + minute);
-                settings.putInt("alarmHour", hourOfDay);
-                settings.putInt("alarmMinute", minute);
-                updateViews();
+    public static int getInt(String sort, Context context) {
+        String[] sortOptions = context.getResources().getStringArray(R.array.sort_type_values);
+        for (int i = 0; i < sortOptions.length; i++) {
+            if (sort.equals(sortOptions[i])) {
+                return i;
             }
-
-        },
-                settings.getInt("alarmHour"),
-                settings.getInt("alarmMinute"),
-                false);
+        }
+        return -1;
     }
 
-    public void showDatePickerDialog(View view) {
-        timePickerDialog.show();
-    }
-
-    public void enableTimeToggle(View view) {
-        Switch aSwitch = findViewById(R.id.enable_time_switch);
-        aSwitch.toggle();
-    }
-
-    /**
-     * For use in initializing the Activity and returning the Activity to focus after a dialog
-     * has been opened.
-     */
-    public void updateViews() {
-        FileIO.writeSettings(this, settings);
-
-        TextView defaultSortSelection = findViewById(R.id.selected_sort_type);
-        defaultSortSelection.setText(sortOptions[settings.getInt("defaultSortIndex")]);
-
-        Switch overdueSwitch = findViewById(R.id.overdue_switch);
-        overdueSwitch.setChecked(!settings.getBoolean("overdueFirst"));
-
-        Switch enableTimeSwitch = findViewById(R.id.enable_time_switch);
-        enableTimeSwitch.setChecked(settings.getBoolean("timeEnabled"));
-
-        TextView currentNotifTime = findViewById(R.id.notification_time_current);
-
-        int hour = settings.getInt("alarmHour");
-        String minute = String.format(Locale.US, "%02d", settings.getInt("alarmMinute"));
-
-        String notifTime;
-
-        String ampm = (hour / 12 == 1)? "pm":"am";
-        hour = hour % 12 == 0? 12 : hour % 12;
-
-        notifTime = hour + ":" + minute + ampm;
-
-        currentNotifTime.setText(notifTime);
-    }
-
-    public void about(View view) {
-        startActivity(new Intent(this, AboutActivity.class));
-    }
 
 }

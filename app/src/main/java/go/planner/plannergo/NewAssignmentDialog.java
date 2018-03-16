@@ -7,7 +7,9 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -80,10 +82,11 @@ public class NewAssignmentDialog extends DialogFragment {
                         Log.v("NewAD", "assignment=" + assignment);
 
                         MainActivity activity = (MainActivity) getActivity();
-                        Bundle settings = FileIO.readSettings(getActivity());
+//                        Bundle settings = FileIO.readSettings(getActivity());
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
                         AlarmManager alarmManager = (AlarmManager) activity.getSystemService(ALARM_SERVICE);
-                        NotificationAlarms.setNotificationTimer(getActivity(), assignment, alarmManager, settings);
+                        NotificationAlarms.setNotificationTimer(getActivity(), assignment, alarmManager, prefs);
                         FileIO.addAssignment(assignment);
                         FileIO.writeAssignmentsToFile(getActivity());
                         activity.loadPanels(assignment, getArguments().getInt("sortIndex"));
@@ -91,7 +94,7 @@ public class NewAssignmentDialog extends DialogFragment {
                         if (assignment.dueDate.get(Calendar.DATE) > today.get(Calendar.DATE))
                             Toast.makeText(activity,
                                     "Reminder set for " + new SimpleDateFormat("h:mm a, EEE, MM/dd/yy", Locale.US).
-                                            format(NotificationAlarms.alarmTimeFromAssignment(assignment, settings)),
+                                            format(NotificationAlarms.alarmTimeFromAssignment(assignment, prefs, false)),
                                     Toast.LENGTH_SHORT
                             ).show();
 

@@ -30,14 +30,6 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
             android:name=".AboutActivity"
             android:label="About"
             android:parentActivityName=".SettingsActivity">
@@ -70,7 +62,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".AssignmentDetailsActivity"></activity>
+        <activity android:name=".AssignmentDetailsActivity" />
+        <activity android:name=".SettingsActivity"
+            android:title="@string/settings"
+            android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>

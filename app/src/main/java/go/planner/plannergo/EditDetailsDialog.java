@@ -10,6 +10,7 @@ import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,7 +59,7 @@ public class EditDetailsDialog extends DialogFragment {
         datePickerDialog = createDatePicker();
         timePickerDialog = createTimePickerDialog();
 
-        Log.v("EditDetailsDialog", "timeEnabled=" + timeEnabled);
+//        Log.v("EditDetailsDialog", "timeEnabled=" + timeEnabled);
 
         View view = initializeViews();
 
@@ -100,7 +101,7 @@ public class EditDetailsDialog extends DialogFragment {
                         //Create new alarm
                         NotificationAlarms.setNotificationTimer(
                                 getActivity(), newAssignment, alarmManager,
-                                FileIO.readSettings(getActivity())
+                                PreferenceManager.getDefaultSharedPreferences(getActivity())
                         );
 
                         FileIO.deleteAssignment(activity, oldAssignment);

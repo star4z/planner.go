@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.app.DialogFragment
 import android.app.FragmentManager
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.design.widget.Snackbar
 import android.util.Log
 import android.view.View
@@ -36,8 +37,10 @@ class DetailsDialog : DialogFragment() {
 
         assignment = Assignment(arguments)
         sortIndex = arguments.getInt("sortIndex")
-        timeEnabled = arguments.getBoolean("timeEnabled")
-        Log.v("DetailsDialog", "timeEnabled=" + timeEnabled)
+
+        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        timeEnabled = prefs.getBoolean(SettingsActivity.timeEnabled, true)
+        Log.v("DetailsDialog", "timeEnabled=$timeEnabled")
 
 
         val view = initializeViews()

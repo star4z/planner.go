@@ -3,7 +3,8 @@ package go.planner.plannergo;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.os.Bundle;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
@@ -21,24 +22,38 @@ import static android.content.Context.ALARM_SERVICE;
 class NotificationAlarms {
 
     static void setNotificationTimers(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        if (!prefs.getBoolean("pref_time_enabled", true))
+            return;
+
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-        Bundle settings = FileIO.readSettings(context);
 
         for (Assignment assignment : FileIO.inProgressAssignments) {
-            setNotificationTimer(context, assignment, alarmManager, settings);
+            setNotificationTimer(context, assignment, alarmManager, prefs);
         }
 
     }
 
-    static void setNotificationTimer(Context context, Assignment assignment, AlarmManager alarmManager, Bundle settings) {
+    static void setNotificationTimer(Context context, Assignment assignment, AlarmManager alarmManager, SharedPreferences prefs) {
         PendingIntent pendingIntent = AlarmBroadcastReceiver.createPendingIntent(
-                assignment, assignment.hashCode(), settings.getBoolean("timeEnabled"), context);
+                assignment, assignment.hashCode(), prefs.getBoolean("timeEnabled", true), context);
         alarmManager.cancel(pendingIntent);
-        long time = alarmTimeFromAssignment(assignment, settings);
+
+        //"normal" notification setting
+        long time = alarmTimeFromAssignment(assignment, prefs, false);
         if (time > Calendar.getInstance().getTimeInMillis()) {
             alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
         }
+
+        //extra notification setting
+        if (prefs.getBoolean("pref_extra_notif_enabled", false)) {
+            long extraTime = alarmTimeFromAssignment(assignment, prefs, true);
+            if (time > Calendar.getInstance().getTimeInMillis()) {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, extraTime, pendingIntent);
+            }
+        }
     }
+
 
     /**
      * returns the date, in milliseconds, at x daysBeforeDueDate
@@ -47,10 +62,20 @@ class NotificationAlarms {
      * @param assignment assignment to retrieve date from
      * @return time for alarm to go off, in milliseconds
      */
-    static long alarmTimeFromAssignment(Assignment assignment, Bundle settings) {
-        int daysBeforeDueDate = settings.getInt("daysBeforeDueDate", 1);
-        int alarmHourOfDay = settings.getInt("alarmHour", 8);
-        int alarmMinuteOfDay = settings.getInt("alarmMinute", 0);
+    static long alarmTimeFromAssignment(Assignment assignment, SharedPreferences prefs, boolean extraAssignment) {
+        int daysBeforeDueDate;
+        long notifTime;
+        if (extraAssignment) {
+            daysBeforeDueDate = prefs.getInt("pref_notif_days_before_extra", 7);
+            notifTime = prefs.getLong("pref_notif_time_extra", 46800000L);
+        } else {
+            daysBeforeDueDate = prefs.getInt("pref_notif_days_before", 1);
+            notifTime = prefs.getLong("pref_notif_time", 46800000L);
+        }
+        Calendar notifCalendar = Calendar.getInstance();
+        notifCalendar.setTimeInMillis(notifTime);
+        int alarmHourOfDay = notifCalendar.get(Calendar.HOUR_OF_DAY);
+        int alarmMinuteOfDay = notifCalendar.get(Calendar.MINUTE);
 
 
         SimpleDateFormat format = new SimpleDateFormat("h:mm:ss a, EEE, MM/dd/yy", Locale.US);

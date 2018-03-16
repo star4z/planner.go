@@ -3,7 +3,9 @@ package go.planner.plannergo
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.NavUtils
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
@@ -20,7 +22,7 @@ import java.util.Calendar.*
 
 class NewAssignmentActivity : AppCompatActivity() {
 
-    lateinit var settings: Bundle
+    lateinit var prefs: SharedPreferences
     lateinit var assignment: NewAssignment
     var dueDate = Calendar.getInstance()
     var notifyDate = Calendar.getInstance()
@@ -35,7 +37,7 @@ class NewAssignmentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_assignment)
 
-        settings = FileIO.readSettings(this)
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         setUpListeners()
 
@@ -46,7 +48,7 @@ class NewAssignmentActivity : AppCompatActivity() {
 
     private fun setUpListeners() {
 
-        if ((settings["timeEnabled"] as Boolean).not())
+        if (prefs.getBoolean(SettingsActivity.timeEnabled, false).not())
             hw_due_time.visibility = View.GONE
 
         //Set default due time
