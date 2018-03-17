@@ -28,7 +28,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final String MARK_DONE = "app.planner.MARK_DONE";
+//    public static final String MARK_DONE = "app.planner.MARK_DONE";
 
     //Settings data
 //    Bundle settings;
@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
     int currentSortIndex = 0;
 
     //Stores all views that need to be manipulated for removal when appropriate; unnecessary?
-    ArrayList<View> currentViews = new ArrayList<>();
 
     //Quick references
     LinearLayout parent;
@@ -45,6 +44,10 @@ public class MainActivity extends AppCompatActivity {
 
     //TODO: add tutorial
 
+    /**
+     * Runs when the activity is created
+     * @param savedInstanceState stores state for restoring the activity
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,28 +55,31 @@ public class MainActivity extends AppCompatActivity {
 
         parent = findViewById(R.id.body);
 
+//        checkFirstRun();
+
+
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-//        setUpNavDrawer();
-        checkFirstRun();
-
-//        currentSortIndex = settings.getInt("defaultSortIndex");
         currentSortIndex = SettingsActivity.getInt(
-                sharedPref.getString(SettingsActivity.defaultSort, ""), this);
+                sharedPref.getString(SettingsActivity.defaultSort, "date"), this);
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
 
         myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
-//        readAssignmentsFromFile();
         FileIO.readAssignmentsFromFile(this);
+
     }
 
     @Override
     protected void onResume() {
-//        settings = FileIO.readSettings(this);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         invalidateOptionsMenu();
         setUpNavDrawer();
+
+        loadPanels(FileIO.inProgressAssignments, currentSortIndex);
         super.onResume();
     }
 
@@ -97,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         // Set the adapter for the list view
         mDrawerList.setAdapter(new DrawerAdapter(this, drawerOptions, drawerIcons));
 
-        final String defaultSort = sharedPref.getString(SettingsActivity.defaultSort, "");
+        final String defaultSort = sharedPref.getString(SettingsActivity.defaultSort, "date");
 
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -118,32 +124,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        int id = 0;
-        int sort = SettingsActivity.getInt(
-                sharedPref.getString(SettingsActivity.defaultSort, ""), this);
-        switch (sort) {
-
-            case 0:
-                id = R.id.action_sort_by_date;
-                break;
-            case 1:
-                id = R.id.action_sort_by_class;
-                break;
-            case 2:
-                id = R.id.action_sort_by_title;
-                break;
-            case 3:
-                id = R.id.action_sort_by_type;
-                break;
-        }
-        MenuItem item = menu.findItem(id);
-        item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        loadPanels(FileIO.inProgressAssignments, currentSortIndex);
-        return super.onPrepareOptionsMenu(menu);
     }
 
 
@@ -218,10 +198,7 @@ public class MainActivity extends AppCompatActivity {
             setTitle("Gravy");
             myToolbar.setBackgroundColor(Color.YELLOW);
         }
-        for (View view : currentViews) {
-            parent.removeView(view);
-        }
-        currentViews.clear();
+        parent.removeAllViews();
 
         //TODO: Add pinned assignments
         if (assignments.isEmpty()) {
@@ -260,7 +237,6 @@ public class MainActivity extends AppCompatActivity {
                 false
         );
         header.setText(textID);
-        currentViews.add(header);
         parent.addView(header);
     }
 
@@ -273,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
                 false
         );
         header.setText(text);
-        currentViews.add(header);
         parent.addView(header);
     }
 
@@ -305,7 +280,6 @@ public class MainActivity extends AppCompatActivity {
                 AssignmentViewWrapper assignmentViewWrapper = new AssignmentViewWrapper(
                         this, assignment, currentSortIndex);
                 parent.addView(assignmentViewWrapper.container);
-                currentViews.add(assignmentViewWrapper.container);
             }
         }
 
@@ -316,7 +290,6 @@ public class MainActivity extends AppCompatActivity {
                 AssignmentViewWrapper assignmentViewWrapper = new AssignmentViewWrapper(
                         this, assignment, currentSortIndex);
                 parent.addView(assignmentViewWrapper.container);
-                currentViews.add(assignmentViewWrapper.container);
             }
         }
 
@@ -349,7 +322,6 @@ public class MainActivity extends AppCompatActivity {
                     AssignmentViewWrapper view = new AssignmentViewWrapper(
                             this, assignment, currentSortIndex);
                     parent.addView(view.container);
-                    currentViews.add(view.container);
                 }
             }
         }
@@ -365,7 +337,6 @@ public class MainActivity extends AppCompatActivity {
                     AssignmentViewWrapper view = new AssignmentViewWrapper(
                             this, assignment, currentSortIndex);
                     parent.addView(view.container);
-                    currentViews.add(view.container);
                 }
             }
         }
@@ -383,12 +354,22 @@ public class MainActivity extends AppCompatActivity {
             Assignment min = assignments.get(pos);
             assignments.set(pos, assignments.get(i));
             assignments.set(i, min);
+        }
 
+        char currentLetter = 0;
+        boolean emptyLetter = true;
+        for (Assignment assignment: assignments){
+            if (assignment.title.equals("") && emptyLetter) {
+                addHeading("Untitled");
+                emptyLetter = false;
+            } else if (assignment.title.toUpperCase().charAt(0) > currentLetter){
+                currentLetter = assignment.title.charAt(0);
+                addHeading(Character.toString(currentLetter).toUpperCase());
+            }
             AssignmentViewWrapper viewContainer = new AssignmentViewWrapper(
-                    this, min, currentSortIndex
+                    this, assignment, currentSortIndex
             );
             parent.addView(viewContainer.container);
-            currentViews.add(viewContainer.container);
         }
 
     }

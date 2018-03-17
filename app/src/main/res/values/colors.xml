@@ -33,4 +33,5 @@
 
     <color name="textBlack">#FF000000</color>
     <color name="textGrey">#FF555555</color>
+    <color name="textWhite">#FFFFFFFF</color>
 </resources>

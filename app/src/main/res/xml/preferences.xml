@@ -3,13 +3,13 @@
     android:title="Settings">
     <ListPreference
         android:defaultValue="@string/sort_date"
-        android:dialogTitle="Sort button"
+        android:dialogTitle="Default sort"
         android:entries="@array/sort_types"
         android:entryValues="@array/sort_type_values"
         android:key="pref_default_sort"
         android:layout="@layout/preference"
         android:summary="Default sort"
-        android:title="Sort button" />
+        android:title="Default sort" />
 
     <SwitchPreference
         android:defaultValue="true"

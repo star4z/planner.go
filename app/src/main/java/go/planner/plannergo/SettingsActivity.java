@@ -25,6 +25,9 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
         setContentView(R.layout.activity_prefs);
 
         toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Settings");
+        toolbar.setNavigationContentDescription("Back");
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         setSupportActionBar(toolbar);
         toolbar.setBackgroundColor(getResources().getColor(R.color.p1_secondary));
         getWindow().setStatusBarColor(getResources().getColor(R.color.p1_secondary_dark));
@@ -40,8 +43,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
 
     @Override
     public void onBackPressed() {
-        Log.v("SettingsActivity","backStackEntryCount=" + getFragmentManager().getBackStackEntryCount());
-        if(getFragmentManager().getBackStackEntryCount()==0){
+        Log.v("SettingsActivity", "backStackEntryCount=" + getFragmentManager().getBackStackEntryCount());
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
             super.onBackPressed();
         } else {
             toolbar.setTitle("Settings");
@@ -54,7 +57,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                if(getFragmentManager().getBackStackEntryCount()==0){
+                if (getFragmentManager().getBackStackEntryCount() == 0) {
                     NavUtils.navigateUpFromSameTask(this);
                 } else {
                     toolbar.setTitle("Settings");

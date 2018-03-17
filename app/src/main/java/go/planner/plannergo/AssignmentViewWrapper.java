@@ -101,12 +101,7 @@ class AssignmentViewWrapper implements Comparable<Object> {
         @Override
         public void onClick(View v) {
             Bundle args = assignment.generateBundle();
-//            args.putInt("sortIndex", sortIndex);
-//            args.putBoolean("timeEnabled", activity.timeEnabled);
-//            Log.v("AssignmentViewContainer", "timeEnabled=" + activity.timeEnabled);
-//            Bundle settings = FileIO.readSettings(activity);
-//            args.putAll(settings);
-
+            args.putInt("sortIndex", sortIndex);
 
             DetailsDialog detailsDialog = new DetailsDialog();
             detailsDialog.setArguments(args);
