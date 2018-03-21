@@ -14,6 +14,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.RingtonePreference;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.Set;
 
@@ -84,8 +85,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     /**
      * Update summary
      *
-     * @param sharedPreferences
-     * @param pref
+     * @param sharedPreferences settings file
+     * @param pref preference to update the summary of
      */
     protected void updatePrefsSummary(SharedPreferences sharedPreferences,
                                       Preference pref) {
@@ -96,6 +97,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         if (pref instanceof ListPreference) {
             // List Preference
             ListPreference listPref = (ListPreference) pref;
+            Log.v("SettingsFragment","listPrefEntry=" + listPref.getEntry());
+            if (listPref.getEntry() == null){
+                listPref.setValueIndex(0);
+                Log.v("SettingsFragment","after change, listPrefEntry=" + listPref.getEntry());
+            }
             listPref.setSummary(listPref.getEntry());
 
         } else if (pref instanceof EditTextPreference) {
@@ -106,7 +112,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         } else if (pref instanceof MultiSelectListPreference) {
             // MultiSelectList Preference
             MultiSelectListPreference mlistPref = (MultiSelectListPreference) pref;
-            String summaryMListPref = "";
+            StringBuilder summaryMListPref = new StringBuilder();
             String and = "";
 
             // Retrieve values
@@ -120,12 +126,12 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                         .getEntries()[index] : null;
                 if (mEntry != null) {
                     // add summary
-                    summaryMListPref = summaryMListPref + and + mEntry;
+                    summaryMListPref.append(and).append(mEntry);
                     and = ";";
                 }
             }
             // set summary
-            mlistPref.setSummary(summaryMListPref);
+            mlistPref.setSummary(summaryMListPref.toString());
 
         } else if (pref instanceof RingtonePreference) {
             // RingtonePreference

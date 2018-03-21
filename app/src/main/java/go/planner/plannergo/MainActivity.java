@@ -58,13 +58,12 @@ public class MainActivity extends AppCompatActivity {
 
 //        checkFirstRun();
 
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         currentSortIndex = SettingsActivity.getInt(
                 sharedPref.getString(SettingsActivity.defaultSort, "date"), this);
-
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
 
         myToolbar = findViewById(R.id.toolbar);

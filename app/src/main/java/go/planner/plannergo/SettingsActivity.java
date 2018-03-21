@@ -102,13 +102,15 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
     }
 
     public static int getInt(String sort, Context context) {
+        Log.v("SettingsActivity","sort=" + sort);
         String[] sortOptions = context.getResources().getStringArray(R.array.sort_type_values);
         for (int i = 0; i < sortOptions.length; i++) {
             if (sort.equals(sortOptions[i])) {
                 return i;
             }
         }
-        return -1;
+        Log.v("SettingsActivity","invalid sort string");
+        return 0;
     }
 
     void removeBorder(){

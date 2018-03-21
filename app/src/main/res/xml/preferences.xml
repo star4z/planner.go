@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="Settings">
     <ListPreference
-        android:defaultValue="@string/sort_date"
+        android:defaultValue="date"
         android:dialogTitle="Default sort"
         android:entries="@array/sort_types"
         android:entryValues="@array/sort_type_values"
