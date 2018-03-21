@@ -1,5 +1,6 @@
 package go.planner.plannergo;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ListView;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsFragment.Callback {
 
@@ -17,6 +19,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
     private static final String TAG_NESTED = "TAG_NESTED";
 
     private Toolbar toolbar;
+
+    public boolean listStyled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,21 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
                     .replace(R.id.body, new SettingsFragment())
                     .commit();
         }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+       removeBorder();
+
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        super.onAttachFragment(fragment);
+        removeBorder();
     }
 
     @Override
@@ -72,12 +91,14 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
     public void onNestedPreferenceSelected(int key) {
         //if multiple nested preference screens are made, this needs to be rewritten
         toolbar.setTitle("Notifications");
+
         getFragmentManager().beginTransaction().replace(
                 R.id.body,
                 NestedPreferencesFragment.newInstance(key),
                 TAG_NESTED).
                 addToBackStack(TAG_NESTED).
                 commit();
+
     }
 
     public static int getInt(String sort, Context context) {
@@ -88,6 +109,16 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
             }
         }
         return -1;
+    }
+
+    void removeBorder(){
+        if (!listStyled) {
+            ListView list = findViewById(android.R.id.list);
+//            list.setPadding(0, 0, 0, 0);
+            if (list != null)
+                list.setDivider(null);
+            listStyled = true;
+        }
     }
 
 

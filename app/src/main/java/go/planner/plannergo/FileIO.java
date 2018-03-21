@@ -37,6 +37,7 @@ public class FileIO {
 
     //TODO: enable new read implementation
     static void readAssignmentsFromFile(Context context) {
+        clearAssignments();
 //        try {
 //            readAssignments();
 //        } catch (IOException e) {
@@ -178,5 +179,10 @@ public class FileIO {
         else
             FileIO.inProgressAssignments.remove(assignment);
         writeAssignmentsToFile(context);
+    }
+
+    private static void clearAssignments(){
+        inProgressAssignments.clear();
+        completedAssignments.clear();
     }
 }

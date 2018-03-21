@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Runs when the activity is created
+     *
      * @param savedInstanceState stores state for restoring the activity
      */
     @Override
@@ -269,7 +270,6 @@ public class MainActivity extends AppCompatActivity {
 
         for (Assignment assignment : assignments) {
             if (sharedPref.getBoolean(SettingsActivity.overdueLast, false) && compareCalendars(assignment.dueDate, today) < 0) {
-                System.out.println("Added assignment to overdue: " + assignment.title);
                 overdue.add(assignment);
             } else {
                 if (compareCalendars(assignment.dueDate, previous.dueDate) > 0)
@@ -357,12 +357,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         char currentLetter = 0;
-        boolean emptyLetter = true;
-        for (Assignment assignment: assignments){
-            if (assignment.title.equals("") && emptyLetter) {
-                addHeading("Untitled");
-                emptyLetter = false;
-            } else if (assignment.title.toUpperCase().charAt(0) > currentLetter){
+        boolean emptyLetter = true; //helps with checking that blank character is added only once
+        for (Assignment assignment : assignments) {
+            if (assignment.title.length() == 0) {
+                if (emptyLetter) {
+                    addHeading("Untitled");
+                    emptyLetter = false;
+                }
+            } else if (assignment.title.toUpperCase().charAt(0) > currentLetter) {
                 currentLetter = assignment.title.charAt(0);
                 addHeading(Character.toString(currentLetter).toUpperCase());
             }
