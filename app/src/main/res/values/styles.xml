@@ -11,7 +11,7 @@
     </style>
 
     <style name="OverflowMenuButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
-        <item name="android:src">@drawable/ic_more_vert_black_24dp</item>
+        <item name="android:src">@drawable/ic_more_vert_white_24dp</item>
     </style>
 
     <style name="DueDateHeader">
@@ -40,4 +40,29 @@
         <item name="android:textColor">@color/textGrey</item>
         <item name="android:textStyle">normal</item>
     </style>
+
+    <!-- App theme for preferences activity ........... -->
+    <style name="AppThemePreferences" parent="Theme.AppCompat.NoActionBar">
+        <!-- AppCompat Dialog Attributes -->
+        <item name="dialogTheme">@style/AppCompatDialog</item>
+    </style>
+
+    <!-- Generic Dialog Theme -->
+    <style name="AppCompatDialog" parent="Theme.AppCompat.Dialog">
+        <!-- Used for the title and text -->
+        <item name="android:textColorPrimary">@color/p1_assignment</item>
+        <!-- Used for the background -->
+        <item name="android:background">@color/colorAccent</item>
+
+        <item name="colorPrimary">@color/p1_primary</item>
+        <item name="colorPrimaryDark">@color/p1_primary_dark</item>
+    </style>
+
+    <style name="IceCreamMain" parent="Theme.AppCompat.Light.NoActionBar" >
+        <item name="colorPrimary">@color/p3_primary</item>
+        <item name="colorPrimaryDark">@color/p3_primary_accent</item>
+        <item name="colorAccent">@color/p3_secondary</item>
+    </style>
+
+
 </resources>

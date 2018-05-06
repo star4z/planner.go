@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="go.planner.plannergo.NewAssignmentActivity">
+    tools:context="go.planner.plannergo.AssignmentActivity">
 
 
     <android.support.v7.widget.Toolbar
@@ -18,7 +18,7 @@
         app:navigationContentDescription="Back"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="New Assignment"
+        app:title="New assignment"
         app:titleTextColor="#FFFFFFFF" />
 
     <ScrollView
@@ -38,6 +38,7 @@
                 android:hint="@string/enter_title_of_assignment"
                 android:inputType="textCapSentences" />
 
+            <!-- change to spinner -->
             <EditText
                 android:id="@+id/hw_class"
                 android:layout_width="match_parent"
@@ -91,7 +92,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingBottom="8dp"
-                android:paddingTop="8dp">
+                android:paddingTop="8dp"
+                android:onClick="togglePriorityAssignment">
 
                 <CheckBox
                     android:id="@+id/is_priority"
@@ -107,6 +109,7 @@
                     android:text="Priority assignment" />
             </LinearLayout>
 
+
             <LinearLayout
                 android:id="@+id/custom_notification"
                 android:layout_width="match_parent"
@@ -114,12 +117,15 @@
                 android:orientation="horizontal"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
-                android:onClick="toggleCustomNotification">
+                android:onClick="toggleCustomNotification"
+                android:visibility="gone">
 
                 <CheckBox
                     android:id="@+id/enable_custom_notification"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:onClick="toggleCustomNotification"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -135,7 +141,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -146,6 +152,7 @@
                     android:id="@+id/n_days"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
                     android:text="1" />
 
                 <TextView
@@ -157,6 +164,7 @@
                     android:id="@+id/n_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
                     android:text="8:00 am" />
             </LinearLayout>
 
@@ -173,7 +181,9 @@
                 <CheckBox
                     android:id="@+id/extra_notification"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:onClick="toggleExtraNotification"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -201,6 +211,7 @@
                     android:id="@+id/r2_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
                     android:text="7" />
 
                 <TextView
@@ -212,6 +223,7 @@
                     android:id="@+id/r2_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:focusable="false"
                     android:text="8:00 am" />
             </LinearLayout>
 

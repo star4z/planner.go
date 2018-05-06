@@ -1,6 +1,6 @@
 package go.planner.plannergo;
 
-import android.os.Bundle;
+import android.util.Log;
 
 import java.util.Calendar;
 
@@ -12,15 +12,17 @@ import java.util.Calendar;
 
 public class NewAssignment extends Assignment {
     int priority = 0;
-    boolean customNotification;
-    long notificationDate = 0L;
-    long notificationDate2 = -1L;
-    long uniqueID;
+    Calendar notificationDate1;
+    Calendar notificationDate2;
+    long uniqueID; //unique to each assignment; Differentiates assignments that are otherwise identical
 
+    NewAssignment(){
+        this(new Assignment());
+    }
 
     NewAssignment(String title, String className, Calendar dueDate, String description,
-                  boolean completed, String type, int priority, boolean customNotification,
-                  long notificationDate, long uniqueID)
+                  boolean completed, String type, int priority, Calendar notificationDate1,
+                  Calendar notificationDate2, long uniqueID)
     {
 
         super(title,
@@ -30,16 +32,22 @@ public class NewAssignment extends Assignment {
                 completed,
                 type);
         this.priority = priority;
-        this.customNotification = customNotification;
-        this.notificationDate = notificationDate;
+        this.notificationDate1 = notificationDate1;
+        this.notificationDate2 = notificationDate2;
         this.uniqueID = uniqueID;
     }
 
-    NewAssignment(Assignment assignment, int priority, boolean customNotification, long notificationDate) {
-        this(assignment, priority, customNotification, notificationDate, Calendar.getInstance().getTimeInMillis());
+    /**
+     * NOT a copy constructor!
+     * For maintaining files during update
+     * @param assignment
+     */
+    NewAssignment(Assignment assignment) {
+        this(assignment, 0,  null, null, Calendar.getInstance().getTimeInMillis());
     }
 
-    NewAssignment(Assignment assignment, int priority, boolean customNotification, long notificationDate, long uniqueID) {
+
+    NewAssignment(Assignment assignment, int priority, Calendar notificationDate1, Calendar notificationDate2, long uniqueID) {
         super(assignment.title,
                 assignment.className,
                 assignment.dueDate,
@@ -47,44 +55,73 @@ public class NewAssignment extends Assignment {
                 assignment.completed,
                 assignment.type);
         this.priority = priority;
-        this.customNotification = customNotification;
-        this.notificationDate = notificationDate;
+
+        this.notificationDate1 = notificationDate1;
+
+        this.notificationDate2 = notificationDate2;
         this.uniqueID = uniqueID;
     }
 
-    NewAssignment(Bundle bundle) {
-        super(bundle);
-        dueDate.setTimeInMillis(bundle.getLong("dueDate"));
-        priority = bundle.getInt("priority");
-        customNotification = bundle.getBoolean("customNotification");
-        notificationDate = bundle.getLong("notificationDate");
-        uniqueID = Calendar.getInstance().getTimeInMillis();
-    }
-
-    @Override
-    Bundle generateBundle() {
-        Bundle bundle = super.generateBundle();
-        bundle.putLong("dueDate", dueDate.getTimeInMillis());
-        bundle.putInt("priority", priority);
-        bundle.putBoolean("customNotification", customNotification);
-        bundle.putLong("notificationDate", notificationDate);
-        return bundle;
-    }
+    /**
+     * Bundle lookup method replaced by UID lookup
+     */
+//    NewAssignment(Bundle bundle) {
+//        super(bundle);
+//        dueDate.setTimeInMillis(bundle.getLong("dueDate", 0));
+//        priority = bundle.getInt("priority", 0);
+//        long nDate1 = bundle.getLong("notificationDate1", 0);
+//        notificationDate1 = Calendar.getInstance();
+//        notificationDate1.setTimeInMillis(nDate1);
+//        long nDate2 = bundle.getLong("notificationDate2", 0);
+//        notificationDate2 = Calendar.getInstance();
+//        notificationDate2.setTimeInMillis(nDate2);
+//        uniqueID = bundle.getLong("uniqueID", Calendar.getInstance().getTimeInMillis());
+//    }
 
     @Override
     protected NewAssignment clone() {
-        return new NewAssignment(super.clone(), priority, customNotification, notificationDate, uniqueID);
+        return new NewAssignment(super.clone(), priority, notificationDate1, notificationDate2, uniqueID);
     }
 
     @Override
-    public String toString() {
-        return super.toString() + ",priority=" + priority;
+    public boolean equals(Object o) {
+        return o instanceof NewAssignment && ((NewAssignment) o).uniqueID == uniqueID;
     }
 
-    //TODO: write new assignment types
-    static int spinnerPosition(String type) {
+    @Override
+    public int hashCode() {
+        return (int) uniqueID;
+    }
 
-        return 0;
+    /**
+     * String representation of NewAssignment
+     * @return ID number; ID numbers should only be the same if they reference the same object
+     */
+    @Override
+    public String toString() {
+        return "uniqueID=" + uniqueID;
+    }
 
+    /**
+     * Use as a more in-depth toString
+     * @return ID and Assignment fields
+     */
+    public String getFields(){
+        return toString() + super.toString();
+    }
+
+    public int spinnerPosition(){
+        switch (type) {
+            default:
+                Log.v("SpinnerPosition", "default case");
+            case "Written":
+                return 0;
+            case "Studying":
+                return 1;
+            case "Online":
+                return 2;
+            case "Project":
+                return 3;
+        }
     }
 }

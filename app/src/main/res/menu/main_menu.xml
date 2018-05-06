@@ -2,29 +2,38 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/action_sort_by_date"
-        android:icon="@drawable/ic_filter_list_white_24dp"
-        android:orderInCategory="300"
-        app:showAsAction="never"
-        android:title="@string/sort_date"/>
-    <item
-        android:id="@+id/action_sort_by_class"
-        android:icon="@drawable/ic_filter_list_white_24dp"
-        android:orderInCategory="400"
-        app:showAsAction="never"
-        android:title="@string/sort_class"/>
-    <item
-        android:id="@+id/action_sort_by_title"
-        android:icon="@drawable/ic_filter_list_white_24dp"
-        android:orderInCategory="500"
-        app:showAsAction="never"
-        android:title="@string/sort_title"/>
-    <item
-        android:id="@+id/action_sort_by_type"
-        android:icon="@drawable/ic_filter_list_white_24dp"
-        android:orderInCategory="500"
-        app:showAsAction="never"
-        android:title="@string/sort_type"/>
+    <group>
+        <item
+            android:id="@+id/action_sort_by_date"
+            android:icon="@drawable/ic_filter_list_white_24dp"
+            android:title="@string/sort_date"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/action_sort_by_class"
+            android:icon="@drawable/ic_filter_list_white_24dp"
+            android:title="@string/sort_class"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/action_sort_by_title"
+            android:icon="@drawable/ic_filter_list_white_24dp"
+            android:title="@string/sort_title"
+            app:showAsAction="never" />
+        <item
+            android:id="@+id/action_sort_by_type"
+            android:icon="@drawable/ic_filter_list_white_24dp"
+            android:title="@string/sort_type"
+            app:showAsAction="never" />
+    </group>
+
+    <!-- <group>
+        <item
+            android:id="@+id/action_open_classes"
+            android:title="Edit classes" />
+
+        <item
+            android:id="@+id/action_open_types"
+            android:title="Edit assignment types" />
+
+    </group> -->
 
 </menu>

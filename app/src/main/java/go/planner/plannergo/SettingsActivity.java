@@ -1,18 +1,15 @@
 package go.planner.plannergo;
 
-import android.app.Fragment;
-import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.ListView;
 
 public class SettingsActivity extends AppCompatActivity implements SettingsFragment.Callback {
 
-    public static final String defaultSort = "pref_default_sort";
     public static final String timeEnabled = "pref_time_enabled";
     public static final String overdueLast = "pref_overdue_last";
 
@@ -28,13 +25,17 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
 
         setContentView(R.layout.activity_prefs);
 
+
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Settings");
         toolbar.setNavigationContentDescription("Back");
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        if (ColorPicker.getColorSecondaryText() == Color.BLACK) {
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        } else {
+            toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        }
         setSupportActionBar(toolbar);
-        toolbar.setBackgroundColor(getResources().getColor(R.color.p1_secondary));
-        getWindow().setStatusBarColor(getResources().getColor(R.color.p1_secondary_dark));
+
 
 
         if (savedInstanceState == null) {
@@ -45,19 +46,13 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
         }
     }
 
-
     @Override
     protected void onResume() {
+        ColorPicker.setColors(this);
+        toolbar.setBackgroundColor(ColorPicker.getColorSecondary());
+        toolbar.setTitleTextColor(ColorPicker.getColorSecondaryText());
+        getWindow().setStatusBarColor(ColorPicker.getColorSecondaryAccent());
         super.onResume();
-
-       removeBorder();
-
-    }
-
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        super.onAttachFragment(fragment);
-        removeBorder();
     }
 
     @Override
@@ -100,28 +95,5 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
                 commit();
 
     }
-
-    public static int getInt(String sort, Context context) {
-        Log.v("SettingsActivity","sort=" + sort);
-        String[] sortOptions = context.getResources().getStringArray(R.array.sort_type_values);
-        for (int i = 0; i < sortOptions.length; i++) {
-            if (sort.equals(sortOptions[i])) {
-                return i;
-            }
-        }
-        Log.v("SettingsActivity","invalid sort string");
-        return 0;
-    }
-
-    void removeBorder(){
-        if (!listStyled) {
-            ListView list = findViewById(android.R.id.list);
-//            list.setPadding(0, 0, 0, 0);
-            if (list != null)
-                list.setDivider(null);
-            listStyled = true;
-        }
-    }
-
 
 }

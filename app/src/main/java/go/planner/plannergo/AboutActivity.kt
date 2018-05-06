@@ -13,8 +13,8 @@ class AboutActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
 
-        about_toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
-        window.statusBarColor = ContextCompat.getColor(this, R.color.p1_secondary_dark)
+        about_toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.p6_assignment))
+        window.statusBarColor = ContextCompat.getColor(this, R.color.colorAccentDark)
         setSupportActionBar(about_toolbar)
     }
 

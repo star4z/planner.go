@@ -2,6 +2,7 @@ package go.planner.plannergo;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -36,7 +37,7 @@ class AssignmentViewWrapper implements Comparable<Object> {
 
     private final Assignment assignment;
 
-    AssignmentViewWrapper(final Activity activity, Assignment newAssignment, int sortIndex) {
+    AssignmentViewWrapper(final Activity activity, NewAssignment newAssignment, int sortIndex) {
         FragmentManager f = activity.getFragmentManager();
         assignment = newAssignment;
         this.sortIndex = sortIndex;
@@ -63,7 +64,7 @@ class AssignmentViewWrapper implements Comparable<Object> {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
                     final MainActivity mainActivity = (MainActivity) activity;
-                    ArrayList<Assignment> currentAssignments;
+                    ArrayList<NewAssignment> currentAssignments;
                     if (assignment.completed)
                         currentAssignments = FileIO.completedAssignments;
                     else
@@ -80,7 +81,7 @@ class AssignmentViewWrapper implements Comparable<Object> {
         SimpleDateFormat dateFormat;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
         if (prefs.getBoolean(SettingsActivity.timeEnabled, false)) {
-            dateFormat = new SimpleDateFormat("h:mm a, EEE, MM/dd/yy", Locale.US);
+            dateFormat = new SimpleDateFormat("h:mm a EEE, MM/dd/yy", Locale.US);
         } else {
             dateFormat = new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
         }
@@ -88,11 +89,11 @@ class AssignmentViewWrapper implements Comparable<Object> {
     }
 
     class BodyClickListener implements View.OnClickListener {
-        Assignment assignment;
+        NewAssignment assignment;
         FragmentManager f;
         MainActivity activity;
 
-        BodyClickListener(Assignment assignment, MainActivity activity, FragmentManager fragmentManager) {
+        BodyClickListener(NewAssignment assignment, MainActivity activity, FragmentManager fragmentManager) {
             this.assignment = assignment;
             this.activity = activity;
             f = fragmentManager;
@@ -100,22 +101,30 @@ class AssignmentViewWrapper implements Comparable<Object> {
 
         @Override
         public void onClick(View v) {
-            Bundle args = assignment.generateBundle();
+//            Bundle args = assignment.generateBundle();
+            Bundle args = new Bundle();
+            args.putLong("uniqueID", assignment.uniqueID);
             args.putInt("sortIndex", sortIndex);
 
-            DetailsDialog detailsDialog = new DetailsDialog();
-            detailsDialog.setArguments(args);
-            detailsDialog.show(f, "DetailsDialog");
+            Intent intent = new Intent(activity, AssignmentDetailsActivity.class);
+            intent.putExtras(args);
+            activity.startActivityForResult(intent,1);
+//            DetailsDialog detailsDialog = new DetailsDialog();
+//            detailsDialog.setArguments(args);
+//            detailsDialog.show(f, "DetailsDialog");
+
+
         }
     }
 
-    private void toggleCompleted(MainActivity mainActivity, ArrayList<Assignment> currentAssignments) {
+    private void toggleCompleted(MainActivity mainActivity, ArrayList<NewAssignment> currentAssignments) {
+        NewAssignment newAssignment = (NewAssignment) assignment;
         if (assignment.completed = !assignment.completed) {
             FileIO.inProgressAssignments.remove(assignment);
-            FileIO.completedAssignments.add(assignment);
+            FileIO.completedAssignments.add(newAssignment);
         } else {
             FileIO.completedAssignments.remove(assignment);
-            FileIO.inProgressAssignments.add(assignment);
+            FileIO.inProgressAssignments.add(newAssignment);
         }
         mainActivity.loadPanels(currentAssignments, sortIndex);
         FileIO.writeAssignmentsToFile(mainActivity);
@@ -139,21 +148,16 @@ class AssignmentViewWrapper implements Comparable<Object> {
      *
      * @param activity reference to MainActivity instance
      */
-    private void createSnackBarPopup(final MainActivity activity, final ArrayList<Assignment> currentAssignments) {
-        String title, status;
-        if (assignment.title.equals(""))
-            title = "Untitled assignment";
-        else
-            title = "'" + assignment.title + "'";
-        if (assignment.completed)
-            status = "complete.";
-        else
-            status = "in progress.";
+    private void createSnackBarPopup(final MainActivity activity, final ArrayList<NewAssignment> currentAssignments) {
+        String title = (assignment.title.equals("")) ? "untitled assignment" : "'" + assignment.title + "'";
+        String status = assignment.completed ? "complete." : "in progress.";
+
         Snackbar snackbar = Snackbar.make(
                 activity.findViewById(R.id.coordinator),
                 "Marked " + title + " as " + status,
                 Snackbar.LENGTH_LONG
         );
+
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {

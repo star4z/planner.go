@@ -6,41 +6,43 @@
         android:defaultValue="true"
         android:key="pref_notif_enabled"
         android:layout="@layout/preference_heading"
-        android:title="Show notifications" />
-
-    <go.planner.plannergo.NumberPreference
-        android:defaultValue="1"
-        android:key="pref_notif_days_before"
-        android:title="Number of days before due date"
-        android:dependency="pref_notif_enabled"
-        android:layout="@layout/preference"/>
+        android:title="Notifications" />
 
     <go.planner.plannergo.TimePreference
         android:defaultValue="46800000"
         android:key="pref_notif_time"
         android:layout="@layout/preference"
         android:dependency="pref_notif_enabled"
-        android:title="Show notification at"/>
+        android:title="Notify me at " />
+
+    <go.planner.plannergo.NumberPreference
+        android:defaultValue="1"
+        android:key="pref_notif_days_before"
+        android:title="Days before deadline"
+        android:dependency="pref_notif_enabled"
+        android:layout="@layout/preference"/>
 
     <SwitchPreference
         android:defaultValue="false"
         android:key="pref_extra_notif_enabled"
         android:layout="@layout/preference"
         android:dependency="pref_notif_enabled"
-        android:title="Extra notification" />
-
-    <go.planner.plannergo.NumberPreference
-        android:defaultValue="7"
-        android:key="pref_notif_days_before_extra"
-        android:title="Number of days before due date"
-        android:dependency="pref_extra_notif_enabled"
-        android:layout="@layout/preference"/>
+        android:title="I want two notifications" />
 
     <go.planner.plannergo.TimePreference
         android:defaultValue="46800000"
         android:key="pref_notif_time_extra"
         android:layout="@layout/preference"
         android:dependency="pref_extra_notif_enabled"
-        android:title="Show notification at"/>
+        android:title="Notify me at"/>
+
+    <go.planner.plannergo.NumberPreference
+        android:defaultValue="7"
+        android:key="pref_notif_days_before_extra"
+        android:title="Days before deadline"
+        android:dependency="pref_extra_notif_enabled"
+        android:layout="@layout/preference"/>
+
+
 
 </PreferenceScreen>

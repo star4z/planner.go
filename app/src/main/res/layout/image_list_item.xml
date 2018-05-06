@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:padding="5dp">
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:contentDescription="List item image"
+        android:padding="5dp" />
+
+    <CheckedTextView
+        android:id="@+id/check"
+        android:maxLines="2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:checkMark="@drawable/ic_check_default_24dp"
+        android:checked="false"
+        android:gravity="center_vertical"
+        android:textSize="20sp"
+        android:padding="5dp" />
+
+</LinearLayout>

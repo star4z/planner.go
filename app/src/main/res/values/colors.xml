@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#212121</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#2bbd7e </color>
+    <color name="colorAccentDark">#008c51</color>
 
     <!-- Palette 1: Bright -->
     <color name="p1_primary">#3F51B5</color>
@@ -14,19 +15,60 @@
     <color name="p1_assignment">#ffa726</color>
     <color name="p1_assignment_dark">#c77800</color>
 
-    <!--TODO: implement color palette options -->
     <!-- Palette 2: Earthy -->
+    <color name="p2_primary">#4e342e</color>
+    <color name="p2_primary_accent">#260e04</color>
+    <color name="p2_secondary">#004d40</color>
+    <color name="p2_secondary_accent">#00251a</color>
+    <color name="p2_completed">#888c4e</color>
+    <color name="p2_completed_accent">#5a5f23</color>
+    <color name="p2_assignment">#311b92</color>
+    <color name="p2_assignment_accent">#000063</color>
 
     <!-- Palette 3: Ice Cream-->
+    <color name="p3_primary">#90caf9</color>
+    <color name="p3_primary_accent">#5d99c6</color>
+    <color name="p3_secondary">#f8bbd0</color>
+    <color name="p3_secondary_accent">#c48b9f</color>
+    <color name="p3_completed">#c8e6c9</color>
+    <color name="p3_completed_accent">#97b498</color>
+    <color name="p3_assignment">#ffecb3</color>
+    <color name="p3_assignment_accent">#cbba83</color>
 
     <!-- Palette 4: Monochrome -->
+    <color name="p4_primary">#212121</color>
+    <color name="p4_primary_accent">#000000</color>
+    <color name="p4_secondary">#212121</color>
+    <color name="p4_secondary_accent">#000000</color>
+    <color name="p4_completed">#212121</color>
+    <color name="p4_completed_accent">#000000</color>
+    <color name="p4_assignment">#212121</color>
+    <color name="p4_assignment_accent">#000000</color>
+
 
     <!-- Palette 5: Patriotic -->
-    <color name="p5_secondary">#f44336</color>
-    <color name="p5_secondary_dark">#ba000d</color>
+    <color name="p5_primary">#b71c1c</color>
+    <color name="p5_primary_accent">#7f0000</color>
+    <color name="p5_secondary">#1a237e</color>
+    <color name="p5_secondary_accent">#000051</color>
+    <color name="p5_completed">#4caf50</color>
+    <color name="p5_completed_accent">#087f23</color>
+    <color name="p5_assignment">#fafafa</color>
+    <color name="p5_assignment_accent">#c7c7c7</color>
+
+    <!-- Palette 6: Mint -->
+    <color name="p6_primary">#263238</color>
+    <color name="p6_primary_accent">#000a12</color>
+    <color name="p6_secondary">#b9f6ca</color>
+    <color name="p6_secondary_accent">#88c399</color>
+    <color name="p6_completed">#757575</color>
+    <color name="p6_completed_accent">#494949</color>
+    <color name="p6_assignment">#69f0ae</color>
+    <color name="p6_assignment_accent">#2bbd7e</color>
 
     <color name="iconWhite">#FFFFFFFF</color>
     <color name="iconGrey">#FFA9A9A9</color>
+    <color name="iconBlack">#FF000000</color>
 
     <color name="backgroundWhite">#FFFFFFFF</color>
     <color name="backgroundGrey">#FF757575</color>

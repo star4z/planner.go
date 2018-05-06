@@ -1,40 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="Settings">
-    <ListPreference
-        android:defaultValue="date"
-        android:dialogTitle="Default sort"
-        android:entries="@array/sort_types"
-        android:entryValues="@array/sort_type_values"
-        android:key="pref_default_sort"
-        android:layout="@layout/preference"
-        android:summary="Default sort"
-        android:title="Default sort" />
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="pref_time_enabled"
-        android:layout="@layout/preference"
-        android:title="Show time for assignments" />
+    <PreferenceCategory android:title="Appearance">
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="pref_overdue_last"
-        android:layout="@layout/preference"
-        android:title="Put overdue assignments last" />
+        <ListPreference
+            android:defaultValue="Mint"
+            android:entries="@array/color_palettes"
+            android:entryValues="@array/color_palettes"
+            android:key="pref_color_scheme"
+            android:layout="@layout/preference"
+            android:title="Color Scheme" />
 
-    <Preference
-        android:key="NOTIFICATIONS_KEY"
-        android:persistent="false"
-        android:title="Notifications"
-        android:layout="@layout/preference"/>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="pref_time_enabled"
+            android:layout="@layout/preference"
+            android:title="Show time for assignments" />
 
-    <Preference
-        android:layout="@layout/preference"
-        android:title="@string/about">
-        <intent
-            android:targetClass="go.planner.plannergo.AboutActivity"
-            android:targetPackage="go.planner.plannergo" />
-    </Preference>
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="pref_priority_first"
+            android:layout="@layout/preference"
+            android:title="Show important items first" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="pref_overdue_last"
+            android:layout="@layout/preference"
+            android:title="Show overdue items last" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Experience">
+        <Preference
+            android:key="NOTIFICATIONS_KEY"
+            android:layout="@layout/preference"
+            android:persistent="false"
+            android:title="Notifications" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Help &amp; Feedback">
+        <Preference
+            android:layout="@layout/preference"
+            android:title="@string/about">
+            <intent
+                android:targetClass="go.planner.plannergo.AboutActivity"
+                android:targetPackage="go.planner.plannergo" />
+        </Preference>
+    </PreferenceCategory>
 
 </PreferenceScreen>

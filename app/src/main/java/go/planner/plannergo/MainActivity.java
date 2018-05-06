@@ -2,14 +2,16 @@ package go.planner.plannergo;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,14 +30,9 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-//    public static final String MARK_DONE = "app.planner.MARK_DONE";
-
     //Settings data
-//    Bundle settings;
     SharedPreferences sharedPref;
     int currentSortIndex = 0;
-
-    //Stores all views that need to be manipulated for removal when appropriate; unnecessary?
 
     //Quick references
     LinearLayout parent;
@@ -56,29 +53,36 @@ public class MainActivity extends AppCompatActivity {
 
         parent = findViewById(R.id.body);
 
-//        checkFirstRun();
-
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
-        currentSortIndex = SettingsActivity.getInt(
-                sharedPref.getString(SettingsActivity.defaultSort, "date"), this);
-
+        currentSortIndex = 0;
 
         myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
+
+//        checkFirstRun();
 
         FileIO.readAssignmentsFromFile(this);
 
     }
 
+
+    /**
+     * Runs when the activity becomes active (again)
+     */
     @Override
     protected void onResume() {
+
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        ColorPicker.setColors(this);
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setImageResource((ColorPicker.getColorSecondaryText() == Color.BLACK) ?
+                R.drawable.ic_add_black_24dp : R.drawable.ic_add_white_24dp);
+        fab.setBackgroundTintList(ColorStateList.valueOf(ColorPicker.getColorSecondary()));
+        fab.setRippleColor(ColorPicker.getColorSecondary());
         invalidateOptionsMenu();
         setUpNavDrawer();
-
         loadPanels(FileIO.inProgressAssignments, currentSortIndex);
         super.onResume();
     }
@@ -103,15 +107,14 @@ public class MainActivity extends AppCompatActivity {
         // Set the adapter for the list view
         mDrawerList.setAdapter(new DrawerAdapter(this, drawerOptions, drawerIcons));
 
-        final String defaultSort = sharedPref.getString(SettingsActivity.defaultSort, "date");
 
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    loadPanels(FileIO.inProgressAssignments, defaultSort);
+                    loadPanels(FileIO.inProgressAssignments);
                 } else if (position == 1) {
-                    loadPanels(FileIO.completedAssignments, defaultSort);
+                    loadPanels(FileIO.completedAssignments);
                 } else if (position == 2) {
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 }
@@ -123,13 +126,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        ArrayList<Assignment> assignments;
+        ArrayList<NewAssignment> assignments;
         if (getTitle().toString().equals(getResources().getString(R.string.header_completed)))
             assignments = FileIO.completedAssignments;
         else
@@ -160,7 +163,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_sort_by_title:
                 loadPanels(assignments, 3);
                 return true;
-
+//            case R.id.action_open_classes:
+//                startActivity(new Intent(this, ClassActivity.class));
+//                return true;
+//            case R.id.action_open_types:
+//                return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -169,12 +176,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void loadPanels(ArrayList<Assignment> assignments, String sort) {
-        loadPanels(assignments, SettingsActivity.getInt(sort, this));
-
+    void loadPanels(ArrayList<NewAssignment> assignments) {
+        loadPanels(assignments, 0);
     }
 
-    public void loadPanels(Assignment assignment, int sortIndex) {
+    void loadPanels(NewAssignment assignment) {
+        loadPanels(assignment, 0);
+    }
+
+
+    public void loadPanels(NewAssignment assignment, int sortIndex) {
         if (assignment.completed) {
             loadPanels(FileIO.completedAssignments, sortIndex);
         } else {
@@ -182,22 +193,38 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void loadPanels(ArrayList<Assignment> assignments, int sortIndex) {
+    public void loadPanels(ArrayList<NewAssignment> assignments, int sortIndex) {
         NotificationAlarms.setNotificationTimers(this);
 
         currentSortIndex = sortIndex;
         if (assignments == FileIO.inProgressAssignments) {
             setTitle(getResources().getString(R.string.header_in_progress));
-            myToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
+            myToolbar.setBackgroundColor(ColorPicker.getColorPrimary());
+            myToolbar.setTitleTextColor(ColorPicker.getColorPrimaryText());
+            getWindow().setStatusBarColor(ColorPicker.getColorPrimaryAccent());
+            myToolbar.setOverflowIcon(ContextCompat.getDrawable(getApplicationContext(),
+                    (ColorPicker.getColorPrimaryText() == Color.BLACK)
+                            ? R.drawable.ic_more_vert_black_24dp
+                            : R.drawable.ic_more_vert_white_24dp));
+            myToolbar.setNavigationIcon((ColorPicker.getColorPrimaryText() == Color.BLACK)
+                    ? R.drawable.ic_dehaze_black_24dp : R.drawable.ic_dehaze_white_24dp);
         } else if (assignments == FileIO.completedAssignments) {
             setTitle(getResources().getString(R.string.header_completed));
-            myToolbar.setBackgroundColor(getResources().getColor(R.color.p1_completed));
-            getWindow().setStatusBarColor(getResources().getColor(R.color.p1_completed_dark));
+            myToolbar.setBackgroundColor(ColorPicker.getColorCompleted());
+            myToolbar.setTitleTextColor(ColorPicker.getColorCompletedText());
+            getWindow().setStatusBarColor(ColorPicker.getColorCompletedAccent());
+            myToolbar.setOverflowIcon(ContextCompat.getDrawable(getApplicationContext(),
+                    (ColorPicker.getColorCompletedText() == Color.BLACK)
+                            ? R.drawable.ic_more_vert_black_24dp
+                            : R.drawable.ic_more_vert_white_24dp));
+            myToolbar.setNavigationIcon((ColorPicker.getColorCompletedText() == Color.BLACK)
+                    ? R.drawable.ic_dehaze_black_24dp : R.drawable.ic_dehaze_white_24dp);
         } else {
+            //Should never run. "Should."
             setTitle("Gravy");
             myToolbar.setBackgroundColor(Color.YELLOW);
         }
+
         parent.removeAllViews();
 
         //TODO: Add pinned assignments
@@ -252,22 +279,22 @@ public class MainActivity extends AppCompatActivity {
         parent.addView(header);
     }
 
-    void sortViewsByDate(ArrayList<Assignment> assignments) {
+    void sortViewsByDate(ArrayList<NewAssignment> assignments) {
 
         Calendar today = Calendar.getInstance();
         Calendar tomorrow = (Calendar) today.clone();
         tomorrow.add(Calendar.DATE, 1);
 
         Collections.sort(assignments);
-        Assignment previous = assignments.get(0);
+        NewAssignment previous = assignments.get(0);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
-        ArrayList<Assignment> overdue = new ArrayList<>();
+        ArrayList<NewAssignment> overdue = new ArrayList<>();
 
         if (!sharedPref.getBoolean(SettingsActivity.overdueLast, false) || compareCalendars(previous.dueDate, today) >= 0)
             addDateHeading(dateFormat, today, tomorrow, previous.dueDate);
 
-        for (Assignment assignment : assignments) {
+        for (NewAssignment assignment : assignments) {
             if (sharedPref.getBoolean(SettingsActivity.overdueLast, false) && compareCalendars(assignment.dueDate, today) < 0) {
                 overdue.add(assignment);
             } else {
@@ -285,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
         if (sharedPref.getBoolean(SettingsActivity.overdueLast, false)) {
             if (!overdue.isEmpty())
                 addHeading(R.string.due_overdue);
-            for (Assignment assignment : overdue) {
+            for (NewAssignment assignment : overdue) {
                 AssignmentViewWrapper assignmentViewWrapper = new AssignmentViewWrapper(
                         this, assignment, currentSortIndex);
                 parent.addView(assignmentViewWrapper.container);
@@ -306,9 +333,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void sortViewsByClass(ArrayList<Assignment> assignments) {
+    void sortViewsByClass(ArrayList<NewAssignment> assignments) {
         ArrayList<String> headings = new ArrayList<>();
-        for (Assignment assignment : assignments) {
+        for (NewAssignment assignment : assignments) {
             if (!headings.contains(assignment.className)) {
                 headings.add(assignment.className);
             }
@@ -316,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(headings);
         for (String heading : headings) {
             addHeading(heading);
-            for (Assignment assignment : assignments) {
+            for (NewAssignment assignment : assignments) {
                 if (assignment.className.equals(heading)) {
                     AssignmentViewWrapper view = new AssignmentViewWrapper(
                             this, assignment, currentSortIndex);
@@ -326,12 +353,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void sortViewsByType(ArrayList<Assignment> assignments) {
+    void sortViewsByType(ArrayList<NewAssignment> assignments) {
         String[] types = getResources().getStringArray(R.array.assignment_types_array);
         Collections.sort(assignments);
         for (String type : types) {
             addHeading(type);
-            for (Assignment assignment : assignments) {
+            for (NewAssignment assignment : assignments) {
                 if (assignment.type.equals(type)) {
                     AssignmentViewWrapper view = new AssignmentViewWrapper(
                             this, assignment, currentSortIndex);
@@ -341,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    void sortViewsByTitle(ArrayList<Assignment> assignments) {
+    void sortViewsByTitle(ArrayList<NewAssignment> assignments) {
         for (int i = 0; i < assignments.size(); i++) {
             int pos = i;
             for (int j = i; j < assignments.size(); j++) {
@@ -350,14 +377,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            Assignment min = assignments.get(pos);
+            NewAssignment min = assignments.get(pos);
             assignments.set(pos, assignments.get(i));
             assignments.set(i, min);
         }
 
         char currentLetter = 0;
         boolean emptyLetter = true; //helps with checking that blank character is added only once
-        for (Assignment assignment : assignments) {
+        for (NewAssignment assignment : assignments) {
             if (assignment.title.length() == 0) {
                 if (emptyLetter) {
                     addHeading("Untitled");
@@ -385,58 +412,12 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Runs when "+" button is pressed
-     * Creates new oldAssignment dialog
+     * Creates new oldNewAssignment dialog
      *
      * @param view Plus button view
      */
     //TODO: pop-up with extra options, define classes, class colors
     public void createNew(View view) {
-        final NewAssignmentDialog newAssignmentDialog = new NewAssignmentDialog();
-        Bundle args = new Bundle();
-        args.putInt("sortIndex", currentSortIndex);
-        args.putBoolean("timeEnabled", sharedPref.getBoolean(SettingsActivity.timeEnabled, true));
-        newAssignmentDialog.setArguments(args);
-        newAssignmentDialog.show(getFragmentManager(), "NewAssignmentDialog");
+        startActivity(new Intent(MainActivity.this, NewAssignmentActivity.class));
     }
-
-
-    private void checkFirstRun() {
-
-        final String PREFS_NAME = "MyPrefsFile";
-        final String PREF_VERSION_CODE_KEY = "version_code";
-        final int DOESNT_EXIST = -1;
-
-        // Get current version code
-        int currentVersionCode = BuildConfig.VERSION_CODE;
-
-        // Get saved version code
-        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        int savedVersionCode = prefs.getInt(PREF_VERSION_CODE_KEY, DOESNT_EXIST);
-
-        // Check for first run or upgrade
-        if (currentVersionCode == savedVersionCode) {
-
-            // This is just a normal run
-            Log.v("MainActivity", "Regular Read");
-
-            return;
-
-        } else if (savedVersionCode == DOESNT_EXIST) {
-
-            Log.v("MainActivity", "New Install");
-
-            return;
-
-        } else if (currentVersionCode > savedVersionCode) {
-
-            // TODO This is an upgrade
-            Log.v("MainActivity", "Upgrade");
-
-
-        }
-
-        // Update the shared preferences with the current version code
-        prefs.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
-    }
-
 } // end MainActivity class

@@ -105,10 +105,10 @@ public class EditDetailsDialog extends DialogFragment {
                         );
 
                         FileIO.deleteAssignment(activity, oldAssignment);
-                        activity.loadPanels(oldAssignment, sortIndex);
+                        activity.loadPanels((NewAssignment) oldAssignment, sortIndex);
                         FileIO.addAssignment(newAssignment);
                         FileIO.writeAssignmentsToFile(activity);
-                        activity.loadPanels(newAssignment, sortIndex);
+                        activity.loadPanels((NewAssignment) newAssignment, sortIndex);
                         openDetailsDialog(newAssignment, getFragmentManager());
                         EditDetailsDialog.this.dismiss();
                     }

@@ -39,18 +39,100 @@
         <item>Ice Cream</item>
         <item>Monochrome</item>
         <item>Patriotic</item>
+        <item>Mint</item>
     </string-array>
 
     <integer-array name="bright_palette">
         <item>@color/p1_primary</item>
         <item>@color/p1_primary_dark</item>
+        <item>@color/textWhite</item>
         <item>@color/p1_secondary</item>
         <item>@color/p1_secondary_dark</item>
+        <item>@color/textWhite</item>
         <item>@color/p1_completed</item>
         <item>@color/p1_completed_dark</item>
+        <item>@color/textWhite</item>
         <item>@color/p1_assignment</item>
         <item>@color/p1_assignment_dark</item>
+        <item>@color/textBlack</item>
     </integer-array>
+
+    <integer-array name="earthy_palette">
+        <item>@color/p2_primary</item>
+        <item>@color/p2_primary_accent</item>
+        <item>@color/textWhite</item>
+        <item>@color/p2_secondary</item>
+        <item>@color/p2_secondary_accent</item>
+        <item>@color/textWhite</item>
+        <item>@color/p2_completed</item>
+        <item>@color/p2_completed_accent</item>
+        <item>@color/textWhite</item>
+        <item>@color/p2_assignment</item>
+        <item>@color/p2_assignment_accent</item>
+        <item>@color/textWhite</item>
+    </integer-array>
+
+    <integer-array name="ice_cream_palette">
+        <item>@color/p3_primary</item>
+        <item>@color/p3_primary_accent</item>
+        <item>@color/textBlack</item>
+        <item>@color/p3_secondary</item>
+        <item>@color/p3_secondary_accent</item>
+        <item>@color/textBlack</item>
+        <item>@color/p3_completed</item>
+        <item>@color/p3_completed_accent</item>
+        <item>@color/textBlack</item>
+        <item>@color/p3_assignment</item>
+        <item>@color/p3_assignment_accent</item>
+        <item>@color/textBlack</item>
+    </integer-array>
+
+    <integer-array name="monochrome_palette">
+        <item>@color/p4_primary</item>
+        <item>@color/p4_primary_accent</item>
+        <item>@color/textWhite</item>
+        <item>@color/p4_secondary</item>
+        <item>@color/p4_secondary_accent</item>
+        <item>@color/textWhite</item>
+        <item>@color/p4_completed</item>
+        <item>@color/p4_completed_accent</item>
+        <item>@color/textWhite</item>
+        <item>@color/p4_assignment</item>
+        <item>@color/p4_assignment_accent</item>
+        <item>@color/textWhite</item>
+    </integer-array>
+
+    <integer-array name="patriotic_palette">
+        <item>@color/p5_primary</item>
+        <item>@color/p5_primary_accent</item>
+        <item>@color/textWhite</item>
+        <item>@color/p5_secondary</item>
+        <item>@color/p5_secondary_accent</item>
+        <item>@color/textWhite</item>
+        <item>@color/p5_completed</item>
+        <item>@color/p5_completed_accent</item>
+        <item>@color/textWhite</item>
+        <item>@color/p5_assignment</item>
+        <item>@color/p5_assignment_accent</item>
+        <item>@color/textBlack</item>
+    </integer-array>
+
+    <integer-array name="mint_palette">
+        <item>@color/p6_primary</item>
+        <item>@color/p6_primary_accent</item>
+        <item>@color/textWhite</item>
+        <item>@color/p6_secondary</item>
+        <item>@color/p6_secondary_accent</item>
+        <item>@color/textBlack</item>
+        <item>@color/p6_completed</item>
+        <item>@color/p6_completed_accent</item>
+        <item>@color/textWhite</item>
+        <item>@color/p6_assignment</item>
+        <item>@color/p6_assignment_accent</item>
+        <item>@color/textBlack</item>
+    </integer-array>
+
+
 
     
 </resources>

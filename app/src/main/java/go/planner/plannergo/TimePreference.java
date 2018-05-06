@@ -32,6 +32,7 @@ public class TimePreference extends DialogPreference {
         calendar = new GregorianCalendar();
     }
 
+
     @Override
     protected View onCreateDialogView() {
         picker = new TimePicker(getContext());
@@ -41,6 +42,7 @@ public class TimePreference extends DialogPreference {
     @Override
     protected void onBindDialogView(View v) {
         super.onBindDialogView(v);
+
         picker.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
         picker.setCurrentMinute(calendar.get(Calendar.MINUTE));
     }

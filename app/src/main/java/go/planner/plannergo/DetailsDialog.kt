@@ -64,7 +64,7 @@ class DetailsDialog : DialogFragment() {
             val manager = fragmentManager
 
             FileIO.deleteAssignment(activity, assignment)
-            activity.loadPanels(assignment, sortIndex)
+            activity.loadPanels(assignment as NewAssignment, sortIndex)
 
             createSnackBarPopup(activity, manager)
 
@@ -130,7 +130,7 @@ class DetailsDialog : DialogFragment() {
         )
         waitDontDeleteMeYet.setAction(R.string.undo) {
             FileIO.addAssignment(assignment)
-            activity.loadPanels(assignment, sortIndex)
+            activity.loadPanels(assignment as NewAssignment, sortIndex)
             val detailsDialog = DetailsDialog()
             detailsDialog.arguments = arguments
             detailsDialog.show(manager, "DetailsDialog")

@@ -29,6 +29,7 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+
         <activity
             android:name=".AboutActivity"
             android:label="About"
@@ -54,19 +55,25 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".NewAssignmentActivity"
-            android:label="@string/new_a"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity android:name=".AssignmentDetailsActivity" />
+                <activity
+                    android:name=".NewAssignmentActivity"
+                    android:label="@string/new_a"
+                    android:parentActivityName=".MainActivity">
+                    <meta-data
+                        android:name="android.support.PARENT_ACTIVITY"
+                        android:value=".MainActivity" />
+                </activity>
+
+        <activity android:name=".AssignmentDetailsActivity"
+            android:parentActivityName=".MainActivity"
+            android:title="Details Activity"
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity"
             android:title="@string/settings" />
+        <activity android:name=".ClassActivity"
+            android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>
