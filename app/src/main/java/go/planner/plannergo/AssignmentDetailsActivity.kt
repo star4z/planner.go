@@ -158,7 +158,6 @@ class AssignmentDetailsActivity : AssignmentActivity() {
         val mType = hw_type.selectedItem.toString()
         val mPrio = if (is_priority.isChecked) 1 else 0
 
-        //TODO: is not saving Dates properly
         val notification1 = if (enable_custom_notification.isChecked) assignment.notificationDate1 else null
         val notification2 = if (extra_notification.isChecked) assignment.notificationDate2 else null
         Log.v("AssignmentDetails", "notificationDate1=$notification1")

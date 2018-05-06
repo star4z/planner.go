@@ -40,7 +40,7 @@ public class NewAssignment extends Assignment {
     /**
      * NOT a copy constructor!
      * For maintaining files during update
-     * @param assignment
+     * @param assignment old Assignment
      */
     NewAssignment(Assignment assignment) {
         this(assignment, 0,  null, null, Calendar.getInstance().getTimeInMillis());
@@ -61,22 +61,6 @@ public class NewAssignment extends Assignment {
         this.notificationDate2 = notificationDate2;
         this.uniqueID = uniqueID;
     }
-
-    /**
-     * Bundle lookup method replaced by UID lookup
-     */
-//    NewAssignment(Bundle bundle) {
-//        super(bundle);
-//        dueDate.setTimeInMillis(bundle.getLong("dueDate", 0));
-//        priority = bundle.getInt("priority", 0);
-//        long nDate1 = bundle.getLong("notificationDate1", 0);
-//        notificationDate1 = Calendar.getInstance();
-//        notificationDate1.setTimeInMillis(nDate1);
-//        long nDate2 = bundle.getLong("notificationDate2", 0);
-//        notificationDate2 = Calendar.getInstance();
-//        notificationDate2.setTimeInMillis(nDate2);
-//        uniqueID = bundle.getLong("uniqueID", Calendar.getInstance().getTimeInMillis());
-//    }
 
     @Override
     protected NewAssignment clone() {

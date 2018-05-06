@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout = findViewById(R.id.drawer_layout);
         ListView mDrawerList = findViewById(R.id.drawer_list);
 
-        // Set the adapter for the list view
         mDrawerList.setAdapter(new DrawerAdapter(this, drawerOptions, drawerIcons));
 
 
@@ -227,7 +226,6 @@ public class MainActivity extends AppCompatActivity {
 
         parent.removeAllViews();
 
-        //TODO: Add pinned assignments
         if (assignments.isEmpty()) {
             if (assignments == FileIO.completedAssignments) {
                 addHeading(R.string.no_completed_assignments);
@@ -281,40 +279,39 @@ public class MainActivity extends AppCompatActivity {
 
     void sortViewsByDate(ArrayList<NewAssignment> assignments) {
 
-        ArrayList<NewAssignment> priorityAssignments = new ArrayList<>();
-        for (NewAssignment assignment : assignments) {
-            if (assignment.priority > 0) {
-                priorityAssignments.add(assignment);
-            }
-        }
-        if (!priorityAssignments.isEmpty()) {
-            addHeading("Priority");
-            Collections.sort(priorityAssignments);
-            for (NewAssignment assignment : priorityAssignments)
-                parent.addView(new AssignmentViewWrapper(
-                        this, assignment, currentSortIndex).container);
-
-        }
-
 
         Calendar today = Calendar.getInstance();
         Calendar tomorrow = (Calendar) today.clone();
         tomorrow.add(Calendar.DATE, 1);
 
-        Collections.sort(assignments);
-        NewAssignment previous = assignments.get(0);
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
-        ArrayList<NewAssignment> overdue = new ArrayList<>();
-
-        if (!sharedPref.getBoolean(SettingsActivity.overdueLast, false) || compareCalendars(previous.dueDate, today) >= 0)
-            addDateHeading(dateFormat, today, tomorrow, previous.dueDate);
+        ArrayList<NewAssignment> priorityAssignments = new ArrayList<>();
+        ArrayList<NewAssignment> overdueAssignments = new ArrayList<>();
+        ArrayList<NewAssignment> everythingElse = new ArrayList<>();
 
         for (NewAssignment assignment : assignments) {
-            if (sharedPref.getBoolean(SettingsActivity.overdueLast, false) && compareCalendars(assignment.dueDate, today) < 0) {
-                overdue.add(assignment);
+            if (assignment.priority > 0) {
+                priorityAssignments.add(assignment);
+            } else if ((sharedPref.getBoolean(SettingsActivity.overdueLast, false)
+                    && compareCalendars(assignment.dueDate, today) < 0)) {
+                overdueAssignments.add(assignment);
             } else {
-                if (compareCalendars(assignment.dueDate, previous.dueDate) > 0)
+                everythingElse.add(assignment);
+            }
+        }
+        if (!priorityAssignments.isEmpty()) {
+            addHeading("Priority");
+            Collections.sort(priorityAssignments);
+            addAll(priorityAssignments);
+        }
+
+        if (!everythingElse.isEmpty()) {
+            Collections.sort(everythingElse);
+            NewAssignment previous = null;//assignments.get(0);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
+
+            for (NewAssignment assignment : everythingElse) {
+                if (previous == null || compareCalendars(assignment.dueDate, previous.dueDate) > 0)
                     addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
 
                 previous = assignment;
@@ -322,19 +319,21 @@ public class MainActivity extends AppCompatActivity {
                 AssignmentViewWrapper assignmentViewWrapper = new AssignmentViewWrapper(
                         this, assignment, currentSortIndex);
                 parent.addView(assignmentViewWrapper.container);
+
             }
         }
 
-        if (sharedPref.getBoolean(SettingsActivity.overdueLast, false)) {
-            if (!overdue.isEmpty())
-                addHeading(R.string.due_overdue);
-            for (NewAssignment assignment : overdue) {
-                AssignmentViewWrapper assignmentViewWrapper = new AssignmentViewWrapper(
-                        this, assignment, currentSortIndex);
-                parent.addView(assignmentViewWrapper.container);
-            }
+        if (!overdueAssignments.isEmpty()) {
+            addHeading("Overdue");
+            Collections.sort(overdueAssignments);
+            addAll(overdueAssignments);
         }
+    }
 
+    void addAll(ArrayList<NewAssignment> assignments) {
+        for (NewAssignment assignment : assignments) {
+            parent.addView(new AssignmentViewWrapper(this, assignment, currentSortIndex).container);
+        }
     }
 
     void addDateHeading(SimpleDateFormat dateFormat, Calendar today, Calendar tomorrow, Calendar date) {

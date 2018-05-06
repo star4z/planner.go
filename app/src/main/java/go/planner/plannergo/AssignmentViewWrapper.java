@@ -101,7 +101,6 @@ class AssignmentViewWrapper implements Comparable<Object> {
 
         @Override
         public void onClick(View v) {
-//            Bundle args = assignment.generateBundle();
             Bundle args = new Bundle();
             args.putLong("uniqueID", assignment.uniqueID);
             args.putInt("sortIndex", sortIndex);
@@ -109,11 +108,6 @@ class AssignmentViewWrapper implements Comparable<Object> {
             Intent intent = new Intent(activity, AssignmentDetailsActivity.class);
             intent.putExtras(args);
             activity.startActivityForResult(intent,1);
-//            DetailsDialog detailsDialog = new DetailsDialog();
-//            detailsDialog.setArguments(args);
-//            detailsDialog.show(f, "DetailsDialog");
-
-
         }
     }
 
