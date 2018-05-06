@@ -281,6 +281,22 @@ public class MainActivity extends AppCompatActivity {
 
     void sortViewsByDate(ArrayList<NewAssignment> assignments) {
 
+        ArrayList<NewAssignment> priorityAssignments = new ArrayList<>();
+        for (NewAssignment assignment : assignments) {
+            if (assignment.priority > 0) {
+                priorityAssignments.add(assignment);
+            }
+        }
+        if (!priorityAssignments.isEmpty()) {
+            addHeading("Priority");
+            Collections.sort(priorityAssignments);
+            for (NewAssignment assignment : priorityAssignments)
+                parent.addView(new AssignmentViewWrapper(
+                        this, assignment, currentSortIndex).container);
+
+        }
+
+
         Calendar today = Calendar.getInstance();
         Calendar tomorrow = (Calendar) today.clone();
         tomorrow.add(Calendar.DATE, 1);
@@ -334,6 +350,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void sortViewsByClass(ArrayList<NewAssignment> assignments) {
+
         ArrayList<String> headings = new ArrayList<>();
         for (NewAssignment assignment : assignments) {
             if (!headings.contains(assignment.className)) {
@@ -354,6 +371,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void sortViewsByType(ArrayList<NewAssignment> assignments) {
+
         String[] types = getResources().getStringArray(R.array.assignment_types_array);
         Collections.sort(assignments);
         for (String type : types) {
