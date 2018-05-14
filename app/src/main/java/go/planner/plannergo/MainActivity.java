@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
         invalidateOptionsMenu();
         setUpNavDrawer();
 
+        FileIO.readAssignmentsFromFile(this);
         loadPanels(FileIO.inProgressAssignments, currentSortIndex);
         super.onResume();
     }

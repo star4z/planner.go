@@ -43,6 +43,7 @@ public class FileIO {
      * @param context used to access files
      */
     static void readAssignmentsFromFile(Context context) {
+        Log.v("FileIO","reading Assignments");
         clearAssignments();
         try {
             readAssignments(context);

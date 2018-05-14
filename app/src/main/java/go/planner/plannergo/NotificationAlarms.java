@@ -27,16 +27,17 @@ class NotificationAlarms {
             return;
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+        assert alarmManager != null;
 
-        for (Assignment assignment : FileIO.inProgressAssignments) {
+        for (NewAssignment assignment : FileIO.inProgressAssignments) {
             setNotificationTimer(context, assignment, alarmManager, prefs);
         }
 
     }
 
-    static void setNotificationTimer(Context context, Assignment assignment, AlarmManager alarmManager, SharedPreferences prefs) {
+    private static void setNotificationTimer(Context context, NewAssignment assignment, AlarmManager alarmManager, SharedPreferences prefs) {
         PendingIntent pendingIntent = AlarmBroadcastReceiver.createPendingIntent(
-                assignment, assignment.hashCode(), prefs.getBoolean("timeEnabled", true), context);
+                assignment, context);
         alarmManager.cancel(pendingIntent);
 
         //"normal" notification setting
@@ -62,7 +63,7 @@ class NotificationAlarms {
      * @param assignment assignment to retrieve date from
      * @return time for alarm to go off, in milliseconds
      */
-    static long alarmTimeFromAssignment(Assignment assignment, SharedPreferences prefs, boolean extraAssignment) {
+    private static long alarmTimeFromAssignment(NewAssignment assignment, SharedPreferences prefs, boolean extraAssignment) {
         int daysBeforeDueDate;
         long notifTime;
         if (extraAssignment) {

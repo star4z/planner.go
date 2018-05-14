@@ -7,23 +7,28 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Action;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 
 import static android.os.Build.VERSION_CODES.O;
 
 /**
  * Receives alarm intent when notification is supposed to be created, and creates the notification.
+ * Dismisses notification when "Done" is pressed on notification.
+ *
+ * There are some unregulated long to int casts, which may produce incorrect calls in unlikely cases.
+ *
  * Created by Ben Phillips on 2/16/2018.
  */
 
@@ -32,57 +37,45 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     public static final String ACTION_ALARM = "planner.app.Alarm1";
     public static final String MARK_DONE = "planner.app.MarkDone";
 
+    /**
+     * Handles creation and dismissal of notifications
+     *
+     * @param context needed for system calls
+     * @param intent contains data for action to be taken and the assignment
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.v("AlarmBroadcastReceiver", "alarm was received");
         if (ACTION_ALARM.equals(intent.getAction())) {
-            Assignment assignment = new Assignment(intent.getExtras());
-            int uniqueID = intent.getIntExtra("uniqueID", 1);
-            boolean timeEnabled = intent.getBooleanExtra("timeEnabled", false);
-            Calendar dueDate = getCalendar(intent);
+            NewAssignment assignment = FileIO.getAssignment(intent.getLongExtra("id", -1L));
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+            boolean timeEnabled = preferences.getBoolean("pref_time_enabled", true);
 
-            createNotification(assignment, uniqueID, dueDate, timeEnabled, context);
+            createNotification(assignment, timeEnabled, context);
 
         } else if (MARK_DONE.equals(intent.getAction())) {
-            Assignment doneAssignment = new Assignment(intent.getExtras());
+            NewAssignment doneAssignment = FileIO.getAssignment(intent.getLongExtra("id", -1L));
             Log.v("AlarmBR","doneAssignment=" + doneAssignment);
 
             //cancel notification
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(
                     Context.NOTIFICATION_SERVICE);
             assert notificationManager != null;
-            notificationManager.cancel(doneAssignment.hashCode());
+            notificationManager.cancel((int) doneAssignment.uniqueID);
 
-//            ArrayList<Assignment> assignments = FileIO.readAssignmentsFromFile(context);
             FileIO.readAssignmentsFromFile(context);
-            for (Assignment nextAssignment : FileIO.inProgressAssignments) {
-                if (doneAssignment.equals(nextAssignment)) {
-                    nextAssignment.completed = true;
-                    break;
-                }
-            }
-
+            doneAssignment.completed = true;
+            FileIO.replaceAssignment(context, doneAssignment);
             FileIO.writeAssignmentsToFile(context);
         }
     }
 
-    Calendar getCalendar(Intent intent) {
-        Calendar dueDate = Calendar.getInstance();
-        int year = intent.getIntExtra("year", 2000);
-        int month = intent.getIntExtra("month", 0);
-        int date = intent.getIntExtra("date", 0);
-        int hour = intent.getIntExtra("hour", 0);
-        int minute = intent.getIntExtra("minute", 0);
-        Log.v("ABReceiver", date + " " + month + " " + year + ", " + hour + ":" + minute);
-        dueDate.set(year, month, date, hour, minute);
-        return dueDate;
-    }
 
-    void createNotification(Assignment assignment, int uniqueID, Calendar dueDate, boolean timeEnabled, Context context) {
+    void createNotification(NewAssignment assignment, boolean timeEnabled, Context context) {
         SimpleDateFormat dateFormat = timeEnabled ?
                 new SimpleDateFormat(" - MMM dd hh:mm", Locale.US) :
                 new SimpleDateFormat(" - MMM dd", Locale.US);
-        String dateString = dateFormat.format(dueDate.getTime());
+        String dateString = dateFormat.format(assignment.dueDate.getTime());
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(
                 Context.NOTIFICATION_SERVICE);
@@ -94,7 +87,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
 
         Intent doneIntent = new Intent(context, AlarmBroadcastReceiver.class);
-        doneIntent.putExtras(assignment.generateBundle());
+        doneIntent.putExtra("id", assignment.uniqueID);
         doneIntent.setAction(AlarmBroadcastReceiver.MARK_DONE);
 
         long[] vibrationPattern = new long[]{100, 100, 200, 100};
@@ -141,28 +134,23 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                         build();
 
         assert notificationManager != null;
-        notificationManager.notify(uniqueID, notification);
+        notificationManager.notify(((int) assignment.uniqueID), notification);
 
     }
 
 
-    public static PendingIntent createPendingIntent(Assignment assignment, int i, boolean timeEnabled, Context context) {
+    /**
+     * Returns an intent which will trigger the notification
+     *
+     * @param assignment Assignment to display
+     * @param context necessary for system calls
+     * @return new PendingIntent with assignment id
+     */
+    public static PendingIntent createPendingIntent(NewAssignment assignment,  Context context) {
         Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
-        intent.putExtras(assignment.generateBundle());
-        intent.putExtra("hour", assignment.dueDate.get(Calendar.HOUR_OF_DAY));
-        intent.putExtra("minute", assignment.dueDate.get(Calendar.MINUTE));
-        intent.putExtra("uniqueID", assignment.hashCode());
-        intent.putExtra("timeEnabled", timeEnabled);
+        intent.putExtra("id", assignment.uniqueID);
         intent.setAction(AlarmBroadcastReceiver.ACTION_ALARM);
 
-        return PendingIntent.getBroadcast(context, i, intent, 0);
-    }
-
-    class NotificationBroadCastReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-        }
+        return PendingIntent.getBroadcast(context, (int) assignment.uniqueID, intent, 0);
     }
 }
