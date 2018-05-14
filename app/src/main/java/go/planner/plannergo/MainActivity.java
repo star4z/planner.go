@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -61,8 +62,6 @@ public class MainActivity extends AppCompatActivity {
         myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
 
-//        checkFirstRun();
-
         FileIO.readAssignmentsFromFile(this);
 
     }
@@ -83,8 +82,23 @@ public class MainActivity extends AppCompatActivity {
         fab.setRippleColor(ColorPicker.getColorSecondary());
         invalidateOptionsMenu();
         setUpNavDrawer();
+
         loadPanels(FileIO.inProgressAssignments, currentSortIndex);
         super.onResume();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Log.v("MainActivity", "NewIntent");
+        if (intent.getExtras() != null){
+            long idToRemove = intent.getExtras().getLong("remove_id", -1);
+            Log.v("MainActivity", "idToRemove=" + idToRemove);
+            if (idToRemove != -1){
+                FileIO.deleteAssignment(this, FileIO.getAssignment(idToRemove));
+            }
+        }
+
+        super.onNewIntent(intent);
     }
 
     //GUI setup methods

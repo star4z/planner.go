@@ -35,7 +35,7 @@ class DetailsDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
 
-        assignment = Assignment(arguments)
+        assignment = NewAssignment(Assignment(arguments))
         sortIndex = arguments.getInt("sortIndex")
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
@@ -63,7 +63,7 @@ class DetailsDialog : DialogFragment() {
             val activity = activity as MainActivity
             val manager = fragmentManager
 
-            FileIO.deleteAssignment(activity, assignment)
+            FileIO.deleteAssignment(activity, assignment as NewAssignment)
             activity.loadPanels(assignment as NewAssignment, sortIndex)
 
             createSnackBarPopup(activity, manager)

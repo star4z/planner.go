@@ -2,8 +2,10 @@ package go.planner.plannergo;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.View;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +26,7 @@ public class FileIO {
 
     final static ArrayList<NewAssignment> inProgressAssignments = new ArrayList<>();
     final static ArrayList<NewAssignment> completedAssignments = new ArrayList<>();
+    final static ArrayList<NewAssignment> deletedAssignments = new ArrayList<>();
 
     final static ArrayList<String> classNames = new ArrayList<>();
     final static ArrayList<String> types = new ArrayList<>();
@@ -33,6 +36,12 @@ public class FileIO {
     private static final String CLASSES_FILE_NAME = "planner.assignments.classes";
 
 
+    /**
+     * Safe wrapper method for readAssignments(Context)
+     * This is the proper method to call from other classes.
+
+     * @param context used to access files
+     */
     static void readAssignmentsFromFile(Context context) {
         clearAssignments();
         try {
@@ -43,6 +52,12 @@ public class FileIO {
         }
     }
 
+    /**
+     * Safe wrapper method for writeAssignment(Context)
+     * This is the proper method to call from other classes.
+     *
+     * @param context used to access files
+     */
     static void writeAssignmentsToFile(Context context) {
         try {
             writeTypes(context);
@@ -52,6 +67,13 @@ public class FileIO {
         }
     }
 
+    /**
+     * Writes all assignments to file, plus a fileVersion and a length.
+     * Uses writeAssignment(NewAssignment, ObjectOutputStream)
+     *
+     * @param context used to access files directory
+     * @throws IOException caused by file writing problems
+     */
     private static void writeAssignments(Context context) throws IOException {
         File file = new File(context.getFilesDir(), NEW_ASSIGNMENTS_FILE_NAME);
         if (file.createNewFile())
@@ -62,12 +84,13 @@ public class FileIO {
         oos.writeInt(totalThings);
         double fileVersion = 2;
         oos.writeDouble(fileVersion);
-        for (Assignment assignment : inProgressAssignments) {
-            writeAssignment((NewAssignment) assignment, oos);
+        for (NewAssignment assignment : inProgressAssignments) {
+            writeAssignment(assignment, oos);
         }
-        for (Assignment assignment : completedAssignments) {
-            writeAssignment((NewAssignment) assignment, oos);
+        for (NewAssignment assignment : completedAssignments) {
+            writeAssignment(assignment, oos);
         }
+
         //App was failing read on the last entered entry,
         // so this code circumvents rather than solves the problem by writing extra data.
         // (totalThings works correctly, so it doesn't even fail internally.)
@@ -76,6 +99,12 @@ public class FileIO {
         Log.v("FileIO", "File written");
     }
 
+    /**
+     * Writes an individual assignment to file
+     * @param assignment Assignment to write
+     * @param oos Stream to write to
+     * @throws IOException
+     */
     private static void writeAssignment(NewAssignment assignment, ObjectOutputStream oos) throws IOException {
         oos.writeObject(assignment.title);
         oos.writeObject(assignment.className);
@@ -114,8 +143,8 @@ public class FileIO {
      * @param fileVersion if version is not current Version, skips some lines and fills them in with
      *                    default values
      * @return NewAssignment from file
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @throws IOException ois finishes
+     * @throws ClassNotFoundException was not able to find object of the given type
      */
     private static NewAssignment readAssignment(ObjectInputStream ois, double fileVersion) throws IOException, ClassNotFoundException {
 
@@ -144,7 +173,7 @@ public class FileIO {
      * Finds the assignment with the correct ID number, and if it exists, returns it.
      * If it does not exist, returns a new instance of NewAssignment.
      *
-     * @param uniqueID
+     * @param uniqueID ID uniquely identifies assignment based on internal
      * @return
      */
     public static NewAssignment getAssignment(long uniqueID) {
@@ -181,8 +210,9 @@ public class FileIO {
         }
     }
 
-    public static void deleteAssignment(Context context, Assignment assignment) {
 
+    @Deprecated
+    public static void deleteAssignment(Context context, Assignment assignment) {
         if (assignment.completed)
             FileIO.completedAssignments.remove(assignment);
         else
@@ -190,40 +220,41 @@ public class FileIO {
         writeAssignmentsToFile(context);
     }
 
-    /*public static void deleteAssignment(final Activity context, final NewAssignment assignment){
+
+    /**
+     * Removes assignment from files and displays a snackbar with an undo option.
+     * If the undo option is selected, it restores the item and displays the item details.
+     *
+     * @param context
+     * @param assignment
+     */
+    public static void deleteAssignment(final Activity context, final NewAssignment assignment) {
+        if (assignment.completed)
+            FileIO.completedAssignments.remove(assignment);
+        else
+            FileIO.inProgressAssignments.remove(assignment);
+        writeAssignmentsToFile(context);
         final Snackbar snackbar = createSnackBarPopup(context, assignment);
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, AssignmentDetailsActivity.class);
-                Bundle args = new Bundle();
-                args.putLong("uniqueID", assignment.uniqueID);
-                intent.putExtras(args);
-                context.startActivity(intent);
-            }
-        });
-        snackbar.addCallback(new Snackbar.Callback(){
-            @Override
-            public void onDismissed(Snackbar transientBottomBar, int event) {
-                if (assignment.completed)
-                    FileIO.completedAssignments.remove(assignment);
-                else
-                    FileIO.inProgressAssignments.remove(assignment);
+                addAssignment(assignment);
                 writeAssignmentsToFile(context);
-                super.onDismissed(transientBottomBar, event);
+                Intent intent = new Intent(context, AssignmentDetailsActivity.class);
+                intent.putExtra("uniqueID", assignment.uniqueID);
+                context.startActivity(intent);
             }
         });
         snackbar.show();
 
 
-    }*/
-
-    private static Snackbar createSnackBarPopup(Activity c, NewAssignment n){
-        String title = (n.title.equals("")) ? "Untitled assignment" : "'" + n.title + "'";
-        return Snackbar.make(c.findViewById(R.id.coordinator), //DOES NOT WORK!!! //TODO: FIX!
-                "Deleted " + title + ".", Snackbar.LENGTH_LONG);
     }
 
+    private static Snackbar createSnackBarPopup(Activity c, NewAssignment n) {
+        String title = (n.title.equals("")) ? "Untitled assignment" : "'" + n.title + "'";
+        return Snackbar.make(c.findViewById(R.id.coordinator),
+                "Deleted " + title + ".", Snackbar.LENGTH_LONG);
+    }
 
 
     public static void replaceAssignment(Context context, NewAssignment newAssignment) {
@@ -288,4 +319,5 @@ public class FileIO {
         }
         Log.v("FileIO", "readClasses()");
     }
+
 }

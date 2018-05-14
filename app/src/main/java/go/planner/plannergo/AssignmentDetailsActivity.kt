@@ -1,5 +1,6 @@
 package go.planner.plannergo
 
+import android.content.Intent
 import android.graphics.Color
 import android.support.v4.app.NavUtils
 import android.text.SpannableStringBuilder
@@ -106,8 +107,13 @@ class AssignmentDetailsActivity : AssignmentActivity() {
                 return true
             }
             R.id.delete -> {
-                FileIO.deleteAssignment(this, assignment)
-                NavUtils.navigateUpFromSameTask(this)
+                Log.v("AssignmentDetails", "Delete assignment")
+                val intent = Intent(this, MainActivity::class.java).apply {
+                    putExtra("remove_id", assignment.uniqueID)
+                    addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                }
+                finish()
+                startActivity(intent)
                 return true
             }
             android.R.id.home -> {
