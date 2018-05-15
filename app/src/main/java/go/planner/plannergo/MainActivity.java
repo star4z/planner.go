@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     //Settings data
     SharedPreferences sharedPref;
     int currentSortIndex = 0;
+    boolean currentScreenIsInProgress = true;
 
     //Quick references
     LinearLayout parent;
@@ -56,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-
-        currentSortIndex = 0;
 
         myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         setUpNavDrawer();
 
         FileIO.readAssignmentsFromFile(this);
-        loadPanels(FileIO.inProgressAssignments, currentSortIndex);
+        loadPanels((currentScreenIsInProgress) ? FileIO.inProgressAssignments : FileIO.completedAssignments, currentSortIndex);
         super.onResume();
     }
 
@@ -105,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
     //GUI setup methods
     private void setUpNavDrawer() {
         String[] drawerOptions = getResources().getStringArray(R.array.drawer_options_array);
-//        drawerIcons = getResources().getIntArray(R.array.drawer_icons_array);
         TypedArray tArray = getResources().obtainTypedArray(R.array.drawer_icons_array);
         int count = tArray.length();
         int[] drawerIcons = new int[count];
@@ -125,12 +123,21 @@ public class MainActivity extends AppCompatActivity {
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    loadPanels(FileIO.inProgressAssignments);
-                } else if (position == 1) {
-                    loadPanels(FileIO.completedAssignments);
-                } else if (position == 2) {
-                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                switch (position) {
+                    case 0:
+                        loadPanels(FileIO.inProgressAssignments);
+                        currentScreenIsInProgress = true;
+                        break;
+                    case 1:
+                        loadPanels(FileIO.completedAssignments);
+                        currentScreenIsInProgress = false;
+                        break;
+                    case 2:
+                        startActivity(new Intent(MainActivity.this, TrashActivity.class));
+                        break;
+                    case 3:
+                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                        break;
                 }
                 mDrawerLayout.closeDrawers();
             }

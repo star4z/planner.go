@@ -15,6 +15,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Handles file reading and writing and stores the values
@@ -32,6 +33,7 @@ public class FileIO {
     final static ArrayList<String> types = new ArrayList<>();
 
     private static final String NEW_ASSIGNMENTS_FILE_NAME = "planner.assignments.all";
+    private static final String DELETED_ASSIGNMENTS_FILE_NAME = "planner.assignments.deleted";
     private static final String TYPES_FILE_NAME = "planner.assignments.types";
     private static final String CLASSES_FILE_NAME = "planner.assignments.classes";
 
@@ -39,11 +41,11 @@ public class FileIO {
     /**
      * Safe wrapper method for readAssignments(Context)
      * This is the proper method to call from other classes.
-
+     *
      * @param context used to access files
      */
     static void readAssignmentsFromFile(Context context) {
-        Log.v("FileIO","reading Assignments");
+        Log.v("FileIO", "reading Assignments");
         clearAssignments();
         try {
             readAssignments(context);
@@ -51,6 +53,7 @@ public class FileIO {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+        readDeletedAssignments(context);
     }
 
     /**
@@ -66,6 +69,7 @@ public class FileIO {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        writeDeletedAssignments(context);
     }
 
     /**
@@ -102,9 +106,10 @@ public class FileIO {
 
     /**
      * Writes an individual assignment to file
+     *
      * @param assignment Assignment to write
-     * @param oos Stream to write to
-     * @throws IOException
+     * @param oos        Stream to write to
+     * @throws IOException when file error occurs
      */
     private static void writeAssignment(NewAssignment assignment, ObjectOutputStream oos) throws IOException {
         oos.writeObject(assignment.title);
@@ -144,7 +149,7 @@ public class FileIO {
      * @param fileVersion if version is not current Version, skips some lines and fills them in with
      *                    default values
      * @return NewAssignment from file
-     * @throws IOException ois finishes
+     * @throws IOException            ois finishes
      * @throws ClassNotFoundException was not able to find object of the given type
      */
     private static NewAssignment readAssignment(ObjectInputStream ois, double fileVersion) throws IOException, ClassNotFoundException {
@@ -230,16 +235,21 @@ public class FileIO {
      * @param assignment
      */
     public static void deleteAssignment(final Activity context, final NewAssignment assignment) {
-        if (assignment.completed)
+        if (assignment.completed) {
             FileIO.completedAssignments.remove(assignment);
-        else
+        } else {
             FileIO.inProgressAssignments.remove(assignment);
+        }
+        final NewAssignment alt = assignment.clone();
+        alt.uniqueID = Calendar.getInstance().getTimeInMillis();
+        deletedAssignments.add(alt);
         writeAssignmentsToFile(context);
         final Snackbar snackbar = createSnackBarPopup(context, assignment);
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addAssignment(assignment);
+                deletedAssignments.remove(alt);
                 writeAssignmentsToFile(context);
                 Intent intent = new Intent(context, AssignmentDetailsActivity.class);
                 intent.putExtra("uniqueID", assignment.uniqueID);
@@ -247,14 +257,84 @@ public class FileIO {
             }
         });
         snackbar.show();
-
-
     }
 
     private static Snackbar createSnackBarPopup(Activity c, NewAssignment n) {
         String title = (n.title.equals("")) ? "Untitled assignment" : "'" + n.title + "'";
         return Snackbar.make(c.findViewById(R.id.coordinator),
                 "Deleted " + title + ".", Snackbar.LENGTH_LONG);
+    }
+
+    /**
+     * Calls handled by readAssignmentsFromFile()
+     *
+     * @param context for system access
+     */
+    private static void readDeletedAssignments(Context context) {
+        File file = new File(context.getFilesDir(), DELETED_ASSIGNMENTS_FILE_NAME);
+
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            int total = ois.readInt();
+            double fileVersion = ois.readDouble();
+            for (int i = 0; i < total; i++) {
+                deletedAssignments.add(readAssignment(ois, fileVersion));
+            }
+            Log.v("FileIO", "readDeletedAssignments()");
+        } catch (IOException | ClassNotFoundException e1) {
+            e1.printStackTrace();
+        }
+    }
+
+    /**
+     * Calls handled by writeAssignmentsToFile()
+     *
+     * @param c for system access
+     */
+    private static void writeDeletedAssignments(Context c) {
+        try {
+            File file = new File(c.getFilesDir(), DELETED_ASSIGNMENTS_FILE_NAME);
+            if (file.createNewFile())
+                Log.v("FileIO", "writeDeletedAssignments() new file created");
+            FileOutputStream fos = new FileOutputStream(file);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeInt(deletedAssignments.size());
+            double fileVersion = 2;
+            oos.writeDouble(fileVersion);
+            Calendar today = Calendar.getInstance();
+            Calendar aDate = new GregorianCalendar(); //assignment creation date
+            for (NewAssignment assignment : deletedAssignments) {
+                aDate.setTimeInMillis(assignment.uniqueID);
+                switch (today.get(Calendar.MONTH) - aDate.get(Calendar.MONTH)) {
+                    case 0:
+                        writeAssignment(assignment, oos);
+                        break;
+                    case 1:
+                        if (today.get(Calendar.DATE) + (aDate.getActualMaximum(Calendar.DATE) - aDate.get(Calendar.DATE)) <= 30)
+                            writeAssignment(assignment, oos);
+                        break;
+                    case 2:
+                        int a = today.get(Calendar.DATE) + (aDate.getActualMaximum(Calendar.DATE) - aDate.get(Calendar.DATE));
+                        aDate.add(Calendar.MONTH, 1);
+                        a += aDate.getActualMaximum(Calendar.DATE);
+                        if (a  <= 30){
+                            writeAssignment(assignment, oos);
+                        }
+                }
+            }
+
+            //App was failing read on the last entered entry,
+            // so this code circumvents rather than solves the problem by writing extra data.
+            // (totalThings works correctly, so it doesn't even fail internally.)
+            // (Copied from writeAssignments())
+            if (!deletedAssignments.isEmpty())
+                writeAssignment(deletedAssignments.get(0), oos);
+            Log.v("FileIO", "File written");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -274,7 +354,11 @@ public class FileIO {
     private static void clearAssignments() {
         inProgressAssignments.clear();
         completedAssignments.clear();
+        deletedAssignments.clear();
+        types.clear();
+        classNames.clear();
     }
+
 
     public static void readTypes(Context context) throws IOException, ClassNotFoundException {
         types.clear();

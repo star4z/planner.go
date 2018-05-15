@@ -32,9 +32,6 @@ class AssignmentDetailsActivity : AssignmentActivity() {
         hw_type.setSelection(assignment.spinnerPosition())
         hw_description.text = SpannableStringBuilder(assignment.description)
         is_priority.isChecked = assignment.priority == 1
-//            toggleCustomNotification(View(this))
-//            if (assignment.notificationDate2 != null) toggleExtraNotification(View(this))
-//        }
         Log.v("AssignmentDetails", "notificationDate1=" + assignment.notificationDate1)
         n_time.text =
                 if (assignment.notificationDate1 != null)
@@ -166,15 +163,6 @@ class AssignmentDetailsActivity : AssignmentActivity() {
 
         val notification1 = if (enable_custom_notification.isChecked) assignment.notificationDate1 else null
         val notification2 = if (extra_notification.isChecked) assignment.notificationDate2 else null
-        Log.v("AssignmentDetails", "notificationDate1=$notification1")
-//
-//        val notifCalendar2 = assignment.dueDate
-//        notifCalendar2.add(Calendar.DAY_OF_MONTH, -r2_date.text.toString().toInt())
-//        timeStr = r2_time.text.split(":")
-//        minute = timeStr[1].substring(0, 2).toInt()
-//        notifCalendar2[Calendar.HOUR_OF_DAY] = timeStr[0].toInt()
-//        notifCalendar2[Calendar.MINUTE] = minute
-//        val mNot2 = notifCalendar2.timeInMillis
 
         val mUID = assignment.uniqueID
 
