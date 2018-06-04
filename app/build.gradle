@@ -7,13 +7,13 @@ android {
         applicationId "go.planner.plannergo"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 15
-        versionName "0.15"
+        versionCode 16
+        versionName "0.16"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

@@ -73,6 +73,8 @@
     <color name="backgroundWhite">#FFFFFFFF</color>
     <color name="backgroundGrey">#FF757575</color>
 
+    <color name="fillerOffWhite">#eafcf9</color>
+
     <color name="textBlack">#FF000000</color>
     <color name="textGrey">#FF555555</color>
     <color name="textWhite">#FFFFFFFF</color>

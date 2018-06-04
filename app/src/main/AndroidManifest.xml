@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="go.planner.plannergo">
 
+    <!--<uses-permission android:name="android.permission.GET_ACCOUNTS" />-->
     <uses-permission android:name="alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -74,7 +75,7 @@
         <activity
             android:name=".ClassActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".TrashActivity"></activity>
+        <activity android:name=".TrashActivity" />
     </application>
 
 </manifest>

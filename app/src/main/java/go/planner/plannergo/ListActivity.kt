@@ -42,5 +42,5 @@ abstract class ListActivity : AppCompatActivity() {
 
     abstract fun initToolbar()
 
-    abstract fun getData():ArrayList<String>
+    abstract fun getData():Bag<String>
 }

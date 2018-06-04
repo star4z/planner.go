@@ -29,6 +29,8 @@ class TrashActivity : Activity() {
         setContentView(R.layout.activity_trash)
 
         setActionBar(toolbar)
+        toolbar.title = "Trash"
+
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.textWhite))
 
         FileIO.readAssignmentsFromFile(this)
@@ -76,7 +78,7 @@ class TrashActivity : Activity() {
                 }
                 1 -> {
                     val intent = Intent(this, MainActivity::class.java).apply {
-                        putExtra("mode_InProgress", true)
+                        putExtra("mode_InProgress", false)
                         addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     }
                     finish()
@@ -118,7 +120,7 @@ class TrashActivity : Activity() {
                     AlertDialog.Builder(this)
                             .setTitle("Permanently delete this?")
                             .setMessage("'${assignment.title}' will be gone forever.")
-                            .setPositiveButton("Yep", DialogInterface.OnClickListener { dialog, which ->
+                            .setPositiveButton("Yep", DialogInterface.OnClickListener { _, _ ->
                                 run {
                                     FileIO.deletedAssignments.remove(assignment)
                                     FileIO.writeAssignmentsToFile(this)

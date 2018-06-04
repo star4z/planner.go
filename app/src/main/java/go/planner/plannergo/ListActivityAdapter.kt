@@ -7,9 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import java.util.*
 
-class ListActivityAdapter internal constructor(private val data: ArrayList<String>) : RecyclerView.Adapter<ListActivityAdapter.ViewHolder>() {
+class ListActivityAdapter internal constructor(private val data: Bag<String>) : RecyclerView.Adapter<ListActivityAdapter.ViewHolder>() {
 
     class ViewHolder(val v: View) : RecyclerView.ViewHolder(v) {
         val textView : TextView

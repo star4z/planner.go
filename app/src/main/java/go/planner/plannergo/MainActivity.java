@@ -11,7 +11,10 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -19,15 +22,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,7 +38,10 @@ public class MainActivity extends AppCompatActivity {
     boolean currentScreenIsInProgress = true;
 
     //Quick references
-    LinearLayout parent;
+    RecyclerView parent;
+    RecyclerView.LayoutManager layoutManager;
+    RecyclerView.Adapter adapter;
+
     Toolbar myToolbar;
     private DrawerLayout mDrawerLayout;
 
@@ -53,7 +57,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FileIO.readAssignmentsFromFile(this);
+
         parent = findViewById(R.id.body);
+
+//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+//        dividerItemDecoration.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.div_grey)));
+//        parent.addItemDecoration(dividerItemDecoration);
+
+        layoutManager = new LinearLayoutManager(this);
+        parent.setLayoutManager(layoutManager);
+
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -71,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onResume() {
-
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         ColorPicker.setColors(this);
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -90,12 +103,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         Log.v("MainActivity", "NewIntent");
-        if (intent.getExtras() != null){
+        if (intent.getExtras() != null) {
             long idToRemove = intent.getExtras().getLong("remove_id", -1);
             Log.v("MainActivity", "idToRemove=" + idToRemove);
-            if (idToRemove != -1){
+            if (idToRemove != -1) {
                 FileIO.deleteAssignment(this, FileIO.getAssignment(idToRemove));
             }
+
+            currentScreenIsInProgress = intent.getExtras().getBoolean("mode_InProgress", true);
         }
 
         super.onNewIntent(intent);
@@ -159,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         else
             assignments = FileIO.inProgressAssignments;
 
-        loadPanels(assignments, currentSortIndex);
+//        loadPanels(assignments, currentSortIndex);
 
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -184,11 +199,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_sort_by_title:
                 loadPanels(assignments, 3);
                 return true;
-//            case R.id.action_open_classes:
-//                startActivity(new Intent(this, ClassActivity.class));
-//                return true;
-//            case R.id.action_open_types:
-//                return true;
+            case R.id.action_open_classes:
+                startActivity(new Intent(this, ClassActivity.class));
+                return true;
+            case R.id.action_open_types:
+                return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -248,31 +263,91 @@ public class MainActivity extends AppCompatActivity {
 
         parent.removeAllViews();
 
-        if (assignments.isEmpty()) {
-            if (assignments == FileIO.completedAssignments) {
-                addHeading(R.string.no_completed_assignments);
-            }
-            if (assignments == FileIO.inProgressAssignments) {
-                addHeading(R.string.no_upcoming_assignments);
-            }
-        } else {
+//        switch (sortIndex) {
+//            case 0: //sort by date
+//                Collections.sort(assignments, new Comparator<NewAssignment>() {
+//                    @Override
+//                    public int compare(NewAssignment o1, NewAssignment o2) {
+//                        return o1.dueDate.compareTo(o2.dueDate);
+//                    }
+//                });
+//                break;
+//            case 1: //sort by class
+//                Collections.sort(assignments, new Comparator<NewAssignment>() {
+//                    @Override
+//                    public int compare(NewAssignment o1, NewAssignment o2) {
+//                        return o1.className.compareTo(o2.className);
+//                    }
+//                });
+//                break;
+//            case 2: //sort by type
+//                Collections.sort(assignments, new Comparator<NewAssignment>() {
+//                    @Override
+//                    public int compare(NewAssignment o1, NewAssignment o2) {
+//                        return o1.type.compareTo(o2.type);
+//                    }
+//                });
+//                break;
+//            case 3: //sort by title
+//            Collections.sort(assignments, new Comparator<NewAssignment>() {
+//                @Override
+//                public int compare(NewAssignment o1, NewAssignment o2) {
+//                    return o1.title.compareTo(o2.title);
+//                }
+//            });
+//            break;
+//        }
 
-            switch (sortIndex) {
-                case 0:
-                    sortViewsByDate(assignments);
-                    break;
-                case 1:
-                    sortViewsByClass(assignments);
-                    break;
-                case 2:
-                    sortViewsByType(assignments);
-                    break;
-                case 3:
-                    sortViewsByTitle(assignments);
-                    break;
+        adapter = new AssignmentItemAdapter(assignments, sortIndex, this);
+        parent.setAdapter(adapter);
+
+        SwipeCallback swipeCallback = new SwipeCallback(this) {
+
+            @Override
+            public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                return makeMovementFlags(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
             }
-        }
-        addHeading(" ");
+
+            @Override
+            public void onSwiped(@Nullable RecyclerView.ViewHolder viewHolder, int direction) {
+                AssignmentItemAdapter adapter = (AssignmentItemAdapter) parent.getAdapter();
+                assert viewHolder != null;
+                if (direction == ItemTouchHelper.LEFT) {
+                    adapter.removeAt(viewHolder.getAdapterPosition());
+                } else if (direction == ItemTouchHelper.RIGHT) {
+                    adapter.toggleDone(viewHolder.getAdapterPosition());
+                }
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
+        itemTouchHelper.attachToRecyclerView(parent);
+//
+//        if (assignments.isEmpty()) {
+//            if (assignments == FileIO.completedAssignments) {
+//                addHeading(R.string.no_completed_assignments);
+//            }
+//            if (assignments == FileIO.inProgressAssignments) {
+//                addHeading(R.string.no_upcoming_assignments);
+//            }
+//        } else {
+//
+//            switch (sortIndex) {
+//                case 0:
+//                    sortViewsByDate(assignments);
+//                    break;
+//                case 1:
+//                    sortViewsByClass(assignments);
+//                    break;
+//                case 2:
+//                    sortViewsByType(assignments);
+//                    break;
+//                case 3:
+//                    sortViewsByTitle(assignments);
+//                    break;
+//            }
+//        }
+//        addHeading(" ");
     }
 
     //Assignments Sorting methods
@@ -299,147 +374,147 @@ public class MainActivity extends AppCompatActivity {
         parent.addView(header);
     }
 
-    void sortViewsByDate(ArrayList<NewAssignment> assignments) {
-
-
-        Calendar today = Calendar.getInstance();
-        Calendar tomorrow = (Calendar) today.clone();
-        tomorrow.add(Calendar.DATE, 1);
-
-        ArrayList<NewAssignment> priorityAssignments = new ArrayList<>();
-        ArrayList<NewAssignment> overdueAssignments = new ArrayList<>();
-        ArrayList<NewAssignment> everythingElse = new ArrayList<>();
-
-        for (NewAssignment assignment : assignments) {
-            if (assignment.priority > 0) {
-                priorityAssignments.add(assignment);
-            } else if ((sharedPref.getBoolean(SettingsActivity.overdueLast, false)
-                    && compareCalendars(assignment.dueDate, today) < 0)) {
-                overdueAssignments.add(assignment);
-            } else {
-                everythingElse.add(assignment);
-            }
-        }
-        if (!priorityAssignments.isEmpty()) {
-            addHeading("Priority");
-            Collections.sort(priorityAssignments);
-            addAll(priorityAssignments);
-        }
-
-        if (!everythingElse.isEmpty()) {
-            Collections.sort(everythingElse);
-            NewAssignment previous = null;//assignments.get(0);
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
-
-            for (NewAssignment assignment : everythingElse) {
-                if (previous == null || compareCalendars(assignment.dueDate, previous.dueDate) > 0)
-                    addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
-
-                previous = assignment;
-
-                AssignmentViewWrapper assignmentViewWrapper = new AssignmentViewWrapper(
-                        this, assignment, currentSortIndex);
-                parent.addView(assignmentViewWrapper.container);
-
-            }
-        }
-
-        if (!overdueAssignments.isEmpty()) {
-            addHeading("Overdue");
-            Collections.sort(overdueAssignments);
-            addAll(overdueAssignments);
-        }
-    }
-
-    void addAll(ArrayList<NewAssignment> assignments) {
-        for (NewAssignment assignment : assignments) {
-            parent.addView(new AssignmentViewWrapper(this, assignment, currentSortIndex).container);
-        }
-    }
-
-    void addDateHeading(SimpleDateFormat dateFormat, Calendar today, Calendar tomorrow, Calendar date) {
-        int compareToToday = compareCalendars(date, today);
-        int compareToTomorrow = compareCalendars(date, tomorrow);
-        if (compareToToday == 0) {
-            addHeading(R.string.due_today);
-        } else if (compareToTomorrow == 0) {
-            addHeading(R.string.due_tomorrow);
-        } else {
-            addHeading(dateFormat.format(date.getTime()));
-        }
-    }
-
-    void sortViewsByClass(ArrayList<NewAssignment> assignments) {
-
-        ArrayList<String> headings = new ArrayList<>();
-        for (NewAssignment assignment : assignments) {
-            if (!headings.contains(assignment.className)) {
-                headings.add(assignment.className);
-            }
-        }
-        Collections.sort(headings);
-        for (String heading : headings) {
-            addHeading(heading);
-            for (NewAssignment assignment : assignments) {
-                if (assignment.className.equals(heading)) {
-                    AssignmentViewWrapper view = new AssignmentViewWrapper(
-                            this, assignment, currentSortIndex);
-                    parent.addView(view.container);
-                }
-            }
-        }
-    }
-
-    void sortViewsByType(ArrayList<NewAssignment> assignments) {
-
-        String[] types = getResources().getStringArray(R.array.assignment_types_array);
-        Collections.sort(assignments);
-        for (String type : types) {
-            addHeading(type);
-            for (NewAssignment assignment : assignments) {
-                if (assignment.type.equals(type)) {
-                    AssignmentViewWrapper view = new AssignmentViewWrapper(
-                            this, assignment, currentSortIndex);
-                    parent.addView(view.container);
-                }
-            }
-        }
-    }
-
-    void sortViewsByTitle(ArrayList<NewAssignment> assignments) {
-        for (int i = 0; i < assignments.size(); i++) {
-            int pos = i;
-            for (int j = i; j < assignments.size(); j++) {
-                if (assignments.get(j).title.compareTo(assignments.get(pos).title) < 0) {
-                    pos = j;
-                }
-            }
-
-            NewAssignment min = assignments.get(pos);
-            assignments.set(pos, assignments.get(i));
-            assignments.set(i, min);
-        }
-
-        char currentLetter = 0;
-        boolean emptyLetter = true; //helps with checking that blank character is added only once
-        for (NewAssignment assignment : assignments) {
-            if (assignment.title.length() == 0) {
-                if (emptyLetter) {
-                    addHeading("Untitled");
-                    emptyLetter = false;
-                }
-            } else if (assignment.title.toUpperCase().charAt(0) > currentLetter) {
-                currentLetter = assignment.title.charAt(0);
-                addHeading(Character.toString(currentLetter).toUpperCase());
-            }
-            AssignmentViewWrapper viewContainer = new AssignmentViewWrapper(
-                    this, assignment, currentSortIndex
-            );
-            parent.addView(viewContainer.container);
-        }
-
-    }
+//    void sortViewsByDate(ArrayList<NewAssignment> assignments) {
+//
+//
+//        Calendar today = Calendar.getInstance();
+//        Calendar tomorrow = (Calendar) today.clone();
+//        tomorrow.add(Calendar.DATE, 1);
+//
+//        ArrayList<NewAssignment> priorityAssignments = new ArrayList<>();
+//        ArrayList<NewAssignment> overdueAssignments = new ArrayList<>();
+//        ArrayList<NewAssignment> everythingElse = new ArrayList<>();
+//
+//        for (NewAssignment assignment : assignments) {
+//            if (assignment.priority > 0) {
+//                priorityAssignments.add(assignment);
+//            } else if ((sharedPref.getBoolean(SettingsActivity.overdueLast, false)
+//                    && compareCalendars(assignment.dueDate, today) < 0)) {
+//                overdueAssignments.add(assignment);
+//            } else {
+//                everythingElse.add(assignment);
+//            }
+//        }
+//        if (!priorityAssignments.isEmpty()) {
+//            addHeading("Priority");
+//            Collections.sort(priorityAssignments);
+//            addAll(priorityAssignments);
+//        }
+//
+//        if (!everythingElse.isEmpty()) {
+//            Collections.sort(everythingElse);
+//            NewAssignment previous = null;//assignments.get(0);
+//
+//            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
+//
+//            for (NewAssignment assignment : everythingElse) {
+//                if (previous == null || compareCalendars(assignment.dueDate, previous.dueDate) > 0)
+//                    addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
+//
+//                previous = assignment;
+//
+//                AssignmentViewWrapper assignmentViewWrapper = new AssignmentViewWrapper(
+//                        this, assignment, currentSortIndex);
+//                parent.addView(assignmentViewWrapper.container);
+//
+//            }
+//        }
+//
+//        if (!overdueAssignments.isEmpty()) {
+//            addHeading("Overdue");
+//            Collections.sort(overdueAssignments);
+//            addAll(overdueAssignments);
+//        }
+//    }
+//
+//    void addAll(ArrayList<NewAssignment> assignments) {
+//        for (NewAssignment assignment : assignments) {
+//            parent.addView(new AssignmentViewWrapper(this, assignment, currentSortIndex).container);
+//        }
+//    }
+//
+//    void addDateHeading(SimpleDateFormat dateFormat, Calendar today, Calendar tomorrow, Calendar date) {
+//        int compareToToday = compareCalendars(date, today);
+//        int compareToTomorrow = compareCalendars(date, tomorrow);
+//        if (compareToToday == 0) {
+//            addHeading(R.string.due_today);
+//        } else if (compareToTomorrow == 0) {
+//            addHeading(R.string.due_tomorrow);
+//        } else {
+//            addHeading(dateFormat.format(date.getTime()));
+//        }
+//    }
+//
+//    void sortViewsByClass(ArrayList<NewAssignment> assignments) {
+//
+//        ArrayList<String> headings = new ArrayList<>();
+//        for (NewAssignment assignment : assignments) {
+//            if (!headings.contains(assignment.className)) {
+//                headings.add(assignment.className);
+//            }
+//        }
+//        Collections.sort(headings);
+//        for (String heading : headings) {
+//            addHeading(heading);
+//            for (NewAssignment assignment : assignments) {
+//                if (assignment.className.equals(heading)) {
+//                    AssignmentViewWrapper view = new AssignmentViewWrapper(
+//                            this, assignment, currentSortIndex);
+//                    parent.addView(view.container);
+//                }
+//            }
+//        }
+//    }
+//
+//    void sortViewsByType(ArrayList<NewAssignment> assignments) {
+//
+//        String[] types = getResources().getStringArray(R.array.assignment_types_array);
+//        Collections.sort(assignments);
+//        for (String type : types) {
+//            addHeading(type);
+//            for (NewAssignment assignment : assignments) {
+//                if (assignment.type.equals(type)) {
+//                    AssignmentViewWrapper view = new AssignmentViewWrapper(
+//                            this, assignment, currentSortIndex);
+//                    parent.addView(view.container);
+//                }
+//            }
+//        }
+//    }
+//
+//    void sortViewsByTitle(ArrayList<NewAssignment> assignments) {
+//        for (int i = 0; i < assignments.size(); i++) {
+//            int pos = i;
+//            for (int j = i; j < assignments.size(); j++) {
+//                if (assignments.get(j).title.compareTo(assignments.get(pos).title) < 0) {
+//                    pos = j;
+//                }
+//            }
+//
+//            NewAssignment min = assignments.get(pos);
+//            assignments.set(pos, assignments.get(i));
+//            assignments.set(i, min);
+//        }
+//
+//        char currentLetter = 0;
+//        boolean emptyLetter = true; //helps with checking that blank character is added only once
+//        for (NewAssignment assignment : assignments) {
+//            if (assignment.title.length() == 0) {
+//                if (emptyLetter) {
+//                    addHeading("Untitled");
+//                    emptyLetter = false;
+//                }
+//            } else if (assignment.title.toUpperCase().charAt(0) > currentLetter) {
+//                currentLetter = assignment.title.charAt(0);
+//                addHeading(Character.toString(currentLetter).toUpperCase());
+//            }
+//            AssignmentViewWrapper viewContainer = new AssignmentViewWrapper(
+//                    this, assignment, currentSortIndex
+//            );
+//            parent.addView(viewContainer.container);
+//        }
+//
+//    }
 
     public int compareCalendars(Calendar c1, Calendar c2) {
         if (c1.get(Calendar.YEAR) != c2.get(Calendar.YEAR))

@@ -29,8 +29,8 @@ public class FileIO {
     final static ArrayList<NewAssignment> completedAssignments = new ArrayList<>();
     final static ArrayList<NewAssignment> deletedAssignments = new ArrayList<>();
 
-    final static ArrayList<String> classNames = new ArrayList<>();
-    final static ArrayList<String> types = new ArrayList<>();
+    final static Bag<String> classNames = new Bag<>();
+    final static Bag<String> types = new Bag<>();
 
     private static final String NEW_ASSIGNMENTS_FILE_NAME = "planner.assignments.all";
     private static final String DELETED_ASSIGNMENTS_FILE_NAME = "planner.assignments.deleted";
@@ -217,18 +217,18 @@ public class FileIO {
     }
 
 
-    @Deprecated
-    public static void deleteAssignment(Context context, Assignment assignment) {
-        if (assignment.completed)
-            FileIO.completedAssignments.remove(assignment);
-        else
-            FileIO.inProgressAssignments.remove(assignment);
-        writeAssignmentsToFile(context);
-    }
+//    @Deprecated
+//    public static void deleteAssignment(Context context, Assignment assignment) {
+//        if (assignment.completed)
+//            FileIO.completedAssignments.remove(assignment);
+//        else
+//            FileIO.inProgressAssignments.remove(assignment);
+//        writeAssignmentsToFile(context);
+//    }
 
 
     /**
-     * Removes assignment from files and displays a snackbar with an undo option.
+     * Removes assignment from files and displays a snackBar with an undo option.
      * If the undo option is selected, it restores the item and displays the item details.
      *
      * @param context
@@ -240,6 +240,14 @@ public class FileIO {
         } else {
             FileIO.inProgressAssignments.remove(assignment);
         }
+
+        /*
+         * Copy of assignment is added to "trash". The copy has a different "unique ID" because
+         * the uniqueID is interpreted as a Date in the context of the trash to calculate when the
+         * assignment should be permanently deleted. If the action is undone, the copy ("alt" for
+         * "alternate") is removed from the trash, and the original with the original unique ID is
+         * added back to list from whence it came.
+         */
         final NewAssignment alt = assignment.clone();
         alt.uniqueID = Calendar.getInstance().getTimeInMillis();
         deletedAssignments.add(alt);
@@ -319,7 +327,7 @@ public class FileIO {
                         int a = today.get(Calendar.DATE) + (aDate.getActualMaximum(Calendar.DATE) - aDate.get(Calendar.DATE));
                         aDate.add(Calendar.MONTH, 1);
                         a += aDate.getActualMaximum(Calendar.DATE);
-                        if (a  <= 30){
+                        if (a <= 30) {
                             writeAssignment(assignment, oos);
                         }
                 }
@@ -339,13 +347,13 @@ public class FileIO {
 
 
     public static void replaceAssignment(Context context, NewAssignment newAssignment) {
-        int check = inProgressAssignments.indexOf(newAssignment);
-        if (check > -1) {
-            inProgressAssignments.set(check, newAssignment);
+        int indexOf = inProgressAssignments.indexOf(newAssignment);
+        if (indexOf > -1) {
+            inProgressAssignments.set(indexOf, newAssignment);
         } else {
-            check = completedAssignments.indexOf(newAssignment);
-            if (check > -1) {
-                completedAssignments.set(check, newAssignment);
+            indexOf = completedAssignments.indexOf(newAssignment);
+            if (indexOf > -1) {
+                completedAssignments.set(indexOf, newAssignment);
             }
         }
         writeAssignmentsToFile(context);
@@ -384,7 +392,7 @@ public class FileIO {
         FileOutputStream fos = new FileOutputStream(file);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeInt(types.size());
-        for (String type : types) {
+        for (String type : types.getSortedArray()) {
             oos.writeObject(type);
         }
 //        oos.writeObject(""); //Safety
@@ -403,6 +411,22 @@ public class FileIO {
             types.add(next);
         }
         Log.v("FileIO", "readClasses()");
+    }
+
+    public static void writeClasses(Context context) throws IOException {
+        File file = new File(context.getFilesDir(), CLASSES_FILE_NAME);
+        if (file.createNewFile()) {
+            Log.v("FileIO", "writeTypes() new file created");
+            return;
+        }
+        FileOutputStream fos = new FileOutputStream(file);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeInt(types.size());
+        for (String type : types.getSortedArray()) {
+            oos.writeObject(type);
+        }
+//        oos.writeObject(""); //Safety
+        Log.v("FileIO", "Classes written");
     }
 
 }

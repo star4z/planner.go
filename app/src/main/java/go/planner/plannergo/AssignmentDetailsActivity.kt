@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
+import kotlinx.android.synthetic.main.activity_assignment.*
 import java.util.*
 
 
@@ -21,6 +22,7 @@ class AssignmentDetailsActivity : AssignmentActivity() {
                 } else {
                     View.GONE
                 }
+        if (assignment.completed) completed_text.visibility = View.VISIBLE
     }
 
     override fun initViews() {

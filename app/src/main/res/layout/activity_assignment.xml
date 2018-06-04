@@ -31,13 +31,26 @@
             android:orientation="vertical"
             android:padding="16dp">
 
-            <EditText
-                android:id="@+id/hw_title"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/enter_title_of_assignment"
-                android:inputType="textCapSentences" />
+                android:orientation="horizontal">
 
+                <EditText
+                    android:id="@+id/hw_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/enter_title_of_assignment"
+                    android:inputType="textCapSentences" />
+
+                <TextView
+                    android:id="@+id/completed_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:text="(COMPLETED)"/>
+            </LinearLayout>
             <!-- change to spinner -->
             <EditText
                 android:id="@+id/hw_class"
@@ -76,7 +89,7 @@
                 android:id="@+id/hw_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/description"
+                android:hint="@string/details"
                 android:inputType="textCapSentences|textMultiLine"
                 android:maxLines="5" />
 
@@ -90,10 +103,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="togglePriorityAssignment"
                 android:orientation="horizontal"
                 android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:onClick="togglePriorityAssignment">
+                android:paddingTop="8dp">
 
                 <CheckBox
                     android:id="@+id/is_priority"
@@ -106,7 +119,7 @@
                     android:layout_weight="1"
                     android:paddingEnd="8dp"
                     android:paddingStart="8dp"
-                    android:text="Priority assignment" />
+                    android:text="@string/priority_assignment" />
             </LinearLayout>
 
 
@@ -114,10 +127,10 @@
                 android:id="@+id/custom_notification"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="toggleCustomNotification"
                 android:orientation="horizontal"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
-                android:onClick="toggleCustomNotification"
                 android:visibility="gone">
 
                 <CheckBox
@@ -125,7 +138,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:focusable="false"
-                    android:onClick="toggleCustomNotification"/>
+                    android:onClick="toggleCustomNotification" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -172,10 +185,10 @@
                 android:id="@+id/custom_notification_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="toggleExtraNotification"
                 android:orientation="horizontal"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
-                android:onClick="toggleExtraNotification"
                 android:visibility="gone">
 
                 <CheckBox
@@ -183,7 +196,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:focusable="false"
-                    android:onClick="toggleExtraNotification"/>
+                    android:onClick="toggleExtraNotification" />
 
                 <TextView
                     android:layout_width="0dp"
