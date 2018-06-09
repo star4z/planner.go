@@ -347,7 +347,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    private ArrayList<RecyclerView> recyclerViews = new ArrayList<>();
 
     void addViewsByDate(ArrayList<NewAssignment> assignments) {
         Calendar today = Calendar.getInstance();
@@ -358,44 +357,40 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<NewAssignment> overdueAssignments = new ArrayList<>();
         ArrayList<NewAssignment> everythingElse = new ArrayList<>();
 
-        Log.v("MainActivity", "Overdue assignments:");
         for (NewAssignment assignment : assignments) {
             if (assignment.priority > 0) {
                 priorityAssignments.add(assignment);
             } else if ((sharedPref.getBoolean(SettingsActivity.overdueLast, false)
                     && compareCalendars(assignment.dueDate, today) < 0)) {
                 overdueAssignments.add(assignment);
-                Log.v("MainActivity", assignment.toString());
             } else {
                 everythingElse.add(assignment);
             }
         }
-        Log.v("MainActivity", "");
 
         if (!priorityAssignments.isEmpty()) {
-            addHeading("Priority");
-            RecyclerView recyclerView = createRecyclerViewForList(priorityAssignments);
+            final TextView heading = addHeading("Priority");
+            final RecyclerView recyclerView = createRecyclerViewForList(priorityAssignments, heading);
 
             parent.addView(recyclerView);
-//            recyclerViews.add(recyclerView);
         }
 
         if (!everythingElse.isEmpty()) {
-            NewAssignment previous = null; //assignments.get(0);
+            NewAssignment previous = null;
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
             ArrayList<NewAssignment> currentGroup = new ArrayList<>();
 
+            TextView lastHeading = null;
             for (NewAssignment assignment : everythingElse) {
                 if (previous == null) {
-                    addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
+                    lastHeading = addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
                     currentGroup = new ArrayList<>();
                 } else if (compareCalendars(assignment.dueDate, previous.dueDate) > 0) {
-                    RecyclerView recyclerView = createRecyclerViewForList(currentGroup);
+                    RecyclerView recyclerView = createRecyclerViewForList(currentGroup, lastHeading);
                     parent.addView(recyclerView);
-//                    recyclerViews.add(recyclerView);
 
-                    addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
+                    lastHeading = addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
                     currentGroup = new ArrayList<>();
                 }
 
@@ -405,18 +400,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (!currentGroup.isEmpty()) {
-                RecyclerView recyclerView = createRecyclerViewForList(currentGroup);
+                RecyclerView recyclerView = createRecyclerViewForList(currentGroup, lastHeading);
                 parent.addView(recyclerView);
-//                recyclerViews.add(recyclerView);
             }
         }
 
         if (!overdueAssignments.isEmpty()) {
-            addHeading("Overdue");
-            RecyclerView recyclerView = createRecyclerViewForList(overdueAssignments);
-
+            TextView heading = addHeading("Overdue");
+            RecyclerView recyclerView = createRecyclerViewForList(overdueAssignments, heading);
             parent.addView(recyclerView);
-//            recyclerViews.add(recyclerView);
         }
     }
 
@@ -424,20 +416,21 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<NewAssignment> group = new ArrayList<>();
 
         String last = null;
+        TextView lastHeading = null;
         for (NewAssignment a : assignments) {
             if (!a.className.toUpperCase().equals(last)) {
                 if (last != null) {
-                    RecyclerView rV = createRecyclerViewForList(group);
+                    RecyclerView rV = createRecyclerViewForList(group, lastHeading);
                     parent.addView(rV);
                 }
-                addHeading(a.className.toUpperCase());
+                lastHeading = addHeading(a.className.toUpperCase());
                 group = new ArrayList<>();
             }
             group.add(a);
             last = a.className.toUpperCase();
         }
         if (!group.isEmpty()) {
-            RecyclerView rV = createRecyclerViewForList(group);
+            RecyclerView rV = createRecyclerViewForList(group, lastHeading);
             parent.addView(rV);
         }
     }
@@ -446,20 +439,21 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<NewAssignment> group = new ArrayList<>();
 
         String last = null;
+        TextView lastHeading = null;
         for (NewAssignment a : assignments) {
             if (!a.type.toUpperCase().equals(last)) {
                 if (last != null) {
-                    RecyclerView rV = createRecyclerViewForList(group);
+                    RecyclerView rV = createRecyclerViewForList(group, lastHeading);
                     parent.addView(rV);
                 }
-                addHeading(a.type.toUpperCase());
+                lastHeading = addHeading(a.type.toUpperCase());
                 group = new ArrayList<>();
             }
             group.add(a);
             last = a.type.toUpperCase();
         }
         if (!group.isEmpty()) {
-            RecyclerView rV = createRecyclerViewForList(group);
+            RecyclerView rV = createRecyclerViewForList(group, lastHeading);
             parent.addView(rV);
         }
     }
@@ -468,12 +462,13 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<NewAssignment> group = new ArrayList<>();
 
         Character last = null;
+        TextView lastHeading = null;
         for (NewAssignment a : assignments) {
             if (last == null) {
-                addHeading(Character.toString(a.title.toUpperCase().charAt(0)));
+                lastHeading = addHeading(Character.toString(a.title.toUpperCase().charAt(0)));
                 group = new ArrayList<>();
             } else if (a.title.toUpperCase().charAt(0) != last) {
-                RecyclerView rV = createRecyclerViewForList(group);
+                RecyclerView rV = createRecyclerViewForList(group, lastHeading);
                 parent.addView(rV);
                 addHeading(Character.toString(a.title.toUpperCase().charAt(0)));
                 group = new ArrayList<>();
@@ -482,12 +477,12 @@ public class MainActivity extends AppCompatActivity {
             last = a.title.toUpperCase().charAt(0);
         }
         if (!group.isEmpty()) {
-            RecyclerView rV = createRecyclerViewForList(group);
+            RecyclerView rV = createRecyclerViewForList(group, lastHeading);
             parent.addView(rV);
         }
     }
 
-    RecyclerView createRecyclerViewForList(ArrayList<NewAssignment> assignments) {
+    RecyclerView createRecyclerViewForList(ArrayList<NewAssignment> assignments, final TextView heading) {
         final RecyclerView recyclerView = new RecyclerView(this);
 //        recyclerView.setHasFixedSize(true);
 
@@ -525,14 +520,35 @@ public class MainActivity extends AppCompatActivity {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
+        recyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+            @Override
+            public void onChildViewAttachedToWindow(View view) {
+                if (heading.getVisibility() != View.VISIBLE) {
+                    heading.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onChildViewDetachedFromWindow(View view) {
+                int count = 0;
+                if (recyclerView.getAdapter() != null) {
+                    count = recyclerView.getAdapter().getItemCount();
+                }
+                Log.v("MainActivity", "count=" + count);
+                if (count <= 0) {
+                    heading.setVisibility(View.GONE);
+                }
+            }
+        });
+
         return recyclerView;
     }
 
-    void addHeading(int id) {
-        addHeading(getString(id));
+    TextView addHeading(int id) {
+        return addHeading(getString(id));
     }
 
-    void addHeading(String text) {
+    TextView addHeading(String text) {
         if (text.equals(""))
             text = "Untitled";
         TextView header = (TextView) getLayoutInflater().inflate(
@@ -542,90 +558,20 @@ public class MainActivity extends AppCompatActivity {
         );
         header.setText(text);
         parent.addView(header);
+        return header;
     }
 
-    void addDateHeading(SimpleDateFormat dateFormat, Calendar today, Calendar tomorrow, Calendar date) {
+    TextView addDateHeading(SimpleDateFormat dateFormat, Calendar today, Calendar tomorrow, Calendar date) {
         int compareToToday = compareCalendars(date, today);
         int compareToTomorrow = compareCalendars(date, tomorrow);
         if (compareToToday == 0) {
-            addHeading(R.string.due_today);
+            return addHeading(R.string.due_today);
         } else if (compareToTomorrow == 0) {
-            addHeading(R.string.due_tomorrow);
+            return addHeading(R.string.due_tomorrow);
         } else {
-            addHeading(dateFormat.format(date.getTime()));
+            return addHeading(dateFormat.format(date.getTime()));
         }
     }
-//
-//    void sortViewsByClass(ArrayList<NewAssignment> assignments) {
-//
-//        ArrayList<String> headings = new ArrayList<>();
-//        for (NewAssignment assignment : assignments) {
-//            if (!headings.contains(assignment.className)) {
-//                headings.add(assignment.className);
-//            }
-//        }
-//        Collections.sort(headings);
-//        for (String heading : headings) {
-//            addHeading(heading);
-//            for (NewAssignment assignment : assignments) {
-//                if (assignment.className.equals(heading)) {
-//                    AssignmentViewWrapper view = new AssignmentViewWrapper(
-//                            this, assignment, currentSortIndex);
-//                    parent.addView(view.container);
-//                }
-//            }
-//        }
-//    }
-//
-//    void sortViewsByType(ArrayList<NewAssignment> assignments) {
-//
-//        String[] types = getResources().getStringArray(R.array.assignment_types_array);
-//        Collections.sort(assignments);
-//        for (String type : types) {
-//            addHeading(type);
-//            for (NewAssignment assignment : assignments) {
-//                if (assignment.type.equals(type)) {
-//                    AssignmentViewWrapper view = new AssignmentViewWrapper(
-//                            this, assignment, currentSortIndex);
-//                    parent.addView(view.container);
-//                }
-//            }
-//        }
-//    }
-//
-//    void sortViewsByTitle(ArrayList<NewAssignment> assignments) {
-//        for (int i = 0; i < assignments.size(); i++) {
-//            int pos = i;
-//            for (int j = i; j < assignments.size(); j++) {
-//                if (assignments.get(j).title.compareTo(assignments.get(pos).title) < 0) {
-//                    pos = j;
-//                }
-//            }
-//
-//            NewAssignment min = assignments.get(pos);
-//            assignments.set(pos, assignments.get(i));
-//            assignments.set(i, min);
-//        }
-//
-//        char currentLetter = 0;
-//        boolean emptyLetter = true; //helps with checking that blank character is added only once
-//        for (NewAssignment assignment : assignments) {
-//            if (assignment.title.length() == 0) {
-//                if (emptyLetter) {
-//                    addHeading("Untitled");
-//                    emptyLetter = false;
-//                }
-//            } else if (assignment.title.toUpperCase().charAt(0) > currentLetter) {
-//                currentLetter = assignment.title.charAt(0);
-//                addHeading(Character.toString(currentLetter).toUpperCase());
-//            }
-//            AssignmentViewWrapper viewContainer = new AssignmentViewWrapper(
-//                    this, assignment, currentSortIndex
-//            );
-//            parent.addView(viewContainer.container);
-//        }
-//
-//    }
 
     public int compareCalendars(Calendar c1, Calendar c2) {
         if (c1.get(Calendar.YEAR) != c2.get(Calendar.YEAR))
