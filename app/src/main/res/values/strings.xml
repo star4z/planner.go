@@ -148,5 +148,8 @@
     <string name="restore">Restore</string>
     <string name="details">Details</string>
     <string name="priority_assignment">Priority assignment</string>
+    <string name="clear_all">Clear all</string>
+    <string name="edit_assignment_types">Edit assignment types</string>
+    <string name="edit_classes">Edit classes</string>
 
 </resources>

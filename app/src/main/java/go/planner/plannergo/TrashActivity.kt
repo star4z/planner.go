@@ -2,13 +2,13 @@ package go.planner.plannergo
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.DrawerLayout
+import android.util.Log
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
@@ -18,11 +18,24 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_trash.*
+import java.util.*
 
+/**
+ * Displays deleted assignments. Does not do any sorting in order to handle larger quantities of
+ * assignments than would be expected in MainActivity, for example.
+ */
 class TrashActivity : Activity() {
 
     private lateinit var prefs: SharedPreferences
     private lateinit var mDrawerLayout: DrawerLayout
+    private val randomPositiveResponses = arrayOf("Yep", "Uh huh", "Yeah ok", "Yes",
+            "Are you questioning me?", "I hit the button, didn't I?", "Hurry up", "Delete", "DELETE",
+           "DELETEDELETEDELETE", "Yep", "Yes", "Yes", "Yep", "Yeah", "Yes", "Yeh", "Yur",
+            "Yes", "Yes", "Yes", "Yes", "Yeah", "Yes", "Sí")
+
+    private val randomNegativeResponses = arrayOf("No", "Nope", "No, wait!", "Wait!", "No",
+            "Hold up", "No", "No", "Nuh-uh", "NOPE", "NOOOOOOOOOOOOO", "Keep it", "That was a mistake",
+            "Nope", "No", "No", "No", "No", "No")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,11 +106,14 @@ class TrashActivity : Activity() {
 
     private fun loadPanels() {
         body.removeAllViews()
+        Log.v("TrashActivity", FileIO.deletedAssignments.toString())
 
         addHeading("Assignments in the trash are permanently deleted after 30 days.")
         if (FileIO.deletedAssignments.isEmpty())
             addHeading("The trash is empty.")
         else {
+            val r = Random()
+
             for (assignment: NewAssignment in FileIO.deletedAssignments) {
                 val nextView = layoutInflater.inflate(
                         R.layout.view_deleted_item,
@@ -119,15 +135,15 @@ class TrashActivity : Activity() {
                 nextView.findViewById<ImageView>(R.id.delete).setOnClickListener {
                     AlertDialog.Builder(this)
                             .setTitle("Permanently delete this?")
-                            .setMessage("'${assignment.title}' will be gone forever.")
-                            .setPositiveButton("Yep", DialogInterface.OnClickListener { _, _ ->
+                            .setMessage("'${if (assignment.title == "") "This" else assignment.title}' will be gone forever.")
+                            .setPositiveButton(randomPositiveResponses[r.nextInt(randomPositiveResponses.size)], { _, _ ->
                                 run {
                                     FileIO.deletedAssignments.remove(assignment)
                                     FileIO.writeAssignmentsToFile(this)
                                     loadPanels()
                                 }
                             })
-                            .setNegativeButton("No", null)
+                            .setNegativeButton(randomNegativeResponses[r.nextInt(randomNegativeResponses.size)], null)
                             .show()
                 }
                 body.addView(nextView)

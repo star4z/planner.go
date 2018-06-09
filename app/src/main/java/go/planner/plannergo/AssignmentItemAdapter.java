@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v7.util.SortedList;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,14 +17,14 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 public class AssignmentItemAdapter extends RecyclerView.Adapter {
 
-    private SortedList<NewAssignment> dataSet;
+    private ArrayList<NewAssignment> dataSet;
     private SharedPreferences prefs;
     private int sortIndex;
+
     private Activity activity;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -51,64 +50,10 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
     }
 
     AssignmentItemAdapter(ArrayList<NewAssignment> dataSet, int sortIndex, Activity activity) {
-        this(sortIndex, activity);
-        addAll(dataSet);
-    }
-
-    private AssignmentItemAdapter(final int sortIndex, Activity activity) {
-        this.dataSet = new SortedList<>(NewAssignment.class, new SortedList.Callback<NewAssignment>() {
-            @Override
-            public int compare(NewAssignment o1, NewAssignment o2) {
-                switch (sortIndex) {
-                    case 0:
-                        return o1.dueDate.compareTo(o2.dueDate);
-                    case 1:
-                        return o1.className.compareTo(o2.className);
-                    case 2:
-                        return o1.type.compareTo(o2.type);
-                    case 3:
-                        return o1.title.compareTo(o2.title);
-                }
-                return 0;
-            }
-
-            @Override
-            public void onChanged(int position, int count) {
-                notifyItemRangeChanged(position, count);
-            }
-
-            @Override
-            public boolean areContentsTheSame(NewAssignment oldItem, NewAssignment newItem) {
-                return oldItem.equals(newItem);
-            }
-
-            @Override
-            public boolean areItemsTheSame(NewAssignment item1, NewAssignment item2) {
-                return item1.equals(item2);
-            }
-
-            @Override
-            public void onInserted(int position, int count) {
-                notifyItemRangeInserted(position, count);
-            }
-
-            @Override
-            public void onRemoved(int position, int count) {
-                notifyItemRangeRemoved(position, count);
-            }
-
-            @Override
-            public void onMoved(int fromPosition, int toPosition) {
-                notifyItemMoved(fromPosition, toPosition);
-            }
-        });
+        this.dataSet = dataSet;
         this.sortIndex = sortIndex;
         this.activity = activity;
         prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-    }
-
-    private void addAll(List<NewAssignment> dataSet) {
-        this.dataSet.addAll(dataSet);
     }
 
     @NonNull
@@ -122,7 +67,6 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         NewAssignment a = dataSet.get(position);
-        Log.v("AssignmentAdapter", "a=" + a);
         ViewHolder vh = (ViewHolder) holder;
 //        vh.checkBox.setChecked(a.completed);
         vh.title.setText(a.title);
@@ -146,7 +90,7 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         Log.v("Adapter", "Removed item at position " + position);
         NewAssignment a = dataSet.get(position);
         FileIO.deleteAssignment(activity, a);
-        dataSet.removeItemAt(position);
+        dataSet.remove(position);
         notifyItemRemoved(position);
     }
 
@@ -154,7 +98,7 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         NewAssignment a = dataSet.get(position);
         NewAssignment b = changeAssignmentStatus(a);
         createSnackBarPopup(b);
-        dataSet.removeItemAt(position);
+        dataSet.remove(position);
         notifyItemRemoved(position);
     }
 
@@ -192,8 +136,7 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
             @Override
             public void onClick(View v) {
                 changeAssignmentStatus(a);
-                int pos = dataSet.add(a);
-                Log.v("Adapter", "Adding at position " + pos);
+                dataSet.add(a);
             }
         });
 

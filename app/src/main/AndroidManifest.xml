@@ -71,7 +71,8 @@
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity"
-            android:title="@string/settings" />
+            android:title="@string/settings" >
+        </activity>
         <activity
             android:name=".ClassActivity"
             android:parentActivityName=".MainActivity" />

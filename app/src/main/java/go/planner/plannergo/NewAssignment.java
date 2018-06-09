@@ -83,7 +83,7 @@ public class NewAssignment extends Assignment {
      */
     @Override
     public String toString() {
-        return "uniqueID=" + uniqueID;
+        return "#" + uniqueID + ", " + title;
     }
 
     /**

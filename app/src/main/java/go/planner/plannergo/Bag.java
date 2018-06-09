@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 //TODO: test
-public class Bag<E> {
+public class Bag<E>{
      private HashMap<E, Integer> map;
 
      Bag(){
@@ -72,4 +72,6 @@ public class Bag<E> {
     public String toString() {
         return getSortedArray().toString();
     }
+
+
 }

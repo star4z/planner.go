@@ -51,7 +51,7 @@ public class FileIO {
             readAssignments(context);
             readTypes(context);
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            Log.w("FileIO", "caught error " + e);
         }
         readDeletedAssignments(context);
     }
@@ -67,7 +67,7 @@ public class FileIO {
             writeTypes(context);
             writeAssignments(context);
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.w("FileIO", "caught error " + e);
         }
         writeDeletedAssignments(context);
     }
@@ -137,7 +137,9 @@ public class FileIO {
         double fileVersion = ois.readDouble();
         Log.v("FileIO", "fileVersion=" + fileVersion);
         for (int i = 0; i < total; i++) {
-            addAssignment(readAssignment(ois, fileVersion));
+            NewAssignment a = readAssignment(ois, fileVersion);
+            addAssignment(a);
+            Log.v("FileIO", a.toString());
         }
         Log.v("FileIO", "readAssignments()");
     }
@@ -180,7 +182,7 @@ public class FileIO {
      * If it does not exist, returns a new instance of NewAssignment.
      *
      * @param uniqueID ID uniquely identifies assignment based on internal
-     * @return
+     * @return Assignment with the given uniqueID
      */
     public static NewAssignment getAssignment(long uniqueID) {
         NewAssignment newAssignment = new NewAssignment();
@@ -197,10 +199,14 @@ public class FileIO {
         return new NewAssignment();
     }
 
-    public static void addAssignment(Assignment assignment) {
-        addAssignment((NewAssignment) assignment);
-    }
-
+    /**
+     * Adds a new assignment to the appropriate list based on whether the assignment is marked
+     * completed.
+     * It is necessary to call writeAssignmentsToFile() after calling this method; the call is not
+     * included in this method so that multiple add calls may be made before each write.
+     *
+     * @param assignment Assignment to be added
+     */
     public static void addAssignment(NewAssignment assignment) {
         if (assignment.dueDate == null) {
             Log.v("FileIO", "null dateView");
@@ -209,30 +215,19 @@ public class FileIO {
                 completedAssignments.add(assignment);
             else
                 inProgressAssignments.add(assignment);
-            if (!classNames.contains(assignment.className))
-                classNames.add(assignment.className);
+            if (!classNames.contains(assignment.className.toUpperCase()))
+                classNames.add(assignment.className.toUpperCase());
             if (!types.contains(assignment.type))
                 types.add(assignment.type);
         }
     }
 
-
-//    @Deprecated
-//    public static void deleteAssignment(Context context, Assignment assignment) {
-//        if (assignment.completed)
-//            FileIO.completedAssignments.remove(assignment);
-//        else
-//            FileIO.inProgressAssignments.remove(assignment);
-//        writeAssignmentsToFile(context);
-//    }
-
-
     /**
      * Removes assignment from files and displays a snackBar with an undo option.
      * If the undo option is selected, it restores the item and displays the item details.
      *
-     * @param context
-     * @param assignment
+     * @param context    Used to create SnackBar pop-up.
+     * @param assignment Assignment to delete.
      */
     public static void deleteAssignment(final Activity context, final NewAssignment assignment) {
         if (assignment.completed) {
@@ -267,6 +262,41 @@ public class FileIO {
         snackbar.show();
     }
 
+    /**
+     * Does the muscle work for the "Clear all" button in MainActivity.
+     * Since this is much faster than many calls to deleteAssignment(),
+     * if the uniqueIDs were all calculated using Calendar.getInstance(), many assignments would
+     * produce identical IDs. Therefore, one ID is calculated this way, and the others are
+     * calculated by merely adding 1 to the number.
+     *
+     * @param assignments List of assignments to delete.
+     * @param c           Context, used to create SnackBar pop-up;
+     */
+    public static void deleteAll(ArrayList<NewAssignment> assignments, final Activity c) {
+        Log.v("FileIO", "IPA=" + inProgressAssignments);
+        if (assignments.isEmpty()) return;
+        long id = Calendar.getInstance().getTimeInMillis();
+        if (assignments.get(0).completed) {
+            for (NewAssignment a : completedAssignments) {
+                a.uniqueID = id;
+                id++;
+                deletedAssignments.add(a);
+            }
+            completedAssignments.clear();
+        } else {
+            for (NewAssignment a : inProgressAssignments) {
+                a.uniqueID = id;
+                id++;
+                deletedAssignments.add(a);
+            }
+            inProgressAssignments.clear();
+        }
+        writeAssignmentsToFile(c);
+
+        Snackbar.make(c.findViewById(R.id.coordinator),
+                "Assignments deleted.", Snackbar.LENGTH_LONG).show();
+    }
+
     private static Snackbar createSnackBarPopup(Activity c, NewAssignment n) {
         String title = (n.title.equals("")) ? "Untitled assignment" : "'" + n.title + "'";
         return Snackbar.make(c.findViewById(R.id.coordinator),
@@ -291,8 +321,8 @@ public class FileIO {
                 deletedAssignments.add(readAssignment(ois, fileVersion));
             }
             Log.v("FileIO", "readDeletedAssignments()");
-        } catch (IOException | ClassNotFoundException e1) {
-            e1.printStackTrace();
+        } catch (IOException | ClassNotFoundException e) {
+            Log.w("FileIO", "caught error " + e);
         }
     }
 
@@ -341,7 +371,7 @@ public class FileIO {
                 writeAssignment(deletedAssignments.get(0), oos);
             Log.v("FileIO", "File written");
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.w("FileIO", "caught error " + e);
         }
     }
 
@@ -368,7 +398,7 @@ public class FileIO {
     }
 
 
-    public static void readTypes(Context context) throws IOException, ClassNotFoundException {
+    private static void readTypes(Context context) throws IOException, ClassNotFoundException {
         types.clear();
         File file = new File(context.getFilesDir(), TYPES_FILE_NAME);
         FileInputStream fis = new FileInputStream(file);
@@ -383,7 +413,7 @@ public class FileIO {
         Log.v("FileIO", "readTypes()");
     }
 
-    public static void writeTypes(Context context) throws IOException {
+    private static void writeTypes(Context context) throws IOException {
         File file = new File(context.getFilesDir(), TYPES_FILE_NAME);
         if (file.createNewFile()) {
             Log.v("FileIO", "writeTypes() new file created");

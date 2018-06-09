@@ -43,11 +43,20 @@
     <PreferenceCategory android:title="Help &amp; Feedback">
         <Preference
             android:layout="@layout/preference"
+            android:title="Send Feedback">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="mailto:benjaminphillipsdeveloper@gmail.com?subject=School Agenda App"/>
+        </Preference>
+
+        <Preference
+            android:layout="@layout/preference"
             android:title="@string/about">
             <intent
                 android:targetClass="go.planner.plannergo.AboutActivity"
                 android:targetPackage="go.planner.plannergo" />
         </Preference>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

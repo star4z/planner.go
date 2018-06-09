@@ -41,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
         if (savedInstanceState == null) {
             // Display the fragment
             getFragmentManager().beginTransaction()
-                    .replace(R.id.body, new SettingsFragment())
+                    .replace(R.id.parent, new SettingsFragment())
                     .commit();
         }
     }
@@ -88,7 +88,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
         toolbar.setTitle("Notifications");
 
         getFragmentManager().beginTransaction().replace(
-                R.id.body,
+                R.id.parent,
                 NestedPreferencesFragment.newInstance(key),
                 TAG_NESTED).
                 addToBackStack(TAG_NESTED).

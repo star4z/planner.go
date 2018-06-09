@@ -38,7 +38,6 @@ class NewAssignmentActivity : AssignmentActivity() {
         hw_due_time.text = SpannableStringBuilder(timeFormat.format(assignment.dueDate.time))
         n_time.text = SpannableStringBuilder(timeFormat.format(assignment.dueDate.time))
         r2_time.text = SpannableStringBuilder(timeFormat.format(assignment.dueDate.time))
-
     }
 
     override fun setUpListeners() {

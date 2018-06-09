@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/assignment_box"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -28,7 +27,7 @@
     <TextView
         android:id="@+id/class_name"
         android:layout_width="0dp"
-        android:layout_height="25dp"
+        android:layout_height="wrap_content"
         android:maxLines="1"
         android:padding="4dp"
         android:text="@string/default_class"
