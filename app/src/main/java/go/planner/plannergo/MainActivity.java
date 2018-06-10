@@ -461,20 +461,24 @@ public class MainActivity extends AppCompatActivity {
     void addViewsByTitle(ArrayList<NewAssignment> assignments) {
         ArrayList<NewAssignment> group = new ArrayList<>();
 
-        Character last = null;
+        String last = null;
         TextView lastHeading = null;
         for (NewAssignment a : assignments) {
             if (last == null) {
-                lastHeading = addHeading(Character.toString(a.title.toUpperCase().charAt(0)));
+                lastHeading = (a.title.length() > 0)
+                        ? addHeading(Character.toString(a.title.toUpperCase().charAt(0)))
+                        : addHeading("Untitled");
                 group = new ArrayList<>();
-            } else if (a.title.toUpperCase().charAt(0) != last) {
+            } else if (a.title.length() > 0 && !Character.toString(a.title.toUpperCase().charAt(0)).equals(last)) {
                 RecyclerView rV = createRecyclerViewForList(group, lastHeading);
                 parent.addView(rV);
                 addHeading(Character.toString(a.title.toUpperCase().charAt(0)));
                 group = new ArrayList<>();
             }
             group.add(a);
-            last = a.title.toUpperCase().charAt(0);
+            last = (a.title.length() > 0)
+                    ? Character.toString(a.title.toUpperCase().charAt(0))
+                    : a.title;
         }
         if (!group.isEmpty()) {
             RecyclerView rV = createRecyclerViewForList(group, lastHeading);
@@ -484,7 +488,7 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView createRecyclerViewForList(ArrayList<NewAssignment> assignments, final TextView heading) {
         final RecyclerView recyclerView = new RecyclerView(this);
-//        recyclerView.setHasFixedSize(true);
+        recyclerView.setHasFixedSize(true);
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
