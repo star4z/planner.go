@@ -1,9 +1,12 @@
 package go.planner.plannergo
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import kotlinx.android.synthetic.main.toolbar.*
 
 /**
@@ -16,15 +19,22 @@ abstract class ListActivity : AppCompatActivity() {
 
 
 
+    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
 
         initToolbar()
 
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.iconBlack))
+        toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
+
         setSupportActionBar(toolbar)
 
+        FileIO.readAssignmentsFromFile(this)
+
         val data = getData()
+        Log.v("ListActivity", "data=$data")
 
         viewManager = LinearLayoutManager(this)
         viewAdapter = ListActivityAdapter(data)

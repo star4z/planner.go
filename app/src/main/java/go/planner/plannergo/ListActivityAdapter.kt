@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 
@@ -12,10 +13,20 @@ class ListActivityAdapter internal constructor(private val data: Bag<String>) : 
 
     class ViewHolder(val v: View) : RecyclerView.ViewHolder(v) {
         val textView : TextView
+        val edit: ImageView
+        val remove: ImageView
         init {
             // Define click listener for the ViewHolder's View.
-            v.setOnClickListener { Log.d("ListActivityAdapter", "Element $adapterPosition clicked.") }
             textView = v.findViewById(R.id.textView)
+            edit = v.findViewById(R.id.edit)
+            edit.setOnClickListener {
+                //TODO
+                //TODO: replace with swipe BECAUSE YOU CAN
+            }
+            remove = v.findViewById(R.id.remove)
+            remove.setOnClickListener {
+                //TODO
+            }
         }
     }
 
@@ -32,6 +43,7 @@ class ListActivityAdapter internal constructor(private val data: Bag<String>) : 
     }
 
     override fun getItemCount(): Int {
-        return 0
+        Log.v("ListActivityAdapter", "dataSize=${data.size()}")
+        return data.size()
     }
 }

@@ -27,7 +27,7 @@
                 android:navigationContentDescription="Open Navigation Pane"
                 android:navigationIcon="@drawable/ic_dehaze_white_24dp"
                 android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                android:title="Trash"
+                android:title="@string/trash"
                 />
 
             <ScrollView

@@ -1,5 +1,6 @@
 package go.planner.plannergo
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
@@ -9,16 +10,12 @@ import android.preference.PreferenceManager
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.DrawerLayout
 import android.util.Log
-import android.view.Gravity
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_trash.*
-import java.util.*
 
 /**
  * Displays deleted assignments. Does not do any sorting in order to handle larger quantities of
@@ -28,21 +25,15 @@ class TrashActivity : Activity() {
 
     private lateinit var prefs: SharedPreferences
     private lateinit var mDrawerLayout: DrawerLayout
-    private val randomPositiveResponses = arrayOf("Yep", "Uh huh", "Yeah ok", "Yes",
-            "Are you questioning me?", "I hit the button, didn't I?", "Hurry up", "Delete", "DELETE",
-           "DELETEDELETEDELETE", "Yep", "Yes", "Yes", "Yep", "Yeah", "Yes", "Yeh", "Yur",
-            "Yes", "Yes", "Yes", "Yes", "Yeah", "Yes", "Sí")
 
-    private val randomNegativeResponses = arrayOf("No", "Nope", "No, wait!", "Wait!", "No",
-            "Hold up", "No", "No", "Nuh-uh", "NOPE", "NOOOOOOOOOOOOO", "Keep it", "That was a mistake",
-            "Nope", "No", "No", "No", "No", "No")
-
+    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trash)
 
         setActionBar(toolbar)
         toolbar.title = "Trash"
+        toolbar.overflowIcon = ContextCompat.getDrawable(applicationContext,R.drawable.ic_more_vert_white_24dp)
 
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.textWhite))
 
@@ -112,8 +103,6 @@ class TrashActivity : Activity() {
         if (FileIO.deletedAssignments.isEmpty())
             addHeading("The trash is empty.")
         else {
-            val r = Random()
-
             for (assignment: NewAssignment in FileIO.deletedAssignments) {
                 val nextView = layoutInflater.inflate(
                         R.layout.view_deleted_item,
@@ -136,14 +125,14 @@ class TrashActivity : Activity() {
                     AlertDialog.Builder(this)
                             .setTitle("Permanently delete this?")
                             .setMessage("'${if (assignment.title == "") "This" else assignment.title}' will be gone forever.")
-                            .setPositiveButton(randomPositiveResponses[r.nextInt(randomPositiveResponses.size)], { _, _ ->
+                            .setPositiveButton("Delete", { _, _ ->
                                 run {
                                     FileIO.deletedAssignments.remove(assignment)
                                     FileIO.writeAssignmentsToFile(this)
                                     loadPanels()
                                 }
                             })
-                            .setNegativeButton(randomNegativeResponses[r.nextInt(randomNegativeResponses.size)], null)
+                            .setNegativeButton("Keep", null)
                             .show()
                 }
                 body.addView(nextView)
@@ -163,11 +152,30 @@ class TrashActivity : Activity() {
         body.addView(header)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.trash_menu, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             android.R.id.home -> {
                 mDrawerLayout.openDrawer(Gravity.START)
                 return true
+            }
+            R.id.empty_trash -> {
+                AlertDialog.Builder(this)
+                        .setTitle("Are you sure you want to empty the trash?")
+                        .setMessage("You will not be able to undo this action.")
+                        .setPositiveButton("Yes", { _, _ ->
+                            run {
+                                FileIO.deletedAssignments.clear()
+                                FileIO.writeAssignmentsToFile(this)
+                                loadPanels()
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show()
             }
         }
         return super.onOptionsItemSelected(item)

@@ -16,6 +16,9 @@ class AboutActivity : AppCompatActivity() {
         about_toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.p6_assignment))
         window.statusBarColor = ContextCompat.getColor(this, R.color.colorAccentDark)
         setSupportActionBar(about_toolbar)
+
+        val text = "Version ${BuildConfig.VERSION_NAME}"
+        version.text = text
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {

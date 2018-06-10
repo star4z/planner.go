@@ -1,5 +1,6 @@
 package go.planner.plannergo
 
+import android.util.Log
 import kotlinx.android.synthetic.main.toolbar.*
 
 /**
@@ -17,7 +18,11 @@ class ClassActivity : ListActivity() {
     }
 
     override fun getData(): Bag<String> {
-
-        return FileIO.classNames
+        Log.v("ClassActivity", "classNames=${FileIO.classNames}")
+        val bag = Bag<String>()
+        bag.add("Alpha")
+        bag.add("Beta")
+        bag.add("Cthulu")
+        return bag
     }
 }

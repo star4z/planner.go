@@ -64,25 +64,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FileIO.readAssignmentsFromFile(this);
-
         parent = findViewById(R.id.parent);
-
-//        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-//        dividerItemDecoration.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.div_grey)));
-//        parent.addItemDecoration(dividerItemDecoration);
-
-//        parent.setLayoutManager(layoutManager);
-
-
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-
         myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
-
-        FileIO.readAssignmentsFromFile(this);
-
     }
 
 
@@ -246,12 +232,12 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_sort_by_title:
                 loadPanels(assignments, 3);
                 return true;
-//
-//            case R.id.action_open_classes:
-//                startActivity(new Intent(this, ClassActivity.class));
-//                return true;
-//            case R.id.action_open_types:
-//                return true;
+
+            case R.id.action_open_classes:
+                startActivity(new Intent(this, ClassActivity.class));
+                return true;
+            case R.id.action_open_types:
+                return true;
 
             case R.id.action_delete_all:
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);

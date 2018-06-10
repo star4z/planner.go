@@ -26,16 +26,16 @@
             app:showAsAction="never" />
     </group>
 
-    <!--<group>-->
-        <!--<item-->
-            <!--android:id="@+id/action_open_classes"-->
-            <!--android:title="@string/edit_classes" />-->
+    <group>
+        <item
+            android:id="@+id/action_open_classes"
+            android:title="@string/edit_classes" />
 
-        <!--<item-->
-            <!--android:id="@+id/action_open_types"-->
-            <!--android:title="@string/edit_assignment_types" />-->
+        <item
+            android:id="@+id/action_open_types"
+            android:title="@string/edit_assignment_types" />
 
-    <!--</group>-->
+    </group>
 
     <group
         android:id="@+id/manipulation">

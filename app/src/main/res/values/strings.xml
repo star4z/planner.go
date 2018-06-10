@@ -151,5 +151,6 @@
     <string name="clear_all">Clear all</string>
     <string name="edit_assignment_types">Edit assignment types</string>
     <string name="edit_classes">Edit classes</string>
+    <string name="empty_trash">Empty trash</string>
 
 </resources>
