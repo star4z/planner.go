@@ -1,14 +1,10 @@
 package go.planner.plannergo
 
-import android.content.Intent
 import android.graphics.Color
-import android.support.v4.app.NavUtils
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import android.widget.ArrayAdapter
 import kotlinx.android.synthetic.main.activity_assignment.*
 import java.util.*
 
@@ -73,55 +69,16 @@ class AssignmentDetailsActivity : AssignmentActivity() {
         r2_time.setOnClickListener {
             notifyExtraTimePickerDialog.show()
         }
-
-        val adapter = ArrayAdapter.createFromResource(this,
-                R.array.assignment_types_array, android.R.layout.simple_spinner_item)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        hw_type.adapter = adapter
-
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.assignment_details_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         val icon1 = if (ColorPicker.getColorAssignmentText() == Color.BLACK)
             R.drawable.ic_save_black_24dp else R.drawable.ic_save_white_24dp
-        val icon2 = if (ColorPicker.getColorAssignmentText() == Color.BLACK)
-            R.drawable.ic_delete_black_24dp else R.drawable.ic_delete_white_24dp
-
-        menu?.getItem(0)?.setIcon(icon2)
-        menu?.getItem(1)?.setIcon(icon1)
+        menu?.getItem(0)?.setIcon(icon1)
         return super.onPrepareOptionsMenu(menu)
     }
 
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.save_assignment -> {
-                saveAssignment()
-                NavUtils.navigateUpFromSameTask(this)
-                return true
-            }
-            R.id.delete -> {
-                Log.v("AssignmentDetails", "Delete assignment")
-                val intent = Intent(this, MainActivity::class.java).apply {
-                    putExtra("remove_id", assignment.uniqueID)
-                    addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                }
-                finish()
-                startActivity(intent)
-                return true
-            }
-            android.R.id.home -> {
-                NavUtils.navigateUpFromSameTask(this)
-                return true
-            }
-            else -> return super.onOptionsItemSelected(item)
-        }
-    }
 
     override fun toggleCustomNotification(@Suppress("UNUSED_PARAMETER") view: View) {
         Log.v("NewAssignmentActivity", "Toggling custom notif")
@@ -171,6 +128,9 @@ class AssignmentDetailsActivity : AssignmentActivity() {
         val mAssignment = NewAssignment(mTitl, mClas, mDate, mDesc, mComp, mType, mPrio, notification1, notification2, mUID)
 
         FileIO.replaceAssignment(this, mAssignment)
+
+        FileIO.classNames.add(hw_class.text.toString())
+        FileIO.types.add(hw_type.selectedItem.toString())
     }
 
 }

@@ -2,16 +2,13 @@ package go.planner.plannergo
 
 import android.app.AlertDialog
 import android.graphics.Color
-import android.support.v4.app.NavUtils
 import android.text.InputType
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import java.util.*
 import java.util.Calendar.*
@@ -56,7 +53,7 @@ class NewAssignmentActivity : AssignmentActivity() {
             dueDatePickerDialog.show()
         }
         hw_due_time.setOnClickListener {
-            Log.v("NewAssignmentActivity", "due time clicked")
+            Log.v( "NewAssignmentActivity", "due time clicked")
             dueTimePickerDialog.show()
         }
         n_days.setOnClickListener {
@@ -72,40 +69,15 @@ class NewAssignmentActivity : AssignmentActivity() {
             notifyExtraTimePickerDialog.show()
         }
 
-        val adapter = ArrayAdapter.createFromResource(this,
-                R.array.assignment_types_array, android.R.layout.simple_spinner_item)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        hw_type.adapter = adapter
+
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.new_assignment_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         val color = if (ColorPicker.getColorAssignmentText() == Color.BLACK)
             R.color.textBlack else R.color.textWhite
         setToolbarMenuItemTextColor(toolbar, color, R.id.save_assignment)
         return super.onPrepareOptionsMenu(menu)
-    }
-
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item!!.itemId) {
-            android.R.id.home -> {
-                consume { NavUtils.navigateUpFromSameTask(this) }
-                true
-            }
-            R.id.save_assignment -> {
-                Log.v("NewAssignmentActivity", "save button pressed")
-                saveAssignment()
-                consume { NavUtils.navigateUpFromSameTask(this) }
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-
-        }
     }
 
 
@@ -128,11 +100,14 @@ class NewAssignmentActivity : AssignmentActivity() {
                 Calendar.getInstance().timeInMillis
         )
 
+        FileIO.classNames.add(hw_class.text.toString())
+        FileIO.types.add(hw_type.selectedItem.toString())
+
         FileIO.addAssignment(assignment)
         Log.v("NewAssignmentActivity","type=${assignment.type}")
         Log.v("NewAssignmentActivity", "$assignment was created.")
 
-        FileIO.writeAssignmentsToFile(this)
+        FileIO.writeFiles(this)
 
     }
 

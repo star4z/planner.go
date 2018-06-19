@@ -49,15 +49,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
-                    android:text="(COMPLETED)"/>
+                    android:text="@string/completed_note"/>
             </LinearLayout>
             <!-- change to spinner -->
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/hw_class"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/enter_class"
                 android:inputType="textCapSentences" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -68,6 +69,7 @@
                     android:layout_height="wrap_content"
                     android:paddingEnd="4dp"
                     android:paddingStart="4dp"
+                    android:labelFor="@id/hw_due_date"
                     android:text="@string/due" />
 
                 <EditText
@@ -75,13 +77,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:focusable="false" />
+                    android:focusable="false"
+                    android:inputType="date"/>
 
                 <EditText
                     android:id="@+id/hw_due_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:focusable="false" />
+                    android:focusable="false"
+                    android:inputType="time"
+                    tools:ignore="LabelFor" />
 
             </LinearLayout>
 

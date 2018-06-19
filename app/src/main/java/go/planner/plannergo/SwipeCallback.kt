@@ -93,11 +93,5 @@ abstract class SwipeCallback constructor(context: Context) : ItemTouchHelper.Sim
         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
     }
 
-    override fun getSwipeDirs(recyclerView: RecyclerView?, viewHolder: RecyclerView.ViewHolder?): Int {
-        return if (viewHolder is AssignmentItemAdapter.ViewHolder && viewHolder.swipeable)
-            super.getSwipeDirs(recyclerView, viewHolder)
-        else
-            0
-    }
 
 }

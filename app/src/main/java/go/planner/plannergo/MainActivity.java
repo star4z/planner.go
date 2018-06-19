@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         //Update data
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         ColorPicker.setColors(this);
-        FileIO.readAssignmentsFromFile(this);
+        FileIO.readFiles(this);
 
         //Preform necessary resets
         invalidateOptionsMenu();
@@ -237,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(this, ClassActivity.class));
                 return true;
             case R.id.action_open_types:
+                startActivity(new Intent(this, TypeActivity.class));
                 return true;
 
             case R.id.action_delete_all:

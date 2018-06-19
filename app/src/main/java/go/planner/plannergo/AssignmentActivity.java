@@ -16,7 +16,11 @@ import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -25,6 +29,7 @@ import android.widget.Spinner;
 import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -46,7 +51,7 @@ public abstract class AssignmentActivity extends AppCompatActivity {
     //All the fucking views all up in one big list because Kotlin's nicer isn't it
     Toolbar toolbar;
     EditText hw_title;
-    EditText hw_class;
+    AutoCompleteTextView hw_class;
     EditText hw_due_date;
     EditText hw_due_time;
     EditText hw_description;
@@ -77,7 +82,7 @@ public abstract class AssignmentActivity extends AppCompatActivity {
      * implementation should include super.onCreate(savedInstanceState;
      * and setContentView(R.layout.activity_assignment);
      *
-     * @param savedInstanceState
+     * @param savedInstanceState for restoring state
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +98,31 @@ public abstract class AssignmentActivity extends AppCompatActivity {
 
         connectViews();
 
+        int layoutID = android.R.layout.simple_dropdown_item_1line;
+        ArrayList<String> classArrayList = FileIO.classNames.getSortedArray();
+        String[] classes = classArrayList.toArray(new String[classArrayList.size()]);
+        ArrayAdapter<String> classAdapter = new ArrayAdapter<>(this, layoutID, classes);
+        hw_class.setAdapter(classAdapter);
+        hw_class.setThreshold(0);
+
+
+
+        ArrayList<String> typesArrayList = FileIO.types.getSortedArray();
+        String[] types = typesArrayList.toArray(new String[typesArrayList.size()]);
+        ArrayAdapter<String> typesAdapter = new ArrayAdapter<>(this, layoutID, types);
+//
+//        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+//                R.array.assignment_types_array, android.R.layout.simple_spinner_item);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        hw_type.setAdapter(typesAdapter);
+
         manageVisibility();
         setUpListeners();
         initViews();
+        initToolbar();
+    }
 
+    void initToolbar(){
         toolbar.setBackgroundColor(ColorPicker.getColorAssignment());
         toolbar.setTitleTextColor(ColorPicker.getColorAssignmentText());
         Drawable menuIcon;
@@ -145,9 +171,7 @@ public abstract class AssignmentActivity extends AppCompatActivity {
 
     abstract void setUpListeners();
 
-    public static void setToolbarMenuItemTextColor(final Toolbar toolbar,
-                                                   final @ColorRes int color,
-                                                   @IdRes final int resId) {
+    public static void setToolbarMenuItemTextColor(final Toolbar toolbar, final @ColorRes int color, @IdRes final int resId) {
         if (toolbar != null) {
             for (int i = 0; i < toolbar.getChildCount(); i++) {
                 final View view = toolbar.getChildAt(i);
@@ -173,19 +197,26 @@ public abstract class AssignmentActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * reads and writes to date
-     * outputs changes to view
-     */
-    TimePickerDialog createTimePicker(final Calendar date, final EditText view) {
-        return new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker timePicker, int hourOfDay, int minute) {
-                date.set(HOUR_OF_DAY, hourOfDay);
-                date.set(MINUTE, minute);
-                view.setText(timeFormat.format(date.getTime()));
-            }
-        }, date.get(HOUR_OF_DAY), date.get(MINUTE), false);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.new_assignment_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.save_assignment:
+                Log.v("NewAssignmentActivity", "save button pressed");
+                saveAssignment();
+            case android.R.id.home:
+                navigateUpTo(new Intent(this, MainActivity.class));
+                return true;
+                default:
+                    return super.onOptionsItemSelected(item);
+
+
+        }
     }
 
     /**
@@ -193,7 +224,7 @@ public abstract class AssignmentActivity extends AppCompatActivity {
      *
      * @param dateToModify 0 for dueDate, 1 for notificationDate1, 2 for NotificationDate2
      * @param view         field to modify
-     * @return
+     * @return TimePickerDialog
      */
     TimePickerDialog createTimePicker(final int dateToModify, final EditText view) {
         final Calendar calendar;

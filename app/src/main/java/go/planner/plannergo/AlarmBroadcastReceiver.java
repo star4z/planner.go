@@ -63,10 +63,10 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             assert notificationManager != null;
             notificationManager.cancel((int) doneAssignment.uniqueID);
 
-            FileIO.readAssignmentsFromFile(context);
+            FileIO.readFiles(context);
             doneAssignment.completed = true;
             FileIO.replaceAssignment(context, doneAssignment);
-            FileIO.writeAssignmentsToFile(context);
+            FileIO.writeFiles(context);
         }
     }
 

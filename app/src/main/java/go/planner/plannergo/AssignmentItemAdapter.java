@@ -31,7 +31,6 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
 
         ConstraintLayout itemView;
         TextView title, className, date;
-        boolean swipeable = true;
 
         ViewHolder(ConstraintLayout itemView) {
             this(itemView, true);
@@ -39,7 +38,6 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
 
         ViewHolder(ConstraintLayout itemView, boolean swipeable) {
             super(itemView);
-            this.swipeable = swipeable;
             this.itemView = itemView;
             title = this.itemView.findViewById(R.id.title);
             if (swipeable) {
@@ -68,7 +66,6 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         NewAssignment a = dataSet.get(position);
         ViewHolder vh = (ViewHolder) holder;
-//        vh.checkBox.setChecked(a.completed);
         vh.title.setText(a.title);
         vh.className.setText(a.className);
 
@@ -111,7 +108,7 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
             FileIO.completedAssignments.remove(a);
             FileIO.inProgressAssignments.add(a);
         }
-        FileIO.writeAssignmentsToFile(activity);
+        FileIO.writeFiles(activity);
         notifyDataSetChanged();
         return a;
     }

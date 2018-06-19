@@ -51,10 +51,10 @@
     <string name="sort_date">Earliest date first</string>
     <string name="sort_class">Alphabetically by class</string>
     <string name="sort_title">Alphabetically by title</string>
-    <string name="sort_type">Group by type</string>
+    <string name="sort_type">Group by category</string>
 
 
-    <string name="default_type">Type</string>
+    <string name="default_type">Category</string>
     <string name="list_item_icon">List Item Icon</string>
     <string name="title_activity_settings">Settings</string>
     <string name="overdue_last_setting">Put overdue items last</string>
@@ -149,8 +149,9 @@
     <string name="details">Details</string>
     <string name="priority_assignment">Priority assignment</string>
     <string name="clear_all">Clear all</string>
-    <string name="edit_assignment_types">Edit assignment types</string>
+    <string name="edit_assignment_types">Edit categories</string>
     <string name="edit_classes">Edit classes</string>
     <string name="empty_trash">Empty trash</string>
+    <string name="completed_note">(COMPLETED)</string>
 
 </resources>

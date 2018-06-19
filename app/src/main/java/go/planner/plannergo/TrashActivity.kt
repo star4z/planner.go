@@ -37,7 +37,7 @@ class TrashActivity : Activity() {
 
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.textWhite))
 
-        FileIO.readAssignmentsFromFile(this)
+        FileIO.readFiles(this)
     }
 
     override fun onResume() {
@@ -47,7 +47,7 @@ class TrashActivity : Activity() {
         invalidateOptionsMenu()
         setUpNavDrawer()
 
-        FileIO.readAssignmentsFromFile(this)
+        FileIO.readFiles(this)
 
         loadPanels()
 
@@ -116,19 +116,18 @@ class TrashActivity : Activity() {
                 nextView.findViewById<ImageView>(R.id.restore).setOnClickListener {
                     FileIO.deletedAssignments.remove(assignment)
                     FileIO.addAssignment(assignment)
-                    FileIO.writeAssignmentsToFile(this)
+                    FileIO.writeFiles(this)
                     loadPanels()
                 }
-
 
                 nextView.findViewById<ImageView>(R.id.delete).setOnClickListener {
                     AlertDialog.Builder(this)
                             .setTitle("Permanently delete this?")
-                            .setMessage("'${if (assignment.title == "") "This" else assignment.title}' will be gone forever.")
+                            .setMessage("'${if (assignment.title == "") "This" else "'$assignment.title'"}' will be gone forever.")
                             .setPositiveButton("Delete", { _, _ ->
                                 run {
                                     FileIO.deletedAssignments.remove(assignment)
-                                    FileIO.writeAssignmentsToFile(this)
+                                    FileIO.writeFiles(this)
                                     loadPanels()
                                 }
                             })
@@ -170,7 +169,7 @@ class TrashActivity : Activity() {
                         .setPositiveButton("Yes", { _, _ ->
                             run {
                                 FileIO.deletedAssignments.clear()
-                                FileIO.writeAssignmentsToFile(this)
+                                FileIO.writeFiles(this)
                                 loadPanels()
                             }
                         })

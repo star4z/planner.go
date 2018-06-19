@@ -2,6 +2,7 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nBar_item"
     android:layout_width="match_parent"
     android:layout_height="48dp"
@@ -28,5 +29,5 @@
         android:layout_gravity="center"
         android:textSize="14sp"
         android:textColor="@android:color/black"
-        android:text="@string/default_title" />
+        tools:text="@string/default_title" />
 </LinearLayout>

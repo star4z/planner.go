@@ -76,7 +76,10 @@
         <activity
             android:name=".ClassActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".TrashActivity" />
+        <activity android:name=".TrashActivity"
+            android:parentActivityName=".MainActivity"/>
+        <activity android:name=".TypeActivity"
+            android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>

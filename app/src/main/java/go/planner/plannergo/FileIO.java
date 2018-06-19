@@ -2,7 +2,6 @@ package go.planner.plannergo;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
@@ -30,12 +29,16 @@ public class FileIO {
     final static ArrayList<NewAssignment> deletedAssignments = new ArrayList<>();
 
     final static Bag<String> classNames = new Bag<>();
+    final static ArrayList<String> ignoredClassNames = new ArrayList<>();
     final static Bag<String> types = new Bag<>();
+    final static ArrayList<String> ignoredTypes = new ArrayList<>();
 
     private static final String NEW_ASSIGNMENTS_FILE_NAME = "planner.assignments.all";
     private static final String DELETED_ASSIGNMENTS_FILE_NAME = "planner.assignments.deleted";
     private static final String TYPES_FILE_NAME = "planner.assignments.types";
+    private static final String IGNORED_TYPES_FILE_NAME = "planner.assignments.types.ignored";
     private static final String CLASSES_FILE_NAME = "planner.assignments.classes";
+    private static final String IGNORED_CLASSES_FILE_NAME = "planner.assignments.classes.ignored";
 
 
     /**
@@ -44,12 +47,13 @@ public class FileIO {
      *
      * @param context used to access files
      */
-    static void readAssignmentsFromFile(Context context) {
+    static void readFiles(Context context) {
         Log.v("FileIO", "reading Assignments");
         clearAssignments();
         try {
-            readAssignments(context);
+            readClasses(context);
             readTypes(context);
+            readAssignments(context);
         } catch (IOException | ClassNotFoundException e) {
             Log.w("FileIO", "caught error " + e);
         }
@@ -62,9 +66,10 @@ public class FileIO {
      *
      * @param context used to access files
      */
-    static void writeAssignmentsToFile(Context context) {
+    static void writeFiles(Context context) {
         try {
             writeTypes(context);
+            writeClasses(context);
             writeAssignments(context);
         } catch (IOException e) {
             Log.w("FileIO", "caught error " + e);
@@ -202,7 +207,7 @@ public class FileIO {
     /**
      * Adds a new assignment to the appropriate list based on whether the assignment is marked
      * completed.
-     * It is necessary to call writeAssignmentsToFile() after calling this method; the call is not
+     * It is necessary to call writeFiles() after calling this method; the call is not
      * included in this method so that multiple add calls may be made before each write.
      *
      * @param assignment Assignment to be added
@@ -215,8 +220,8 @@ public class FileIO {
                 completedAssignments.add(assignment);
             else
                 inProgressAssignments.add(assignment);
-            if (!classNames.contains(assignment.className.toUpperCase()))
-                classNames.add(assignment.className.toUpperCase());
+            if (!classNames.contains(assignment.className))
+                classNames.add(assignment.className);
             if (!types.contains(assignment.type))
                 types.add(assignment.type);
         }
@@ -238,25 +243,26 @@ public class FileIO {
 
         /*
          * Copy of assignment is added to "trash". The copy has a different "unique ID" because
-         * the uniqueID is interpreted as a Date in the context of the trash to calculate when the
-         * assignment should be permanently deleted. If the action is undone, the copy ("alt" for
-         * "alternate") is removed from the trash, and the original with the original unique ID is
-         * added back to list from whence it came.
+         * the uniqueID is interpreted as a Date in the context of the trash. This is used to
+         * calculate when the assignment should be permanently deleted. If the action is undone,
+         * the copy ("alt" for "alternate") is removed from the trash, and the original with the
+         * original unique ID is added back to list from whence it came.
          */
         final NewAssignment alt = assignment.clone();
         alt.uniqueID = Calendar.getInstance().getTimeInMillis();
         deletedAssignments.add(alt);
-        writeAssignmentsToFile(context);
+        writeFiles(context);
         final Snackbar snackbar = createSnackBarPopup(context, assignment);
         snackbar.setAction(R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addAssignment(assignment);
                 deletedAssignments.remove(alt);
-                writeAssignmentsToFile(context);
-                Intent intent = new Intent(context, AssignmentDetailsActivity.class);
-                intent.putExtra("uniqueID", assignment.uniqueID);
-                context.startActivity(intent);
+                writeFiles(context);
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).loadPanels((assignment.completed)
+                            ? completedAssignments : inProgressAssignments);
+                }
             }
         });
         snackbar.show();
@@ -291,7 +297,7 @@ public class FileIO {
             }
             inProgressAssignments.clear();
         }
-        writeAssignmentsToFile(c);
+        writeFiles(c);
 
         Snackbar.make(c.findViewById(R.id.coordinator),
                 "Assignments deleted.", Snackbar.LENGTH_LONG).show();
@@ -304,7 +310,7 @@ public class FileIO {
     }
 
     /**
-     * Calls handled by readAssignmentsFromFile()
+     * Calls handled by readFiles()
      *
      * @param context for system access
      */
@@ -327,7 +333,7 @@ public class FileIO {
     }
 
     /**
-     * Calls handled by writeAssignmentsToFile()
+     * Calls handled by writeFiles()
      *
      * @param c for system access
      */
@@ -386,7 +392,7 @@ public class FileIO {
                 completedAssignments.set(indexOf, newAssignment);
             }
         }
-        writeAssignmentsToFile(context);
+        writeFiles(context);
     }
 
     private static void clearAssignments() {
@@ -425,25 +431,51 @@ public class FileIO {
         for (String type : types.getSortedArray()) {
             oos.writeObject(type);
         }
-//        oos.writeObject(""); //Safety
         Log.v("FileIO", "Types written");
     }
 
-    public static void readClasses(Context context) throws IOException, ClassNotFoundException {
+    static void addClass(String s) {
+        if (!classNames.contains(s) & ignoredClassNames.contains(s)) {
+            classNames.add(s);
+        }
+    }
+
+    static void ignoreClass(String s) {
+        if (classNames.contains(s)) {
+            classNames.remove(s);
+        }
+        if (!ignoredClassNames.contains(s)) {
+            ignoredClassNames.add(s);
+        }
+    }
+
+    static void renameClass(String oldS, String newS) {
+        if (oldS.equals(newS)) return;
+        classNames.replace(oldS, newS);
+        for (int i = 0; i < inProgressAssignments.size(); i++) {
+            if (inProgressAssignments.get(i).className.equals(oldS))
+                inProgressAssignments.get(i).className = newS;
+        }
+        for (int i = 0; i < completedAssignments.size(); i++) {
+            if (completedAssignments.get(i).className.equals(oldS))
+                completedAssignments.get(i).className = newS;
+        }
+    }
+
+    private static void readClasses(Context context) throws IOException, ClassNotFoundException {
         File file = new File(context.getFilesDir(), CLASSES_FILE_NAME);
         FileInputStream fis = new FileInputStream(file);
         ObjectInputStream ois = new ObjectInputStream(fis);
 
         int total = ois.readInt();
-        Log.v("FileIO", "total=" + total);
         for (int i = 0; i < total; i++) {
             String next = (String) ois.readObject();
-            types.add(next);
+            classNames.add(next);
         }
-        Log.v("FileIO", "readClasses()");
+        Log.v("FileIO", "readClasses():" + classNames);
     }
 
-    public static void writeClasses(Context context) throws IOException {
+    private static void writeClasses(Context context) throws IOException {
         File file = new File(context.getFilesDir(), CLASSES_FILE_NAME);
         if (file.createNewFile()) {
             Log.v("FileIO", "writeTypes() new file created");
@@ -451,12 +483,12 @@ public class FileIO {
         }
         FileOutputStream fos = new FileOutputStream(file);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeInt(types.size());
-        for (String type : types.getSortedArray()) {
+        oos.writeInt(classNames.size());
+        for (String type : classNames.getSortedArray()) {
             oos.writeObject(type);
         }
-//        oos.writeObject(""); //Safety
-        Log.v("FileIO", "Classes written");
+        Log.v("FileIO", "Classes written:" + classNames);
     }
+
 
 }
