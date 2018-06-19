@@ -29,16 +29,12 @@ public class FileIO {
     final static ArrayList<NewAssignment> deletedAssignments = new ArrayList<>();
 
     final static Bag<String> classNames = new Bag<>();
-    final static ArrayList<String> ignoredClassNames = new ArrayList<>();
     final static Bag<String> types = new Bag<>();
-    final static ArrayList<String> ignoredTypes = new ArrayList<>();
 
     private static final String NEW_ASSIGNMENTS_FILE_NAME = "planner.assignments.all";
     private static final String DELETED_ASSIGNMENTS_FILE_NAME = "planner.assignments.deleted";
     private static final String TYPES_FILE_NAME = "planner.assignments.types";
-    private static final String IGNORED_TYPES_FILE_NAME = "planner.assignments.types.ignored";
     private static final String CLASSES_FILE_NAME = "planner.assignments.classes";
-    private static final String IGNORED_CLASSES_FILE_NAME = "planner.assignments.classes.ignored";
 
 
     /**
@@ -48,11 +44,11 @@ public class FileIO {
      * @param context used to access files
      */
     static void readFiles(Context context) {
-        Log.v("FileIO", "reading Assignments");
+        Log.v("FileIO", "Starting read...");
         clearAssignments();
+        readClasses(context);
+        readTypes(context);
         try {
-            readClasses(context);
-            readTypes(context);
             readAssignments(context);
         } catch (IOException | ClassNotFoundException e) {
             Log.w("FileIO", "caught error " + e);
@@ -67,9 +63,9 @@ public class FileIO {
      * @param context used to access files
      */
     static void writeFiles(Context context) {
+        writeTypes(context);
+        writeClasses(context);
         try {
-            writeTypes(context);
-            writeClasses(context);
             writeAssignments(context);
         } catch (IOException e) {
             Log.w("FileIO", "caught error " + e);
@@ -88,6 +84,7 @@ public class FileIO {
         File file = new File(context.getFilesDir(), NEW_ASSIGNMENTS_FILE_NAME);
         if (file.createNewFile())
             Log.v("FileIO", "writeAssignments() new file created");
+        Log.v("FileIO", "assignments=" + inProgressAssignments + completedAssignments);
         FileOutputStream fos = new FileOutputStream(file);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         int totalThings = inProgressAssignments.size() + completedAssignments.size();
@@ -105,7 +102,10 @@ public class FileIO {
         // so this code circumvents rather than solves the problem by writing extra data.
         // (totalThings works correctly, so it doesn't even fail internally.)
         if (!inProgressAssignments.isEmpty())
-            writeAssignment(inProgressAssignments.get(0), oos);
+            Log.v("FileIO", "Safety write:");
+        writeAssignment(inProgressAssignments.get(0), oos);
+        oos.close();
+        fos.close();
         Log.v("FileIO", "File written");
     }
 
@@ -146,6 +146,8 @@ public class FileIO {
             addAssignment(a);
             Log.v("FileIO", a.toString());
         }
+        ois.close();
+        fis.close();
         Log.v("FileIO", "readAssignments()");
     }
 
@@ -213,6 +215,7 @@ public class FileIO {
      * @param assignment Assignment to be added
      */
     public static void addAssignment(NewAssignment assignment) {
+        Log.v("FileIO", "addAssignment " + assignment);
         if (assignment.dueDate == null) {
             Log.v("FileIO", "null dateView");
         } else {
@@ -404,91 +407,56 @@ public class FileIO {
     }
 
 
-    private static void readTypes(Context context) throws IOException, ClassNotFoundException {
-        types.clear();
-        File file = new File(context.getFilesDir(), TYPES_FILE_NAME);
-        FileInputStream fis = new FileInputStream(file);
-        ObjectInputStream ois = new ObjectInputStream(fis);
-
-        int total = ois.readInt();
-        Log.v("FileIO", "total=" + total);
-        for (int i = 0; i < total; i++) {
-            String next = (String) ois.readObject();
-            types.add(next);
-        }
-        Log.v("FileIO", "readTypes()");
+    private static void readTypes(Context context) {
+        readBagFromFile(context, TYPES_FILE_NAME, types);
     }
 
-    private static void writeTypes(Context context) throws IOException {
-        File file = new File(context.getFilesDir(), TYPES_FILE_NAME);
-        if (file.createNewFile()) {
-            Log.v("FileIO", "writeTypes() new file created");
-            return;
-        }
-        FileOutputStream fos = new FileOutputStream(file);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeInt(types.size());
-        for (String type : types.getSortedArray()) {
-            oos.writeObject(type);
-        }
-        Log.v("FileIO", "Types written");
+    private static void writeTypes(Context context) {
+        writeBagToFile(context, TYPES_FILE_NAME, types);
     }
 
-    static void addClass(String s) {
-        if (!classNames.contains(s) & ignoredClassNames.contains(s)) {
-            classNames.add(s);
-        }
+    private static void readClasses(Context context) {
+        readBagFromFile(context, CLASSES_FILE_NAME, classNames);
     }
 
-    static void ignoreClass(String s) {
-        if (classNames.contains(s)) {
-            classNames.remove(s);
-        }
-        if (!ignoredClassNames.contains(s)) {
-            ignoredClassNames.add(s);
-        }
+    private static void writeClasses(Context context) {
+        writeBagToFile(context, CLASSES_FILE_NAME, classNames);
     }
 
-    static void renameClass(String oldS, String newS) {
-        if (oldS.equals(newS)) return;
-        classNames.replace(oldS, newS);
-        for (int i = 0; i < inProgressAssignments.size(); i++) {
-            if (inProgressAssignments.get(i).className.equals(oldS))
-                inProgressAssignments.get(i).className = newS;
+    private static void readBagFromFile(Context c, String fileName, Bag<String> b) {
+        File file = new File(c.getFilesDir(), fileName);
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+
+            int total = ois.readInt();
+            for (int i = 0; i < total; i++) {
+                String next = (String) ois.readObject();
+                b.add(next);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            Log.w("FileIO", "caught error " + e);
         }
-        for (int i = 0; i < completedAssignments.size(); i++) {
-            if (completedAssignments.get(i).className.equals(oldS))
-                completedAssignments.get(i).className = newS;
-        }
+        Log.v("FileIO", "read " + fileName);
     }
 
-    private static void readClasses(Context context) throws IOException, ClassNotFoundException {
-        File file = new File(context.getFilesDir(), CLASSES_FILE_NAME);
-        FileInputStream fis = new FileInputStream(file);
-        ObjectInputStream ois = new ObjectInputStream(fis);
-
-        int total = ois.readInt();
-        for (int i = 0; i < total; i++) {
-            String next = (String) ois.readObject();
-            classNames.add(next);
+    private static void writeBagToFile(Context c, String fileName, Bag<String> b) {
+        File file = new File(c.getFilesDir(), fileName);
+        try {
+            if (file.createNewFile()) {
+                Log.v("FileIO", fileName + " created");
+                return;
+            }
+            FileOutputStream fos = new FileOutputStream(file);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeInt(b.size());
+            for (String type : b.getSortedArray()) {
+                oos.writeObject(type);
+            }
+        } catch (IOException e) {
+            Log.w("FileIO", "caught error " + e);
         }
-        Log.v("FileIO", "readClasses():" + classNames);
+        Log.v("FileIO", fileName + " written:" + b);
     }
-
-    private static void writeClasses(Context context) throws IOException {
-        File file = new File(context.getFilesDir(), CLASSES_FILE_NAME);
-        if (file.createNewFile()) {
-            Log.v("FileIO", "writeTypes() new file created");
-            return;
-        }
-        FileOutputStream fos = new FileOutputStream(file);
-        ObjectOutputStream oos = new ObjectOutputStream(fos);
-        oos.writeInt(classNames.size());
-        for (String type : classNames.getSortedArray()) {
-            oos.writeObject(type);
-        }
-        Log.v("FileIO", "Classes written:" + classNames);
-    }
-
 
 }

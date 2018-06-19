@@ -87,21 +87,23 @@ class NewAssignmentActivity : AssignmentActivity() {
         val notification1 = if (enable_custom_notification.isChecked) assignment.notificationDate1 else null
         val notification2 = if (extra_notification.isChecked) assignment.notificationDate2 else null
 
+        val type = if (hw_type.selectedItem != null) hw_type.selectedItem.toString() else ""
+
         assignment = NewAssignment(
                 hw_title.text.toString(),
                 hw_class.text.toString(),
                 assignment.dueDate,
                 hw_description.text.toString(),
                 false,
-                hw_type.selectedItem.toString(),
+                type,
                 priority,
                 notification1,
                 notification2,
                 Calendar.getInstance().timeInMillis
         )
 
-        FileIO.classNames.add(hw_class.text.toString())
-        FileIO.types.add(hw_type.selectedItem.toString())
+//        FileIO.classNames.add(hw_class.text.toString())
+//        FileIO.types.add(type)
 
         FileIO.addAssignment(assignment)
         Log.v("NewAssignmentActivity","type=${assignment.type}")
