@@ -14,6 +14,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import kotlinx.android.synthetic.main.toolbar.*
 
 /**
@@ -108,9 +109,14 @@ abstract class ListActivity : AppCompatActivity() {
                 .setView(editText)
                 .setPositiveButton("Save", { _: DialogInterface, _: Int ->
                     run {
-                        val pos = data.add(editText.text.toString())
-                        FileIO.writeFiles(this)
-                        viewAdapter.notifyItemInserted(pos)
+                        if (!data.contains(editText.text.toString())) {
+                            val pos = data.add(editText.text.toString())
+                            FileIO.writeFiles(this)
+                            viewAdapter.notifyItemInserted(pos)
+                        } else {
+                            val text = "You can't have duplicates!"
+                            Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+                        }
                     }
                 })
                 .setNegativeButton("Cancel", null)

@@ -101,9 +101,10 @@ public class FileIO {
         //App was failing read on the last entered entry,
         // so this code circumvents rather than solves the problem by writing extra data.
         // (totalThings works correctly, so it doesn't even fail internally.)
-        if (!inProgressAssignments.isEmpty())
+        if (!inProgressAssignments.isEmpty()) {
             Log.v("FileIO", "Safety write:");
-        writeAssignment(inProgressAssignments.get(0), oos);
+            writeAssignment(inProgressAssignments.get(0), oos);
+        }
         oos.close();
         fos.close();
         Log.v("FileIO", "File written");

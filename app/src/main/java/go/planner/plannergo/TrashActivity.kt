@@ -33,7 +33,8 @@ class TrashActivity : Activity() {
 
         setActionBar(toolbar)
         toolbar.title = "Trash"
-        toolbar.overflowIcon = ContextCompat.getDrawable(applicationContext,R.drawable.ic_more_vert_white_24dp)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
+            toolbar.overflowIcon = ContextCompat.getDrawable(applicationContext, R.drawable.ic_more_vert_white_24dp)
 
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.textWhite))
 

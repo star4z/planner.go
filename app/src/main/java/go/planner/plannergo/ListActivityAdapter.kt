@@ -87,11 +87,12 @@ class ListActivityAdapter internal constructor(private val data: Bag<String>, pr
         val newPos = data.replace(oldStr, newStr)
         c.onEdit(oldStr, newStr)
         Log.v("ListActivityAdapter", "$oldPos to $newPos")
-        if (newPos >= oldPos)
-            notifyItemRangeChanged(oldPos, newPos)
-        else
-            notifyItemRangeChanged(newPos, oldPos)
-
+        when {
+            newPos == oldPos -> notifyItemChanged(newPos)
+            newPos > oldPos -> notifyItemRangeChanged(oldPos, newPos)
+            else -> notifyItemRangeChanged(newPos, oldPos)
+        }
+//        notifyDataSetChanged()
         Log.v("ListActivity", "data=$data")
     }
 }

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
     android:hint="@string/default_title"
-    android:inputType="text"
+    android:inputType="textCapSentences"
     android:padding="16dp"
     tools:text="EditText" />
 
