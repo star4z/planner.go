@@ -2,6 +2,7 @@ package go.planner.plannergo
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.NavUtils
@@ -13,6 +14,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import kotlinx.android.synthetic.main.toolbar.*
@@ -24,7 +26,7 @@ abstract class ListActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var data: Bag<String>
+    private lateinit var data: ArrayList<String>
 
 
     @SuppressLint("NewApi")
@@ -62,7 +64,7 @@ abstract class ListActivity : AppCompatActivity() {
 
     abstract fun initToolbar()
 
-    abstract fun getData(): Bag<String>
+    abstract fun getData(): ArrayList<String>
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.list_menu_1, menu)
@@ -75,14 +77,14 @@ abstract class ListActivity : AppCompatActivity() {
                 AlertDialog.Builder(this)
                         .setTitle("Are you sure you want to delete all items?")
                         .setMessage("You will not be able to undo this action.")
-                        .setPositiveButton("Yes", { _, _ ->
+                        .setPositiveButton("Yes") { _, _ ->
                             run {
-                                val size = data.size()
+                                val size = data.size
                                 data.clear()
                                 FileIO.writeFiles(this)
                                 viewAdapter.notifyItemRangeChanged(0, size)
                             }
-                        })
+                        }
                         .setNegativeButton("No", null)
                         .show()
                 true
@@ -104,23 +106,29 @@ abstract class ListActivity : AppCompatActivity() {
                 R.layout.view_edit_text_list_item,
                 findViewById(android.R.id.content),
                 false) as EditText
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         AlertDialog.Builder(this)
                 .setTitle("Add new item:")
                 .setView(editText)
-                .setPositiveButton("Save", { _: DialogInterface, _: Int ->
+                .setPositiveButton("Save") { _: DialogInterface, _: Int ->
                     run {
                         if (!data.contains(editText.text.toString())) {
-                            val pos = data.add(editText.text.toString())
+                            data.add(editText.text.toString())
                             FileIO.writeFiles(this)
-                            viewAdapter.notifyItemInserted(pos)
+                            viewAdapter.notifyItemInserted(data.size - 1)
                         } else {
                             val text = "You can't have duplicates!"
                             Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
                         }
+                        imm.hideSoftInputFromWindow(editText.windowToken, 0)
                     }
-                })
-                .setNegativeButton("Cancel", null)
+                }
+                .setNegativeButton("Cancel") {_, _ ->
+                    imm.hideSoftInputFromWindow(editText.windowToken, 0)
+                }
                 .show()
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+
     }
 
     private inline fun consume(f: () -> Unit): Boolean {

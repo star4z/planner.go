@@ -86,26 +86,10 @@ public class NewAssignment extends Assignment {
         return "#" + uniqueID + ", " + title;
     }
 
-    /**
-     * Use as a more in-depth toString
-     * @return ID and Assignment fields
-     */
-    public String getFields(){
-        return toString() + super.toString();
-    }
-
+    //TODO: fix to represent current implementation of type
     public int spinnerPosition(){
-        switch (type) {
-            default:
-                Log.v("SpinnerPosition", "default case");
-            case "Written":
-                return 0;
-            case "Studying":
-                return 1;
-            case "Online":
-                return 2;
-            case "Project":
-                return 3;
-        }
+        int pos = FileIO.classNames.indexOf(type);
+        Log.v("NewAssignment", "spinnerPosition=" + pos);
+        return (pos >= 0) ? pos : 0;
     }
 }

@@ -30,6 +30,8 @@ import android.widget.TextView;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -63,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        checkFirstRun();
 
         parent = findViewById(R.id.parent);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -114,6 +118,17 @@ public class MainActivity extends AppCompatActivity {
         }
 
         super.onNewIntent(intent);
+    }
+
+    private void checkFirstRun(){
+        File file = new File(getFilesDir(), "planner.info");
+        try {
+            if (file.createNewFile()) {
+                startActivity(new Intent(this, TutorialActivity.class));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initNavDrawer() {

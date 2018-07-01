@@ -7,7 +7,7 @@ class TypeActivity : ListActivity() {
         toolbar.title = "Categories"
     }
 
-    override fun getData(): Bag<String> {
+    override fun getData(): ArrayList<String> {
         return FileIO.types
     }
 
@@ -24,7 +24,9 @@ class TypeActivity : ListActivity() {
                 n.type = newString
             }
         }
-        FileIO.types.replace(oldString, newString)
+
+        val iOld = FileIO.types.indexOf(oldString)
+        FileIO.types[iOld] = newString
         FileIO.writeFiles(this)
     }
 }

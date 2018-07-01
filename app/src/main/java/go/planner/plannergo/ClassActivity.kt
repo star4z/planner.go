@@ -16,7 +16,7 @@ class ClassActivity : ListActivity() {
         toolbar.title = "Classes"
     }
 
-    override fun getData(): Bag<String> {
+    override fun getData(): ArrayList<String> {
         return FileIO.classNames
     }
 
@@ -33,7 +33,10 @@ class ClassActivity : ListActivity() {
                 n.className = newString
             }
         }
-        FileIO.classNames.replace(oldString, newString)
+
+        val iOld = FileIO.classNames.indexOf(oldString)
+        if (iOld >= 0)
+            FileIO.classNames[iOld] = newString
         FileIO.writeFiles(this)
     }
 

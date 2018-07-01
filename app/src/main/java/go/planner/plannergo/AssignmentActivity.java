@@ -99,7 +99,7 @@ public abstract class AssignmentActivity extends AppCompatActivity {
         connectViews();
 
         int layoutID = android.R.layout.simple_dropdown_item_1line;
-        ArrayList<String> classArrayList = FileIO.classNames.getSortedArray();
+        ArrayList<String> classArrayList = FileIO.classNames;
         String[] classes = classArrayList.toArray(new String[classArrayList.size()]);
         ArrayAdapter<String> classAdapter = new ArrayAdapter<>(this, layoutID, classes);
         hw_class.setAdapter(classAdapter);
@@ -107,7 +107,7 @@ public abstract class AssignmentActivity extends AppCompatActivity {
 
 
 
-        ArrayList<String> typesArrayList = FileIO.types.getSortedArray();
+        ArrayList<String> typesArrayList = FileIO.types;
         String[] types = typesArrayList.toArray(new String[typesArrayList.size()]);
         ArrayAdapter<String> typesAdapter = new ArrayAdapter<>(this, layoutID, types);
 //

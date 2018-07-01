@@ -1,18 +1,21 @@
 package go.planner.plannergo
 
 import android.app.AlertDialog
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 
-class ListActivityAdapter internal constructor(private val data: Bag<String>, private val c: ListActivity, private val mRecyclerView: RecyclerView)
+
+class ListActivityAdapter internal constructor(private val data: ArrayList<String>, private val c: ListActivity, private val mRecyclerView: RecyclerView)
     : RecyclerView.Adapter<ListActivityAdapter.ViewHolder>() {
 
     /**
@@ -40,19 +43,36 @@ class ListActivityAdapter internal constructor(private val data: Bag<String>, pr
                     c.findViewById(android.R.id.content) as ViewGroup,
                     false) as EditText
             editText.text = SpannableStringBuilder(data[holder.adapterPosition])
-            AlertDialog.Builder(c)
+
+            val imm = c.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val builder = AlertDialog.Builder(c)
                     .setTitle("Edit")
                     .setView(editText)
-                    .setPositiveButton("Save", { _, _ ->
+                    .setPositiveButton("Save") { _, _ ->
                         run {
-                            updateData(view, editText.text.toString()
-                            )
+                            updateData(view, editText.text.toString())
+                            imm.hideSoftInputFromWindow(editText.windowToken, 0)
                         }
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show()
+                    }
+                    .setNegativeButton("Cancel") { _, _ ->
+                        run {
+                            imm.hideSoftInputFromWindow(editText.windowToken, 0)
+                        }
+                    }
+                    .setOnCancelListener {
+                        run {
+                            editText.postDelayed({
+                                imm.hideSoftInputFromWindow(editText.windowToken, 0)
+                            }, 1)
+                        }
+                    }
+            val dialog = builder.create()
+            dialog.setCanceledOnTouchOutside(true)
+            dialog.show()
 
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
         }
+
         holder.remove.setOnClickListener {
             data.remove(holder.textView.text as String)
             notifyItemRemoved(holder.adapterPosition)
@@ -73,7 +93,7 @@ class ListActivityAdapter internal constructor(private val data: Bag<String>, pr
      * Determines the length of the array
      */
     override fun getItemCount(): Int {
-        return data.size()
+        return data.size
     }
 
     /**
@@ -84,14 +104,16 @@ class ListActivityAdapter internal constructor(private val data: Bag<String>, pr
     private fun updateData(view: View, newStr: String) {
         val oldPos = mRecyclerView.getChildLayoutPosition(view)
         val oldStr = data[oldPos]
-        val newPos = data.replace(oldStr, newStr)
         c.onEdit(oldStr, newStr)
-        Log.v("ListActivityAdapter", "$oldPos to $newPos")
-        when {
-            newPos == oldPos -> notifyItemChanged(newPos)
-            newPos > oldPos -> notifyItemRangeChanged(oldPos, newPos)
-            else -> notifyItemRangeChanged(newPos, oldPos)
-        }
+        data[oldPos] = newStr
+
+//        Log.v("ListActivityAdapter", "$oldPos to $newPos")
+        notifyItemChanged(oldPos)
+//        when {
+//            newPos == oldPos -> notifyItemChanged(newPos)
+//            newPos > oldPos -> notifyItemRangeChanged(oldPos, newPos)
+//            else -> notifyItemRangeChanged(newPos, oldPos)
+//        }
 //        notifyDataSetChanged()
         Log.v("ListActivity", "data=$data")
     }

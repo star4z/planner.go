@@ -28,8 +28,8 @@ public class FileIO {
     final static ArrayList<NewAssignment> completedAssignments = new ArrayList<>();
     final static ArrayList<NewAssignment> deletedAssignments = new ArrayList<>();
 
-    final static Bag<String> classNames = new Bag<>();
-    final static Bag<String> types = new Bag<>();
+    final static ArrayList<String> classNames = new ArrayList<>();
+    final static ArrayList<String> types = new ArrayList<>();
 
     private static final String NEW_ASSIGNMENTS_FILE_NAME = "planner.assignments.all";
     private static final String DELETED_ASSIGNMENTS_FILE_NAME = "planner.assignments.deleted";
@@ -65,8 +65,10 @@ public class FileIO {
     static void writeFiles(Context context) {
         writeTypes(context);
         writeClasses(context);
+
         try {
-            writeAssignments(context);
+             writeAssignments(context);
+
         } catch (IOException e) {
             Log.w("FileIO", "caught error " + e);
         }
@@ -82,8 +84,9 @@ public class FileIO {
      */
     private static void writeAssignments(Context context) throws IOException {
         File file = new File(context.getFilesDir(), NEW_ASSIGNMENTS_FILE_NAME);
-        if (file.createNewFile())
+        if (file.createNewFile()) {
             Log.v("FileIO", "writeAssignments() new file created");
+        }
         Log.v("FileIO", "assignments=" + inProgressAssignments + completedAssignments);
         FileOutputStream fos = new FileOutputStream(file);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -424,7 +427,7 @@ public class FileIO {
         writeBagToFile(context, CLASSES_FILE_NAME, classNames);
     }
 
-    private static void readBagFromFile(Context c, String fileName, Bag<String> b) {
+    private static void readBagFromFile(Context c, String fileName, ArrayList<String> b) {
         File file = new File(c.getFilesDir(), fileName);
         try {
             FileInputStream fis = new FileInputStream(file);
@@ -441,7 +444,7 @@ public class FileIO {
         Log.v("FileIO", "read " + fileName);
     }
 
-    private static void writeBagToFile(Context c, String fileName, Bag<String> b) {
+    private static void writeBagToFile(Context c, String fileName, ArrayList<String> b) {
         File file = new File(c.getFilesDir(), fileName);
         try {
             if (file.createNewFile()) {
@@ -451,7 +454,7 @@ public class FileIO {
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeInt(b.size());
-            for (String type : b.getSortedArray()) {
+            for (String type : b) {
                 oos.writeObject(type);
             }
         } catch (IOException e) {
