@@ -144,7 +144,7 @@ class NewAssignmentActivity : AssignmentActivity() {
 
 
     private fun getNumberDialog(outputTo: Int) {
-        //TODO: create functionality
+        //TODO: create functionality (feature currently not implemented)
         Log.v("NewAssignmentActivity", "numberDialog triggered")
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Days before")

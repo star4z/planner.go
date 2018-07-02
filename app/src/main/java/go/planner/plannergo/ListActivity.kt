@@ -127,6 +127,7 @@ abstract class ListActivity : AppCompatActivity() {
                     imm.hideSoftInputFromWindow(editText.windowToken, 0)
                 }
                 .show()
+                .setCanceledOnTouchOutside(false)
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 
     }

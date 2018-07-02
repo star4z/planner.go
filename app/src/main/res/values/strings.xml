@@ -156,8 +156,8 @@
 
     <!-- Tutorial text snippits -->
     <string name="tut_text_01">Hi!</string>
-    <string name="tut_text_02">Here\'s an awesome app to help you keep track of your assignments!</string>
-    <string name="tut_text_03">Let\'s create a new Assignment.  Tap this button to begin.</string>
+    <string name="tut_text_02">Here\'s an awesome app to help you keep track of your assignments</string>
+    <string name="tut_text_03">Let\'s create a new Assignment!\nTap this button to begin-\nWe\'ll fill it out for you this time.</string>
     <string name="skip">skip</string>
 
 </resources>

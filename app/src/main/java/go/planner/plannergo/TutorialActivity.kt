@@ -13,7 +13,7 @@ class TutorialActivity : AppCompatActivity() {
     }
 
     fun onAdd(v: View){
-        startActivity(Intent(this, NewAssignmentActivity::class.java))
+        startActivity(Intent(this, TutorialActivity2::class.java))
     }
 
     fun onQuit(v: View) {

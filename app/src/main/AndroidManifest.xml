@@ -71,7 +71,7 @@
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".MainActivity"
-            android:title="@string/settings"></activity>
+            android:title="@string/settings" />
         <activity
             android:name=".ClassActivity"
             android:parentActivityName=".MainActivity" />
@@ -81,7 +81,8 @@
         <activity
             android:name=".TypeActivity"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".TutorialActivity"></activity>
+        <activity android:name=".TutorialActivity" />
+        <activity android:name=".TutorialActivity2"></activity>
     </application>
 
 </manifest>

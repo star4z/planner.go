@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        checkFirstRun();
+//        checkFirstRun();
 
         parent = findViewById(R.id.parent);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -593,7 +593,7 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param view Plus button view
      */
-    //TODO: pop-up with extra options, define classes, class colors
+    //TODO: pop-up with extra options, define classes, class colors (currently elsewhere)
     public void createNew(View view) {
         startActivity(new Intent(MainActivity.this, NewAssignmentActivity.class));
     }

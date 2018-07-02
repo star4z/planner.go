@@ -12,6 +12,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+/**
+ * By David Vávra and CommonsWare via stack overflow
+ * @see <a href="https://stackoverflow.com/a/10608622/7222176">TimePicker in PreferenceScreen topic</a>
+ */
 public class TimePreference extends DialogPreference {
     private Calendar calendar;
     private TimePicker picker = null;

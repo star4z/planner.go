@@ -86,7 +86,6 @@ public class NewAssignment extends Assignment {
         return "#" + uniqueID + ", " + title;
     }
 
-    //TODO: fix to represent current implementation of type
     public int spinnerPosition(){
         int pos = FileIO.classNames.indexOf(type);
         Log.v("NewAssignment", "spinnerPosition=" + pos);

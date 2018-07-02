@@ -11,6 +11,8 @@ import android.widget.FrameLayout;
 import android.widget.NumberPicker;
 
 /**
+ * By Rob Meeuwisse via stack exchange
+ * @see <a href="https://stackoverflow.com/a/27046784/7222176">Android PreferenceActivity dialog with number picker</a>
  * A {@link android.preference.Preference} that displays a number picker as a dialog.
  */
 public class NumberPreference extends DialogPreference {

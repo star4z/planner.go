@@ -59,6 +59,7 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
                             imm.hideSoftInputFromWindow(editText.windowToken, 0)
                         }
                     }
+                    //Not used since couldn't get it to work
                     .setOnCancelListener {
                         run {
                             editText.postDelayed({
@@ -67,7 +68,10 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
                         }
                     }
             val dialog = builder.create()
-            dialog.setCanceledOnTouchOutside(true)
+
+            //disables ability to cancel dialog with method other than cancel button. I don't like it,
+            //but I don't see an alternative
+            dialog.setCanceledOnTouchOutside(false)
             dialog.show()
 
             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
