@@ -44,6 +44,7 @@
         <item>Monochrome</item>
         <item>Patriotic</item>
         <item>Mint</item>
+        <item>Space White</item>
     </string-array>
 
     <integer-array name="bright_palette">
@@ -137,6 +138,20 @@
     </integer-array>
 
 
+    <integer-array name="space_white_palette">
+        <item>@color/p7_primary</item>
+        <item>@color/p7_primary_accent</item>
+        <item>@color/textBlack</item>
+        <item>@color/p7_secondary</item>
+        <item>@color/p7_secondary_accent</item>
+        <item>@color/textBlack</item>
+        <item>@color/p7_completed</item>
+        <item>@color/p7_completed_accent</item>
+        <item>@color/textBlack</item>
+        <item>@color/p7_assignment</item>
+        <item>@color/p7_assignment_accent</item>
+        <item>@color/textBlack</item>
+    </integer-array>
 
     
 </resources>

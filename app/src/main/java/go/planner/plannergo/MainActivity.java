@@ -39,7 +39,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 
+import go.planner.plannergo.billing.BillingManager;
+
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
 
     //Settings data
     SharedPreferences sharedPref;
@@ -50,12 +54,13 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout parent;
     RecyclerView.LayoutManager layoutManager;
     RecyclerView.Adapter adapter;
-
     Toolbar myToolbar;
     private DrawerLayout mDrawerLayout;
 
-    //TODO: add tutorial
-
+    //Billing
+    private MainViewController mViewController;
+    private BillingManager mBillingManager;
+//    private AcquireFragment mAcquireFragment;
     /**
      * Runs when the activity is created
      *
@@ -66,13 +71,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        checkFirstRun();
+        checkFirstRun();
 
         parent = findViewById(R.id.parent);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
+
+        mViewController = new MainViewController(this);
+        mBillingManager = new BillingManager(this, mViewController.getUpdateListener());
     }
 
 
@@ -106,10 +114,10 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onNewIntent(Intent intent) {
-        Log.v("MainActivity", "NewIntent");
+        Log.v(TAG, "NewIntent");
         if (intent.getExtras() != null) {
             long idToRemove = intent.getExtras().getLong("remove_id", -1);
-            Log.v("MainActivity", "idToRemove=" + idToRemove);
+            Log.v(TAG, "idToRemove=" + idToRemove);
             if (idToRemove != -1) {
                 FileIO.deleteAssignment(this, FileIO.getAssignment(idToRemove));
             }
@@ -505,7 +513,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setNestedScrollingEnabled(false);
 
         SwipeCallback swipeCallback = new SwipeCallback(this) {
-
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 return makeMovementFlags(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
@@ -540,7 +547,7 @@ public class MainActivity extends AppCompatActivity {
                 if (recyclerView.getAdapter() != null) {
                     count = recyclerView.getAdapter().getItemCount();
                 }
-                Log.v("MainActivity", "count=" + count);
+                Log.v(TAG, "count=" + count);
                 if (count <= 0) {
                     heading.setVisibility(View.GONE);
                 }

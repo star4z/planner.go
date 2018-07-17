@@ -51,23 +51,23 @@ class AssignmentDetailsActivity : AssignmentActivity() {
 
         hw_due_date.setOnClickListener {
             Log.v("NewAssignmentActivity", "due date clicked")
-            dueDatePickerDialog.show()
+            dueDatePickerDialog!!.show()
         }
         hw_due_time.setOnClickListener {
             Log.v("NewAssignmentActivity", "due time clicked")
-            dueTimePickerDialog.show()
+            dueTimePickerDialog!!.show()
         }
         n_days.setOnClickListener {
             //            getNumberDialog(1)
         }
         n_time.setOnClickListener {
-            notifyTimePickerDialog.show()
+            notifyTimePickerDialog!!.show()
         }
         r2_date.setOnClickListener {
             //            getNumberDialog(2)
         }
         r2_time.setOnClickListener {
-            notifyExtraTimePickerDialog.show()
+            notifyExtraTimePickerDialog!!.show()
         }
     }
 

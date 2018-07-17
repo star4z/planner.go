@@ -11,7 +11,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="?android:attr/actionBarSize"
         android:background="@color/textGrey"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
@@ -25,107 +25,142 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:padding="16dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/hw_title"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/completed_text"
+                android:layout_weight="1"
+                android:hint="@string/enter_title_of_assignment"
+                android:inputType="textCapSentences" />
 
-                <EditText
-                    android:id="@+id/hw_title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/enter_title_of_assignment"
-                    android:inputType="textCapSentences" />
+            <TextView
+                android:id="@+id/completed_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="@id/hw_title"
+                app:layout_constraintBottom_toBottomOf="@id/hw_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/hw_title"
+                android:text="@string/completed_note"
+                android:visibility="gone" />
 
-                <TextView
-                    android:id="@+id/completed_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:text="@string/completed_note"/>
-            </LinearLayout>
-            <!-- change to spinner -->
             <AutoCompleteTextView
                 android:id="@+id/hw_class"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:hint="@string/enter_class"
-                android:inputType="textCapSentences" />
+                android:inputType="textCapSentences"
+                app:layout_constraintTop_toBottomOf="@id/hw_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                 />
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/due_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:labelFor="@id/hw_due_date"
+                android:paddingEnd="4dp"
+                android:paddingStart="4dp"
+                android:text="@string/due"
+                app:layout_constraintTop_toTopOf="@+id/hw_due_date"
+                app:layout_constraintBottom_toBottomOf="@+id/hw_due_date"
+                app:layout_constraintStart_toStartOf="parent"
+               />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingEnd="4dp"
-                    android:paddingStart="4dp"
-                    android:labelFor="@id/hw_due_date"
-                    android:text="@string/due" />
+            <EditText
+                android:id="@+id/hw_due_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:focusable="false"
+                android:inputType="date"
+                app:layout_constraintTop_toBottomOf="@id/hw_class"
+                app:layout_constraintEnd_toStartOf="@+id/hw_due_time"
+                app:layout_constraintStart_toEndOf="@id/due_title"
+                 />
 
-                <EditText
-                    android:id="@+id/hw_due_date"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:focusable="false"
-                    android:inputType="date"/>
-
-                <EditText
-                    android:id="@+id/hw_due_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:inputType="time"
-                    tools:ignore="LabelFor" />
-
-            </LinearLayout>
+            <EditText
+                android:id="@+id/hw_due_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:focusable="false"
+                android:inputType="time"
+                app:layout_constraintTop_toBottomOf="@+id/hw_class"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:ignore="LabelFor" />
 
             <EditText
                 android:id="@+id/hw_description"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="45dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/hw_due_date"
                 android:hint="@string/details"
                 android:inputType="textCapSentences|textMultiLine"
                 android:maxLines="5" />
 
+            <TextView
+                android:id="@+id/category_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/hw_description"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:text="Category: "
+                />
+
             <Spinner
                 android:id="@+id/hw_type"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:paddingBottom="8dp"
-                android:paddingTop="8dp" />
+                android:paddingTop="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/category_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/category_title"
+                app:layout_constraintTop_toTopOf="@+id/category_title" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
+
+            <CheckBox
+                android:id="@+id/is_priority"
+                android:layout_width="wrap_content"
+                android:layout_height="33dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/category_title" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:onClick="togglePriorityAssignment"
-                android:orientation="horizontal"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp">
-
-                <CheckBox
-                    android:id="@+id/is_priority"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingEnd="8dp"
-                    android:paddingStart="8dp"
-                    android:text="@string/priority_assignment" />
-            </LinearLayout>
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:paddingEnd="8dp"
+                android:paddingStart="8dp"
+                android:text="@string/priority_assignment"
+                app:layout_constraintBottom_toBottomOf="@+id/is_priority"
+                app:layout_constraintStart_toEndOf="@+id/is_priority"
+                app:layout_constraintTop_toTopOf="@+id/is_priority" />
 
 
             <LinearLayout
@@ -245,7 +280,7 @@
                     android:text="8:00 am" />
             </LinearLayout>
 
-        </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
     </ScrollView>
 
 </LinearLayout>

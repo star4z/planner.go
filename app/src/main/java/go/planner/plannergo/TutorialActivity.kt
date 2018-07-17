@@ -12,7 +12,7 @@ class TutorialActivity : AppCompatActivity() {
         setContentView(R.layout.activity_tutorial)
     }
 
-    fun onAdd(v: View){
+    fun onStart(v: View){
         startActivity(Intent(this, TutorialActivity2::class.java))
     }
 

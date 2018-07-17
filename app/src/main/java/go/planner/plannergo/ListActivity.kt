@@ -112,13 +112,13 @@ abstract class ListActivity : AppCompatActivity() {
                 .setView(editText)
                 .setPositiveButton("Save") { _: DialogInterface, _: Int ->
                     run {
-                        if (!data.contains(editText.text.toString())) {
+                        if (data.contains(editText.text.toString())) {
+                            val text = "You can't have duplicates!"
+                            Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+                        } else {
                             data.add(editText.text.toString())
                             FileIO.writeFiles(this)
                             viewAdapter.notifyItemInserted(data.size - 1)
-                        } else {
-                            val text = "You can't have duplicates!"
-                            Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
                         }
                         imm.hideSoftInputFromWindow(editText.windowToken, 0)
                     }

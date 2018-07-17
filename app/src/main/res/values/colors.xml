@@ -66,12 +66,24 @@
     <color name="p6_assignment">#69f0ae</color>
     <color name="p6_assignment_accent">#2bbd7e</color>
 
+    <!--Palette 7: Space White-->
+    <color name="p7_primary">#FFFFFF</color>
+    <color name="p7_primary_accent">#E0E0E0</color>
+    <color name="p7_secondary">#b9f6ca</color>
+    <color name="p7_secondary_accent">#88c399</color>
+    <color name="p7_completed">#FFFFFF</color>
+    <color name="p7_completed_accent">#E0E0E0</color>
+    <color name="p7_assignment">#FFFFFF</color>
+    <color name="p7_assignment_accent">#E0E0E0</color>
+
+
     <color name="iconWhite">#FFFFFFFF</color>
     <color name="iconGrey">#FFA9A9A9</color>
     <color name="iconBlack">#FF000000</color>
 
     <color name="backgroundWhite">#FFFFFFFF</color>
     <color name="backgroundGrey">#FF757575</color>
+    <color name="backgroundLightGrey">#DADEE5</color>
 
     <color name="fillerOffWhite">#eafcf9</color>
 

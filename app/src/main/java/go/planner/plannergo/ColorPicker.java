@@ -41,6 +41,8 @@ public class ColorPicker {
             default:
                 colors = context.getResources().getIntArray(R.array.monochrome_palette);
                 break;
+            case "Space White":
+                colors = context.getResources().getIntArray(R.array.space_white_palette);
         }
 
         updateColors(colors);

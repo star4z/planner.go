@@ -21,14 +21,13 @@ import java.util.Locale;
 
 public class AssignmentItemAdapter extends RecyclerView.Adapter {
 
-    private ArrayList<NewAssignment> dataSet;
-    private SharedPreferences prefs;
+    ArrayList<NewAssignment> dataSet;
+    SharedPreferences prefs;
     private int sortIndex;
 
-    private Activity activity;
+    Activity activity;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
         ConstraintLayout itemView;
         TextView title, className, date;
 
@@ -44,6 +43,31 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
                 className = this.itemView.findViewById(R.id.class_name);
                 date = this.itemView.findViewById(R.id.date);
             }
+        }
+    }
+
+    /**
+     * Handles clicking of the view (Displays details)
+     */
+    class BodyClickListener implements View.OnClickListener {
+        NewAssignment assignment;
+
+        Activity activity;
+
+        BodyClickListener(NewAssignment assignment, Activity activity) {
+            this.assignment = assignment;
+            this.activity = activity;
+        }
+
+        @Override
+        public void onClick(View v) {
+            Bundle args = new Bundle();
+            args.putLong("uniqueID", assignment.uniqueID);
+            args.putInt("sortIndex", sortIndex);
+
+            Intent intent = new Intent(activity, AssignmentDetailsActivity.class);
+            intent.putExtras(args);
+            activity.startActivityForResult(intent, 1);
         }
     }
 
@@ -117,6 +141,7 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
      * Creates snackBar in activity with option to undo completion state change.
      * Used only when the assignment is marked done, NOT when it is deleted. (See
      * FileIO.deleteAssignment().)
+     *
      * @param a assignment; uses title to give personalized pop-up message.
      */
     private void createSnackBarPopup(final NewAssignment a) {
@@ -140,29 +165,5 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         snackbar.show();
     }
 
-    /**
-     * Handles clicking of the view (Displays details)
-     */
-    class BodyClickListener implements View.OnClickListener {
-        NewAssignment assignment;
-
-        Activity activity;
-
-        BodyClickListener(NewAssignment assignment, Activity activity) {
-            this.assignment = assignment;
-            this.activity = activity;
-        }
-
-        @Override
-        public void onClick(View v) {
-            Bundle args = new Bundle();
-            args.putLong("uniqueID", assignment.uniqueID);
-            args.putInt("sortIndex", sortIndex);
-
-            Intent intent = new Intent(activity, AssignmentDetailsActivity.class);
-            intent.putExtras(args);
-            activity.startActivityForResult(intent, 1);
-        }
-    }
 
 }

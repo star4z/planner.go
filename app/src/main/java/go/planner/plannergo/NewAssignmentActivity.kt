@@ -10,6 +10,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.EditText
+import kotlinx.android.synthetic.main.activity_assignment.*
 import java.util.*
 import java.util.Calendar.*
 
@@ -50,23 +51,23 @@ class NewAssignmentActivity : AssignmentActivity() {
 
         hw_due_date.setOnClickListener {
             Log.v("NewAssignmentActivity", "due date clicked")
-            dueDatePickerDialog.show()
+            dueDatePickerDialog!!.show()
         }
         hw_due_time.setOnClickListener {
             Log.v( "NewAssignmentActivity", "due time clicked")
-            dueTimePickerDialog.show()
+            dueTimePickerDialog!!.show()
         }
         n_days.setOnClickListener {
             getNumberDialog(1)
         }
         n_time.setOnClickListener {
-            notifyTimePickerDialog.show()
+            notifyTimePickerDialog!!.show()
         }
         r2_date.setOnClickListener {
             getNumberDialog(2)
         }
         r2_time.setOnClickListener {
-            notifyExtraTimePickerDialog.show()
+            notifyExtraTimePickerDialog!!.show()
         }
 
 

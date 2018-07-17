@@ -42,14 +42,14 @@ class NotificationAlarms {
 
         //"normal" notification setting
         long time = alarmTimeFromAssignment(assignment, prefs, false);
-        if (time > Calendar.getInstance().getTimeInMillis()) {
+        if (time > System.currentTimeMillis()) {
             alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
         }
 
         //extra notification setting
         if (prefs.getBoolean("pref_extra_notif_enabled", false)) {
             long extraTime = alarmTimeFromAssignment(assignment, prefs, true);
-            if (time > Calendar.getInstance().getTimeInMillis()) {
+            if (time > System.currentTimeMillis()) {
                 alarmManager.set(AlarmManager.RTC_WAKEUP, extraTime, pendingIntent);
             }
         }

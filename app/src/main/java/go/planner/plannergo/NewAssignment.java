@@ -43,7 +43,7 @@ public class NewAssignment extends Assignment {
      * @param assignment old Assignment
      */
     NewAssignment(Assignment assignment) {
-        this(assignment, 0,  null, null, Calendar.getInstance().getTimeInMillis());
+        this(assignment, 0,  null, null, System.currentTimeMillis());
     }
 
 
@@ -87,7 +87,7 @@ public class NewAssignment extends Assignment {
     }
 
     public int spinnerPosition(){
-        int pos = FileIO.classNames.indexOf(type);
+        int pos = FileIO.types.indexOf(type);
         Log.v("NewAssignment", "spinnerPosition=" + pos);
         return (pos >= 0) ? pos : 0;
     }

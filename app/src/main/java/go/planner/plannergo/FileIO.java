@@ -23,6 +23,8 @@ import java.util.GregorianCalendar;
  */
 
 public class FileIO {
+    
+    private static final String TAG = "FileIO";
 
     final static ArrayList<NewAssignment> inProgressAssignments = new ArrayList<>();
     final static ArrayList<NewAssignment> completedAssignments = new ArrayList<>();
@@ -44,14 +46,14 @@ public class FileIO {
      * @param context used to access files
      */
     static void readFiles(Context context) {
-        Log.v("FileIO", "Starting read...");
+        Log.v(TAG, "Starting read...");
         clearAssignments();
         readClasses(context);
         readTypes(context);
         try {
             readAssignments(context);
         } catch (IOException | ClassNotFoundException e) {
-            Log.w("FileIO", "caught error " + e);
+            Log.w(TAG, "caught error " + e);
         }
         readDeletedAssignments(context);
     }
@@ -70,7 +72,7 @@ public class FileIO {
              writeAssignments(context);
 
         } catch (IOException e) {
-            Log.w("FileIO", "caught error " + e);
+            Log.w(TAG, "caught error " + e);
         }
         writeDeletedAssignments(context);
     }
@@ -85,9 +87,9 @@ public class FileIO {
     private static void writeAssignments(Context context) throws IOException {
         File file = new File(context.getFilesDir(), NEW_ASSIGNMENTS_FILE_NAME);
         if (file.createNewFile()) {
-            Log.v("FileIO", "writeAssignments() new file created");
+            Log.i(TAG, "writeAssignments() new file created");
         }
-        Log.v("FileIO", "assignments=" + inProgressAssignments + completedAssignments);
+        Log.v(TAG, "assignments=" + inProgressAssignments + completedAssignments);
         FileOutputStream fos = new FileOutputStream(file);
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         int totalThings = inProgressAssignments.size() + completedAssignments.size();
@@ -105,12 +107,12 @@ public class FileIO {
         // so this code circumvents rather than solves the problem by writing extra data.
         // (totalThings works correctly, so it doesn't even fail internally.)
         if (!inProgressAssignments.isEmpty()) {
-            Log.v("FileIO", "Safety write:");
+            Log.v(TAG, "Safety write:");
             writeAssignment(inProgressAssignments.get(0), oos);
         }
         oos.close();
         fos.close();
-        Log.v("FileIO", "File written");
+        Log.v(TAG, "File written");
     }
 
     /**
@@ -133,7 +135,7 @@ public class FileIO {
         oos.writeLong(assignment.notificationDate2 == null ?
                 -1L : assignment.notificationDate2.getTimeInMillis());
         oos.writeLong(assignment.uniqueID);
-        Log.v("FileIO", "Wrote: " + assignment);
+        Log.v(TAG, "Wrote: " + assignment);
     }
 
     private static void readAssignments(Context context) throws IOException, ClassNotFoundException {
@@ -142,17 +144,17 @@ public class FileIO {
         ObjectInputStream ois = new ObjectInputStream(fis);
 
         int total = ois.readInt();
-        Log.v("FileIO", "total=" + total);
+        Log.v(TAG, "total=" + total);
         double fileVersion = ois.readDouble();
-        Log.v("FileIO", "fileVersion=" + fileVersion);
+        Log.v(TAG, "fileVersion=" + fileVersion);
         for (int i = 0; i < total; i++) {
             NewAssignment a = readAssignment(ois, fileVersion);
             addAssignment(a);
-            Log.v("FileIO", a.toString());
+            Log.v(TAG, a.toString());
         }
         ois.close();
         fis.close();
-        Log.v("FileIO", "readAssignments()");
+        Log.v(TAG, "readAssignments()");
     }
 
     /**
@@ -219,9 +221,9 @@ public class FileIO {
      * @param assignment Assignment to be added
      */
     public static void addAssignment(NewAssignment assignment) {
-        Log.v("FileIO", "addAssignment " + assignment);
+        Log.v(TAG, "addAssignment " + assignment);
         if (assignment.dueDate == null) {
-            Log.v("FileIO", "null dateView");
+            Log.v(TAG, "null dateView");
         } else {
             if (assignment.completed)
                 completedAssignments.add(assignment);
@@ -256,7 +258,7 @@ public class FileIO {
          * original unique ID is added back to list from whence it came.
          */
         final NewAssignment alt = assignment.clone();
-        alt.uniqueID = Calendar.getInstance().getTimeInMillis();
+        alt.uniqueID = System.currentTimeMillis();
         deletedAssignments.add(alt);
         writeFiles(context);
         final Snackbar snackbar = createSnackBarPopup(context, assignment);
@@ -286,9 +288,9 @@ public class FileIO {
      * @param c           Context, used to create SnackBar pop-up;
      */
     public static void deleteAll(ArrayList<NewAssignment> assignments, final Activity c) {
-        Log.v("FileIO", "IPA=" + inProgressAssignments);
+        Log.v(TAG, "IPA=" + inProgressAssignments);
         if (assignments.isEmpty()) return;
-        long id = Calendar.getInstance().getTimeInMillis();
+        long id = System.currentTimeMillis();
         if (assignments.get(0).completed) {
             for (NewAssignment a : completedAssignments) {
                 a.uniqueID = id;
@@ -333,9 +335,9 @@ public class FileIO {
             for (int i = 0; i < total; i++) {
                 deletedAssignments.add(readAssignment(ois, fileVersion));
             }
-            Log.v("FileIO", "readDeletedAssignments()");
+            Log.v(TAG, "readDeletedAssignments()");
         } catch (IOException | ClassNotFoundException e) {
-            Log.w("FileIO", "caught error " + e);
+            Log.w(TAG, "caught error " + e);
         }
     }
 
@@ -348,7 +350,7 @@ public class FileIO {
         try {
             File file = new File(c.getFilesDir(), DELETED_ASSIGNMENTS_FILE_NAME);
             if (file.createNewFile())
-                Log.v("FileIO", "writeDeletedAssignments() new file created");
+                Log.v(TAG, "writeDeletedAssignments() new file created");
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeInt(deletedAssignments.size());
@@ -382,9 +384,9 @@ public class FileIO {
             // (Copied from writeAssignments())
             if (!deletedAssignments.isEmpty())
                 writeAssignment(deletedAssignments.get(0), oos);
-            Log.v("FileIO", "File written");
+            Log.v(TAG, "File written");
         } catch (IOException e) {
-            Log.w("FileIO", "caught error " + e);
+            Log.w(TAG, "caught error " + e);
         }
     }
 
@@ -439,16 +441,16 @@ public class FileIO {
                 b.add(next);
             }
         } catch (IOException | ClassNotFoundException e) {
-            Log.w("FileIO", "caught error " + e);
+            Log.w(TAG, "caught error " + e);
         }
-        Log.v("FileIO", "read " + fileName);
+        Log.v(TAG, "read " + fileName);
     }
 
     private static void writeBagToFile(Context c, String fileName, ArrayList<String> b) {
         File file = new File(c.getFilesDir(), fileName);
         try {
             if (file.createNewFile()) {
-                Log.v("FileIO", fileName + " created");
+                Log.v(TAG, fileName + " created");
                 return;
             }
             FileOutputStream fos = new FileOutputStream(file);
@@ -458,9 +460,9 @@ public class FileIO {
                 oos.writeObject(type);
             }
         } catch (IOException e) {
-            Log.w("FileIO", "caught error " + e);
+            Log.w(TAG, "caught error " + e);
         }
-        Log.v("FileIO", fileName + " written:" + b);
+        Log.v(TAG, fileName + " written:" + b);
     }
 
 }
