@@ -20,14 +20,13 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.toolbar.*
 
 /**
- * For displaying and editing lists.
+ * For displaying and editing simple lists.
  */
 abstract class ListActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var data: ArrayList<String>
-
 
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +49,8 @@ abstract class ListActivity : AppCompatActivity() {
 
         viewManager = LinearLayoutManager(this)
         viewAdapter = ListActivityAdapter(data, this, recyclerView)
+
+
 
         recyclerView.apply {
 
@@ -90,7 +91,7 @@ abstract class ListActivity : AppCompatActivity() {
                 true
             }
             android.R.id.home -> {
-                NavUtils.navigateUpFromSameTask(this)
+                finish()
                 true
             }
             else -> {
@@ -101,7 +102,7 @@ abstract class ListActivity : AppCompatActivity() {
 
     abstract fun onEdit(oldString: String, newString: String)
 
-    fun addNew(view: View) {
+    fun addNew(@Suppress("UNUSED_PARAMETER") view: View) {
         val editText = layoutInflater.inflate(
                 R.layout.view_edit_text_list_item,
                 findViewById(android.R.id.content),

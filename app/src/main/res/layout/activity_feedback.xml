@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/screen_main"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FeedbackActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
+    <TextView
+        android:id="@+id/greeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="24dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:text="@string/greeting"
+        android:textStyle="bold"
+        android:textColor="@color/textBlack"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <TextView
+        android:id="@+id/donate_plea"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/donation_plea"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/greeting" />
+
+    <Button
+        android:id="@+id/donate1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/donate_plea"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="16dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="8dp"
+        android:text="Donate"
+        android:background="@drawable/bg_donate_button"
+        android:onClick="openDonationDialog"/>
+
+    <TextView
+        android:id="@+id/repeat_tutorial"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:onClick="replayTutorial"
+        android:padding="24dp"
+        android:paddingEnd="32dp"
+        android:paddingStart="32dp"
+        android:text="@string/repeat_tutorial"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/donate1" />
+
+    <TextView
+        android:id="@+id/rate_us"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/repeat_tutorial"
+        app:layout_constraintStart_toStartOf="parent"
+        android:padding="24dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:text="@string/rate_us"
+        android:onClick="gotoAppRating"/>
+
+
+
+    <TextView
+        android:id="@+id/send_feedback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/rate_us"
+        app:layout_constraintStart_toStartOf="parent"
+        android:padding="24dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:text="@string/send_feedback"
+        android:onClick="openEmailForFeedback"/>
+
+    <TextView
+        android:id="@+id/about"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/send_feedback"
+        android:padding="24dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:text="@string/about"
+        android:onClick="openAboutActivity"/>
+
+</android.support.constraint.ConstraintLayout>

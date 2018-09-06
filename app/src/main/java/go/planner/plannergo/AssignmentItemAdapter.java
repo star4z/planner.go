@@ -21,15 +21,17 @@ import java.util.Locale;
 
 public class AssignmentItemAdapter extends RecyclerView.Adapter {
 
+    private static String TAG = "AssignmentItemAdapter";
+
     ArrayList<NewAssignment> dataSet;
-    SharedPreferences prefs;
+    private SharedPreferences prefs;
     private int sortIndex;
 
     Activity activity;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout itemView;
-        TextView title, className, date;
+        TextView title, className, date, category;
 
         ViewHolder(ConstraintLayout itemView) {
             this(itemView, true);
@@ -42,6 +44,7 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
             if (swipeable) {
                 className = this.itemView.findViewById(R.id.class_name);
                 date = this.itemView.findViewById(R.id.date);
+                category = this.itemView.findViewById(R.id.category);
             }
         }
     }
@@ -91,6 +94,7 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         NewAssignment a = dataSet.get(position);
         ViewHolder vh = (ViewHolder) holder;
         vh.title.setText(a.title);
+        vh.category.setText(a.type);
         vh.className.setText(a.className);
 
         SimpleDateFormat dateFormat = (prefs.getBoolean(SettingsActivity.timeEnabled, false))
@@ -147,6 +151,12 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
     private void createSnackBarPopup(final NewAssignment a) {
         String title = (a.title.equals("")) ? "assignment" : "'" + a.title + "'";
         String status = a.completed ? "complete." : "in progress.";
+
+        Log.v(TAG, "title.length=" + title.length());
+
+        if (title.length() > 18){
+            title = title.substring(0, 15) + "...'";
+        }
 
         Snackbar snackbar = Snackbar.make(
                 activity.findViewById(R.id.coordinator),

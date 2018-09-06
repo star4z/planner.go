@@ -9,7 +9,7 @@
     app:background="?android:attr/colorPrimary"
     android:elevation="4dp"
     android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-    app:navigationContentDescription="Open Navigation Pane"
+    app:navigationContentDescription="@string/open_nav_menu"
     app:navigationIcon="@drawable/ic_dehaze_white_24dp"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
     app:titleTextColor="#FFFFFFFF" />

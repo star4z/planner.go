@@ -1,7 +1,9 @@
 package go.planner.plannergo
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
@@ -28,23 +30,26 @@ import java.util.*
 import java.util.Calendar.*
 
 abstract class AssignmentActivity : AppCompatActivity() {
+    private val tag = "AssignmentActivity"
+
+    //Keeps old data in case edits were accidental
+    private lateinit var oldAssignment: NewAssignment
     //Reads and writes involve this object
-    internal lateinit var assignment: NewAssignment
-    //    Calendar notifyDate = Calendar.getInstance();
-    //    Calendar notifyDate2 = Calendar.getInstance();
+    internal lateinit var mAssignment: NewAssignment
 
     //Settings file
     internal lateinit var prefs: SharedPreferences
 
-
     //Listeners
     internal var dueTimePickerDialog: TimePickerDialog? = null
     internal var dueDatePickerDialog: DatePickerDialog? = null
-    internal var notifyTimePickerDialog: TimePickerDialog? = null
-    internal var notifyExtraTimePickerDialog: TimePickerDialog? = null
 
     internal var dateFormat = SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US)
     internal var timeFormat = SimpleDateFormat("h:mm a".toLowerCase(), Locale.US)
+
+    private lateinit var typeSpinner: Spinner
+    private val layoutID = android.R.layout.simple_dropdown_item_1line
+
 
     /**
      * implementation should include super.onCreate(savedInstanceState;
@@ -60,33 +65,36 @@ abstract class AssignmentActivity : AppCompatActivity() {
 
         val thisIntent = intent
 
-        assignment = FileIO.getAssignment(if (thisIntent.extras != null) thisIntent.extras!!.getLong("uniqueID", -1L) else -1L)
-        Log.v("AssignmentActivity", "assignment=$assignment")
+        mAssignment = FileIO.getAssignment(if (thisIntent.extras != null) thisIntent.extras!!.getLong("uniqueID", -1L) else -1L)
+        Log.v("AssignmentActivity", "mAssignment=$mAssignment")
+        oldAssignment = mAssignment.clone()
 
-
-        val layoutID = android.R.layout.simple_dropdown_item_1line
+        //Set up autocomplete for class field
         val classArrayList = FileIO.classNames
         val classes = classArrayList.toTypedArray()
         val classAdapter = ArrayAdapter(this, layoutID, classes)
         hw_class.setAdapter(classAdapter)
         hw_class.threshold = 0
 
-
-        val typesArrayList = FileIO.types
-        val types = typesArrayList.toTypedArray()
-        val typesAdapter = ArrayAdapter(this, layoutID, types)
-        //
-        //        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-        //                R.array.assignment_types_array, android.R.layout.simple_spinner_item);
-        //        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        val typeSpinner = findViewById<Spinner>(R.id.hw_type)
-        typeSpinner.adapter = typesAdapter
+        updateTypeSpinner()
 
         manageVisibility()
         setUpListeners()
         initViews()
         initToolbar()
     }
+
+    /**
+     * Fills spinner with options from FileIO.types
+     */
+    private fun updateTypeSpinner() {
+        val typesArrayList = FileIO.types
+        val types = typesArrayList.toTypedArray()
+        val typesAdapter = ArrayAdapter(this, layoutID, types)
+        typeSpinner = findViewById(R.id.hw_type)
+        typeSpinner.adapter = typesAdapter
+    }
+
 
     private fun initToolbar() {
         val appBar = findViewById<Toolbar>(R.id.toolbar)
@@ -130,7 +138,20 @@ abstract class AssignmentActivity : AppCompatActivity() {
                 true
             }
             android.R.id.home -> {
-                navigateUpTo(Intent(this, MainActivity::class.java))
+                Log.d(tag, "oldAssignment == assignmet?${oldAssignment.compareFields(getAssignment())}")
+                if (oldAssignment.compareFields(getAssignment()))
+                    navigateUpTo(Intent(this, MainActivity::class.java))
+                else {
+                    //TODO: add don't ask me again option
+                    AlertDialog.Builder(this)
+                            .setMessage("If you leave now, any changes you made will not be saved.")
+                            .setTitle("Leave without saving?")
+                            .setPositiveButton("Leave") { _, _ ->
+                                navigateUpTo(Intent(this, MainActivity::class.java))
+                            }
+                            .setNegativeButton("Go back", null)
+                            .create().show()
+                }
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -147,33 +168,37 @@ abstract class AssignmentActivity : AppCompatActivity() {
     internal fun createTimePicker(dateToModify: Int, view: EditText): TimePickerDialog {
         val calendar: Calendar
         when (dateToModify) {
-            0 -> calendar = if (assignment.dueDate == null)
-                Calendar.getInstance()
-            else
-                assignment.dueDate
-            1 -> calendar = if (assignment.notificationDate1 == null)
-                Calendar.getInstance()
-            else
-                assignment.notificationDate1
-            2 -> calendar = if (assignment.notificationDate2 == null)
-                Calendar.getInstance()
-            else
-                assignment.notificationDate2
-            else -> calendar = if (assignment.dueDate == null)
-                Calendar.getInstance()
-            else
-                assignment.dueDate
+            0 -> calendar =
+                    if (mAssignment.dueDate == null)
+                        Calendar.getInstance()
+                    else
+                        mAssignment.dueDate
+            1 -> calendar =
+                    if (mAssignment.notificationDate1 == null)
+                        Calendar.getInstance()
+                    else
+                        mAssignment.notificationDate1
+            2 -> calendar =
+                    if (mAssignment.notificationDate2 == null)
+                        Calendar.getInstance()
+                    else
+                        mAssignment.notificationDate2
+            else -> calendar =
+                    if (mAssignment.dueDate == null)
+                        Calendar.getInstance()
+                    else
+                        mAssignment.dueDate
         }
 
-        return TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { timePicker, hourOfDay, minute ->
+        return TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
             calendar.set(HOUR_OF_DAY, hourOfDay)
             calendar.set(MINUTE, minute)
             view.setText(timeFormat.format(calendar.time))
             when (dateToModify) {
-                0 -> assignment.dueDate = calendar
-                1 -> assignment.notificationDate1 = calendar
-                2 -> assignment.notificationDate2 = calendar
-                else -> assignment.dueDate = calendar
+                0 -> mAssignment.dueDate = calendar
+                1 -> mAssignment.notificationDate1 = calendar
+                2 -> mAssignment.notificationDate2 = calendar
+                else -> mAssignment.dueDate = calendar
             }
         }, calendar.get(HOUR_OF_DAY), calendar.get(MINUTE), false)
 
@@ -184,7 +209,7 @@ abstract class AssignmentActivity : AppCompatActivity() {
      * outputs changes to view
      */
     internal fun createDatePicker(date: Calendar, view: EditText): DatePickerDialog {
-        return DatePickerDialog(this, DatePickerDialog.OnDateSetListener { datePicker, year, month, dayOfMonth ->
+        return DatePickerDialog(this, DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
             date.set(YEAR, year)
             date.set(MONTH, month)
             date.set(DAY_OF_MONTH, dayOfMonth)
@@ -192,20 +217,29 @@ abstract class AssignmentActivity : AppCompatActivity() {
         }, date.get(YEAR), date.get(MONTH), date.get(DAY_OF_MONTH))
     }
 
-    abstract fun toggleCustomNotification(view: View)
-
-    abstract fun toggleExtraNotification(view: View)
-
-    fun togglePriorityAssignment(view: View) {
-        if (assignment.priority == 1) {
-            assignment.priority = 0
-            is_priority.isChecked = false
-        } else {
-            assignment.priority = 1
-            is_priority.isChecked = true
-        }
+    @SuppressWarnings("unused parameter")
+    fun openTypeActivity(@Suppress("UNUSED_PARAMETER") view: View) {
+        startActivityForResult(Intent(this, TypeActivity::class.java), 0)
     }
 
+    //Updates type spinner when user returns to activity from type editor
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        updateTypeSpinner()
+    }
+
+    internal fun getAssignment():NewAssignment{
+        val mTitl = hw_title.text.toString()
+        val mClas = hw_class.text.toString()
+        val mDate = mAssignment.dueDate
+        val mDesc = hw_description.text.toString()
+        val mComp = mAssignment.completed
+        val mType = if (hw_type.selectedItem != null) hw_type.selectedItem.toString() else ""
+        val mPrio = if (is_priority.isChecked) 1 else 0
+        val mUID = mAssignment.uniqueID
+
+        return NewAssignment(mTitl, mClas, mDate, mDesc, mComp, mType, mPrio, null, null, mUID)
+    }
 
     internal abstract fun saveAssignment()
 

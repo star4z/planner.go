@@ -7,7 +7,7 @@
     <uses-permission android:name="alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="com.android.vending.BILLING"/>
+    <uses-permission android:name="com.android.vending.BILLING" />
 
     <application
         android:allowBackup="true"
@@ -83,7 +83,10 @@
             android:name=".TypeActivity"
             android:parentActivityName=".MainActivity" />
         <activity android:name=".TutorialActivity" />
-        <activity android:name=".TutorialActivity2"></activity>
+        <activity android:name=".TutorialActivity2" />
+        <activity
+            android:name=".FeedbackActivity"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

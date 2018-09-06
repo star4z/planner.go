@@ -13,10 +13,13 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import kotlinx.android.synthetic.main.activity_list.*
 
 
 class ListActivityAdapter internal constructor(private val data: ArrayList<String>, private val c: ListActivity, private val mRecyclerView: RecyclerView)
     : RecyclerView.Adapter<ListActivityAdapter.ViewHolder>() {
+
+    private val notifyEmptyTextView = TextView(c)
 
     /**
      * Provides reference points for the views in a list_activity_item
@@ -59,14 +62,6 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
                             imm.hideSoftInputFromWindow(editText.windowToken, 0)
                         }
                     }
-                    //Not used since couldn't get it to work
-                    .setOnCancelListener {
-                        run {
-                            editText.postDelayed({
-                                imm.hideSoftInputFromWindow(editText.windowToken, 0)
-                            }, 1)
-                        }
-                    }
             val dialog = builder.create()
 
             //disables ability to cancel dialog with method other than cancel button. I don't like it,
@@ -97,6 +92,11 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
      * Determines the length of the array
      */
     override fun getItemCount(): Int {
+        if (data.size == 0){
+            c.recycler_view_label.setText(R.string.empty_list)
+        } else {
+            c.recycler_view_label.text = ""
+        }
         return data.size
     }
 
@@ -111,14 +111,7 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
         c.onEdit(oldStr, newStr)
         data[oldPos] = newStr
 
-//        Log.v("ListActivityAdapter", "$oldPos to $newPos")
         notifyItemChanged(oldPos)
-//        when {
-//            newPos == oldPos -> notifyItemChanged(newPos)
-//            newPos > oldPos -> notifyItemRangeChanged(oldPos, newPos)
-//            else -> notifyItemRangeChanged(newPos, oldPos)
-//        }
-//        notifyDataSetChanged()
         Log.v("ListActivity", "data=$data")
     }
 }

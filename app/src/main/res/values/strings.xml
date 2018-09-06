@@ -60,7 +60,7 @@
     <string name="overdue_last_setting">Put overdue items last</string>
     <string name="about">About</string>
     <string name="setting_default_sort">Default sort</string>
-    <string name="about_text0">© 2018 Benjamin Phillips\nMade with Android Studio</string>
+    <string name="about_text0">© 2018 Benjamin Phillips\nMade with Android Studio\n\nSome assets ©Google under the Apache 2.0 license.</string>
     <string name="default_subtitle">Subtitle stuffy stuff</string>
 
     <string name="import_assignments">Import assignments</string>
@@ -146,7 +146,7 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="restore">Restore</string>
-    <string name="details">Details</string>
+    <string name="details">Enter any extra details here</string>
     <string name="priority_assignment">Priority assignment</string>
     <string name="clear_all">Clear all</string>
     <string name="edit_assignment_types">Edit categories</string>
@@ -160,5 +160,41 @@
     <string name="tut_text_03">Tap the button below to create a new assignment- We\'ll fill it out for you this time.</string>
     <string name="skip">skip tutorial</string>
     <string name="start">Start Tutorial</string>
+
+    <string name="category">Category:</string>
+    <string name="add_category_description">Add a new category of assignments</string>
+
+    <string name="send_feedback">Send Feedback</string>
+    <string name="rate_us">Rate us!</string>
+    <string name="repeat_tutorial">Repeat Tutorial</string>
+    <string name="donation_plea">It takes a lot of time and effort to make this app, so any donations would be really appreciated! Thanks!</string>
+    <string name="greeting">Hi there!</string>
+
+    <!--Billing text -->
+
+    <string name="alert_error_consuming">Error while consuming: %1$s</string>
+    <string name="alert_already_purchased">Item is already purchased</string>
+
+    <string name="content_description_app_loading_image">App loading image</string>
+    <string name="button_purchase">Purchase</string>
+    <string name="button_buy">Buy</string>
+    <string name="button_own">Own</string>
+    <string name="button_update">Update</string>
+    <string name="button_change">Change</string>
+
+    <string name="header_inapp">Donation options</string>
+    <string name="header_subscriptions">Subscriptions</string>
+
+    <string name="error_no_skus">We didn\'t find any SKUs to display&#8230; Check your internet
+        connection and make sure your Google Developer Console was setup correctly.</string>
+    <string name="error_billing_unavailable">Billing unavailable. Make sure your Google Play app
+        is setup correctly</string>
+    <string name="error_billing_default">Billing unavailable. Please check your device.</string>
+
+    <string name="back">Back</string>
+    <string name="open_nav_menu">Open navigation menu</string>
+
+    <string name="empty_list">List is empty.</string>
+    <string name="empty_list_content_descr">Indicates when the list is empty.</string>
 
 </resources>

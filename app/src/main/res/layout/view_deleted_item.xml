@@ -5,24 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/backgroundWhite"
-    android:elevation="8dp"
-    android:padding="16dp">
+    android:elevation="8dp">
 
     <TextView
         android:id="@+id/textView"
         style="@style/TextAppearance.AppCompat.Body1"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="TextView"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="TextView"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:paddingBottom="16dp"
         app:layout_constraintTop_toBottomOf="@id/textView"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TextView"
@@ -36,8 +38,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/delete"
         android:contentDescription="@string/restore"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
+        android:padding="8dp"
         android:src="@drawable/ic_restore_black_24dp"
         android:visibility="visible" />
 
@@ -49,8 +50,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:contentDescription="@string/delete"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:src="@drawable/ic_delete_black_24dp"
         android:visibility="visible" />
 

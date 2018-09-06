@@ -28,6 +28,6 @@
         android:layout_weight="1"
         android:layout_gravity="center"
         android:textSize="14sp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/textGrey"
         tools:text="@string/default_title" />
 </LinearLayout>

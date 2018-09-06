@@ -37,7 +37,7 @@ class TutorialActivity2 : AppCompatActivity() {
         fab.setOnClickListener { initStage1() }
 
         addTextView("The plus button in the bottom right corner creates assignments.")
-        addTextView("Tap it to create an assignment.")
+        addTextView("Tap it to create an mAssignment.")
     }
 
     private fun initStage1() {
@@ -50,7 +50,7 @@ class TutorialActivity2 : AppCompatActivity() {
         touchHelper = feedRecyclerView(recycler_view, makeArray(), ItemTouchHelper.RIGHT)
         recycler_view.visibility = View.VISIBLE
 
-        addTextView("Here's your first assignment (We've filled it out for you)")
+        addTextView("Here's your first mAssignment (We've filled it out for you)")
         addTextView("The title is in bold, and the due date is on the right.")
         addTextView("Swipe it to the right to mark it as done.")
     }
@@ -123,12 +123,12 @@ class TutorialActivity2 : AppCompatActivity() {
         tArray.recycle()
 
 
-        drawer_list.adapter = DrawerAdapter(this, drawerOptions, drawerIcons)
+        drawer_list.adapter = DrawerAdapter(this, drawerOptions, drawerIcons, 1)
 
 
-        drawer_list.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, id ->
+        drawer_list.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             when (position) {
-                1 -> {
+                2 -> {
                     initStage3()
                 }
             }
@@ -165,7 +165,7 @@ class TutorialActivity2 : AppCompatActivity() {
         touchHelper = feedRecyclerView(recycler_view, makeArray(), ItemTouchHelper.LEFT)
 
         addTextView("Checked off assignments show up here.")
-        addTextView("We've had enough of this assignment--\ndelete it by swiping it to the left.")
+        addTextView("We've had enough of this mAssignment--\ndelete it by swiping it to the left.")
     }
 
     private fun initStage4() {
@@ -249,7 +249,7 @@ class TutorialActivity2 : AppCompatActivity() {
                     initStage6(editText.text.toString())
                 }
             }
-            val suggestion1 = body.findViewById<TextView>(R.id.textView2)
+            val suggestion1 = body.findViewById<TextView>(R.id.priority_text)
             suggestion1.setOnClickListener(createListener(suggestion1.text.toString(), dialog))
             val suggestion2 = body.findViewById<TextView>(R.id.textView3)
             suggestion2.setOnClickListener(createListener(suggestion2.text.toString(), dialog))
@@ -288,7 +288,7 @@ class TutorialActivity2 : AppCompatActivity() {
 
         linear_layout.addView(v)
 
-        addTextView("Now, when you make a new assignment, you can select \"$newCategory\" as the category")
+        addTextView("Now, when you make a new mAssignment, you can select \"$newCategory\" as the category")
         addTextView("Well that's it for this tutorial!")
         addTextView("Press the back arrow at the top left to end the tutorial")
     }

@@ -39,8 +39,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 
-import go.planner.plannergo.billing.BillingManager;
-
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -55,12 +53,11 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView.LayoutManager layoutManager;
     RecyclerView.Adapter adapter;
     Toolbar myToolbar;
-    private DrawerLayout mDrawerLayout;
 
-    //Billing
-    private MainViewController mViewController;
-    private BillingManager mBillingManager;
-//    private AcquireFragment mAcquireFragment;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
+    private DrawerAdapter mDrawerAdapter;
+
     /**
      * Runs when the activity is created
      *
@@ -78,9 +75,6 @@ public class MainActivity extends AppCompatActivity {
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         myToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(myToolbar);
-
-        mViewController = new MainViewController(this);
-        mBillingManager = new BillingManager(this, mViewController.getUpdateListener());
     }
 
 
@@ -121,14 +115,17 @@ public class MainActivity extends AppCompatActivity {
             if (idToRemove != -1) {
                 FileIO.deleteAssignment(this, FileIO.getAssignment(idToRemove));
             }
-
+            boolean cTemp = currentScreenIsInProgress;
             currentScreenIsInProgress = intent.getExtras().getBoolean("mode_InProgress", true);
+            if (cTemp != currentScreenIsInProgress)
+                loadPanels((currentScreenIsInProgress) ?
+                        FileIO.inProgressAssignments : FileIO.completedAssignments);
         }
 
         super.onNewIntent(intent);
     }
 
-    private void checkFirstRun(){
+    private void checkFirstRun() {
         File file = new File(getFilesDir(), "planner.info");
         try {
             if (file.createNewFile()) {
@@ -142,8 +139,7 @@ public class MainActivity extends AppCompatActivity {
     private void initNavDrawer() {
         String[] drawerOptions = getResources().getStringArray(R.array.drawer_options_array);
         TypedArray tArray = getResources().obtainTypedArray(R.array.drawer_icons_array);
-        int count = tArray.length();
-        int[] drawerIcons = new int[count];
+        int[] drawerIcons = new int[tArray.length()];
         for (int i = 0; i < drawerIcons.length; i++) {
             drawerIcons[i] = tArray.getResourceId(i, 0);
         }
@@ -152,29 +148,34 @@ public class MainActivity extends AppCompatActivity {
         tArray.recycle();
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
-        ListView mDrawerList = findViewById(R.id.drawer_list);
+         mDrawerList = findViewById(R.id.drawer_list);
 
-        mDrawerList.setAdapter(new DrawerAdapter(this, drawerOptions, drawerIcons));
+        int selectedPos = (currentScreenIsInProgress) ? 1 : 2;
+
+        mDrawerAdapter = new DrawerAdapter(this, drawerOptions, drawerIcons, selectedPos);
+        mDrawerList.setAdapter(mDrawerAdapter);
 
 
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
-                    case 0:
+                    case 1:
                         loadPanels(FileIO.inProgressAssignments);
                         currentScreenIsInProgress = true;
                         break;
-                    case 1:
+                    case 2:
                         loadPanels(FileIO.completedAssignments);
                         currentScreenIsInProgress = false;
                         break;
-                    case 2:
+                    case 3:
                         startActivity(new Intent(MainActivity.this, TrashActivity.class));
                         break;
-                    case 3:
+                    case 4:
                         startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                         break;
+                    case 5:
+                        startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
                 }
                 mDrawerLayout.closeDrawers();
             }
@@ -230,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
         else
             assignments = FileIO.inProgressAssignments;
 
-//        loadPanels(assignments, currentSortIndex);
 
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -295,9 +295,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void loadPanels(ArrayList<NewAssignment> assignments, int sortIndex) {
-
         NotificationAlarms.setNotificationTimers(this);
-        initToolbar(assignments == FileIO.inProgressAssignments);
+        currentScreenIsInProgress = assignments == FileIO.inProgressAssignments;
+        initToolbar(currentScreenIsInProgress);
+        mDrawerAdapter.setSelectedPos((currentScreenIsInProgress)? 1: 2);
+        mDrawerList.setAdapter(mDrawerAdapter);
         currentSortIndex = sortIndex;
 
         parent.removeAllViews();
@@ -352,9 +354,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
-        addHeading(" ");
-        addHeading(" ");
-
     }
 
 
@@ -600,7 +599,6 @@ public class MainActivity extends AppCompatActivity {
      *
      * @param view Plus button view
      */
-    //TODO: pop-up with extra options, define classes, class colors (currently elsewhere)
     public void createNew(View view) {
         startActivity(new Intent(MainActivity.this, NewAssignmentActivity.class));
     }

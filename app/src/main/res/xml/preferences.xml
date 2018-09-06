@@ -3,7 +3,6 @@
     android:title="Settings">
 
     <PreferenceCategory android:title="Appearance">
-
         <ListPreference
             android:defaultValue="Mint"
             android:entries="@array/color_palettes"
@@ -37,10 +36,9 @@
             android:layout="@layout/preference"
             android:persistent="false"
             android:title="Notifications" />
-
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Help &amp; Feedback">
+    <!--<PreferenceCategory android:title="Help &amp; Feedback">
         <Preference
             android:layout="@layout/preference"
             android:title="Send Feedback">
@@ -56,7 +54,6 @@
                 android:targetClass="go.planner.plannergo.AboutActivity"
                 android:targetPackage="go.planner.plannergo" />
         </Preference>
-
-    </PreferenceCategory>
+    </PreferenceCategory>-->
 
 </PreferenceScreen>

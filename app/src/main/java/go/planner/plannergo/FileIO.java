@@ -116,7 +116,7 @@ public class FileIO {
     }
 
     /**
-     * Writes an individual assignment to file
+     * Writes an individual mAssignment to file
      *
      * @param assignment Assignment to write
      * @param oos        Stream to write to
@@ -190,11 +190,11 @@ public class FileIO {
     }
 
     /**
-     * The proper way to access an assignment as of v.0.12.
-     * Finds the assignment with the correct ID number, and if it exists, returns it.
+     * The proper way to access an mAssignment as of v.0.12.
+     * Finds the mAssignment with the correct ID number, and if it exists, returns it.
      * If it does not exist, returns a new instance of NewAssignment.
      *
-     * @param uniqueID ID uniquely identifies assignment based on internal
+     * @param uniqueID ID uniquely identifies mAssignment based on internal
      * @return Assignment with the given uniqueID
      */
     public static NewAssignment getAssignment(long uniqueID) {
@@ -213,7 +213,7 @@ public class FileIO {
     }
 
     /**
-     * Adds a new assignment to the appropriate list based on whether the assignment is marked
+     * Adds a new mAssignment to the appropriate list based on whether the mAssignment is marked
      * completed.
      * It is necessary to call writeFiles() after calling this method; the call is not
      * included in this method so that multiple add calls may be made before each write.
@@ -237,7 +237,7 @@ public class FileIO {
     }
 
     /**
-     * Removes assignment from files and displays a snackBar with an undo option.
+     * Removes mAssignment from files and displays a snackBar with an undo option.
      * If the undo option is selected, it restores the item and displays the item details.
      *
      * @param context    Used to create SnackBar pop-up.
@@ -251,9 +251,9 @@ public class FileIO {
         }
 
         /*
-         * Copy of assignment is added to "trash". The copy has a different "unique ID" because
+         * Copy of mAssignment is added to "trash". The copy has a different "unique ID" because
          * the uniqueID is interpreted as a Date in the context of the trash. This is used to
-         * calculate when the assignment should be permanently deleted. If the action is undone,
+         * calculate when the mAssignment should be permanently deleted. If the action is undone,
          * the copy ("alt" for "alternate") is removed from the trash, and the original with the
          * original unique ID is added back to list from whence it came.
          */
@@ -313,7 +313,7 @@ public class FileIO {
     }
 
     private static Snackbar createSnackBarPopup(Activity c, NewAssignment n) {
-        String title = (n.title.equals("")) ? "Untitled assignment" : "'" + n.title + "'";
+        String title = (n.title.equals("")) ? "Untitled mAssignment" : "'" + n.title + "'";
         return Snackbar.make(c.findViewById(R.id.coordinator),
                 "Deleted " + title + ".", Snackbar.LENGTH_LONG);
     }
@@ -357,7 +357,7 @@ public class FileIO {
             double fileVersion = 2;
             oos.writeDouble(fileVersion);
             Calendar today = Calendar.getInstance();
-            Calendar aDate = new GregorianCalendar(); //assignment creation date
+            Calendar aDate = new GregorianCalendar(); //mAssignment creation date
             for (NewAssignment assignment : deletedAssignments) {
                 aDate.setTimeInMillis(assignment.uniqueID);
                 switch (today.get(Calendar.MONTH) - aDate.get(Calendar.MONTH)) {

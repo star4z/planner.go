@@ -20,6 +20,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
                 android:background="@color/textBlack"
+                app:navigationContentDescription="@string/open_nav_menu"
                 app:navigationIcon="@drawable/ic_dehaze_white_24dp"
                 app:title="In Progress"
                 app:titleTextColor="@color/textWhite" />
@@ -52,6 +53,7 @@
         <ListView
             android:id="@+id/drawer_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:divider="@null"/>
     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

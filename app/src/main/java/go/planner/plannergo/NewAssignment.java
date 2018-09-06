@@ -14,7 +14,7 @@ public class NewAssignment extends Assignment {
     int priority = 0;
     Calendar notificationDate1;
     Calendar notificationDate2;
-    long uniqueID; //unique to each assignment; Differentiates assignments that are otherwise identical
+    long uniqueID; //unique to each mAssignment; Differentiates assignments that are otherwise identical
 
     NewAssignment(){
         this(new Assignment());
@@ -64,12 +64,44 @@ public class NewAssignment extends Assignment {
 
     @Override
     protected NewAssignment clone() {
-        return new NewAssignment(super.clone(), priority, notificationDate1, notificationDate2, uniqueID);
+        return new NewAssignment(title, className, (Calendar) dueDate.clone(), description,
+                completed, type, priority, notificationDate1, notificationDate2, uniqueID);
     }
 
+    /**
+     * Checks if they are copies of the same original mAssignment; if they are, they should contain
+     * the same information. This might not be true all the time in an AssignmentActivity. To compare
+     * fields, use compareFields(NewAssignment).
+     * @param o Another object to compare with this one.
+     * @return true if they are both instances of NewAssignment and share a unique ID, else false.
+     *
+     */
     @Override
     public boolean equals(Object o) {
         return o instanceof NewAssignment && ((NewAssignment) o).uniqueID == uniqueID;
+    }
+
+    /**
+     * Checks if all fields except unique ID between two instances are the same.
+     * Normally does not need to be checked.
+     * Neglects notificationDates because they are unused.
+     * @return true if all editable fields are the same.
+     */
+    public boolean compareFields(NewAssignment o) {
+        Log.v("NewAssignments", String.valueOf(title.equals(o.title)) +
+               String.valueOf(className.equals(o.className)) +
+                String.valueOf(dueDate.equals(o.dueDate)) +
+                String.valueOf(description.equals(o.description)) +
+                String.valueOf(completed == o.completed) +
+                String.valueOf(type.equals(o.type)) +
+                String.valueOf(priority == o.priority));
+        return title.equals(o.title)
+                && className.equals(o.className)
+                && dueDate.equals(o.dueDate)
+                && description.equals(o.description)
+                && completed == o.completed
+                && type.equals(o.type)
+                && priority == o.priority;
     }
 
     @Override

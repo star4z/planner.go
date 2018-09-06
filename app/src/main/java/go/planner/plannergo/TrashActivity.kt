@@ -68,12 +68,12 @@ class TrashActivity : Activity() {
         mDrawerLayout = findViewById(R.id.drawer_layout)
         val mDrawerList = findViewById<ListView>(R.id.drawer_list)
 
-        mDrawerList.adapter = DrawerAdapter(this, drawerOptions, drawerIcons)
+        mDrawerList.adapter = DrawerAdapter(this, drawerOptions, drawerIcons, 3)
 
 
         mDrawerList.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             when (position) {
-                0 -> {
+                1 -> {
                     val intent = Intent(this, MainActivity::class.java).apply {
                         putExtra("mode_InProgress", true)
                         addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -81,7 +81,7 @@ class TrashActivity : Activity() {
                     finish()
                     startActivity(intent)
                 }
-                1 -> {
+                2 -> {
                     val intent = Intent(this, MainActivity::class.java).apply {
                         putExtra("mode_InProgress", false)
                         addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -89,8 +89,9 @@ class TrashActivity : Activity() {
                     finish()
                     startActivity(intent)
                 }
-                2 -> loadPanels()
-                3 -> startActivity(Intent(this@TrashActivity, SettingsActivity::class.java))
+                3 -> loadPanels()
+                4 -> startActivity(Intent(this@TrashActivity, SettingsActivity::class.java))
+                5 -> startActivity(Intent(this@TrashActivity, FeedbackActivity::class.java))
             }
             mDrawerLayout.closeDrawers()
         }
@@ -125,20 +126,19 @@ class TrashActivity : Activity() {
                     AlertDialog.Builder(this)
                             .setTitle("Permanently delete this?")
                             .setMessage("'${if (assignment.title == "") "This" else "'$assignment.title'"}' will be gone forever.")
-                            .setPositiveButton("Delete", { _, _ ->
+                            .setPositiveButton("Delete") { _, _ ->
                                 run {
                                     FileIO.deletedAssignments.remove(assignment)
                                     FileIO.writeFiles(this)
                                     loadPanels()
                                 }
-                            })
+                            }
                             .setNegativeButton("Keep", null)
                             .show()
                 }
                 body.addView(nextView)
             }
         }
-        addHeading(" ")
     }
 
     private fun addHeading(inText: String) {
@@ -167,13 +167,13 @@ class TrashActivity : Activity() {
                 AlertDialog.Builder(this)
                         .setTitle("Are you sure you want to empty the trash?")
                         .setMessage("You will not be able to undo this action.")
-                        .setPositiveButton("Yes", { _, _ ->
+                        .setPositiveButton("Yes") { _, _ ->
                             run {
                                 FileIO.deletedAssignments.clear()
                                 FileIO.writeFiles(this)
                                 loadPanels()
                             }
-                        })
+                        }
                         .setNegativeButton("No", null)
                         .show()
             }

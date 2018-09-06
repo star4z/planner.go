@@ -5,6 +5,8 @@
     <color name="colorAccent">#2bbd7e </color>
     <color name="colorAccentDark">#008c51</color>
 
+    <color name="ic_launcher_background">#212121</color>
+
     <!-- Palette 1: Bright -->
     <color name="p1_primary">#3F51B5</color>
     <color name="p1_primary_dark">#303F9F</color>
@@ -84,10 +86,28 @@
     <color name="backgroundWhite">#FFFFFFFF</color>
     <color name="backgroundGrey">#FF757575</color>
     <color name="backgroundLightGrey">#DADEE5</color>
+    <color name="backgroundLimeGreen">#75f9b8</color>
 
     <color name="fillerOffWhite">#eafcf9</color>
 
     <color name="textBlack">#FF000000</color>
     <color name="textGrey">#FF555555</color>
     <color name="textWhite">#FFFFFFFF</color>
+    
+    <color name="golden">#dda60f</color>
+    <color name="green">#169625</color>
+    <color name="maroon">#a21a50</color>
+
+
+    <!--Added for billing-->
+    <color name="primary_color">#37474F</color>
+    <color name="primary_color_dark">#263238</color>
+    <color name="ascent_color">#4285F4</color>
+
+    <color name="list_bg_color">#eeeeee</color>
+    <color name="row_header_bg_color">#ffffff</color>
+    <color name="row_bg_color">#ffffff</color>
+
+    <color name="disabled_color">#90b1b0</color>
+    <color name="gold">#ffbf00</color>
 </resources>

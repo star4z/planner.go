@@ -40,7 +40,7 @@
         android:onClick="onQuit"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp"/>
+        android:padding="16dp"/>
 
     <Button
         android:id="@+id/button"

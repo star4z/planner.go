@@ -31,7 +31,7 @@
                     android:background="#f9f9f9"
                     android:clipToPadding="false"
                     android:orientation="vertical"
-                    android:paddingBottom="8dp" />
+                    android:paddingBottom="96dp" />
 
             </android.support.v4.widget.NestedScrollView>
 
@@ -60,6 +60,8 @@
         <ListView
             android:id="@+id/drawer_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:dividerHeight="0dp"
+            android:divider="@null"/>
     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

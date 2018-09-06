@@ -15,7 +15,7 @@
         android:background="@color/textGrey"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:navigationContentDescription="Back"
+        app:navigationContentDescription="@string/back"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="New assignment"
@@ -34,23 +34,23 @@
                 android:id="@+id/hw_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/completed_text"
                 android:layout_weight="1"
                 android:hint="@string/enter_title_of_assignment"
-                android:inputType="textCapSentences" />
+                android:inputType="textCapSentences"
+                app:layout_constraintEnd_toStartOf="@id/completed_text"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/completed_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="@id/hw_title"
+                android:text="@string/completed_note"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/hw_title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/hw_title"
-                android:text="@string/completed_note"
-                android:visibility="gone" />
+                app:layout_constraintTop_toTopOf="@id/hw_title" />
 
             <AutoCompleteTextView
                 android:id="@+id/hw_class"
@@ -59,10 +59,9 @@
                 android:layout_marginEnd="8dp"
                 android:hint="@string/enter_class"
                 android:inputType="textCapSentences"
-                app:layout_constraintTop_toBottomOf="@id/hw_title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                 />
+                app:layout_constraintTop_toBottomOf="@id/hw_title" />
 
 
             <TextView
@@ -74,10 +73,9 @@
                 android:paddingEnd="4dp"
                 android:paddingStart="4dp"
                 android:text="@string/due"
-                app:layout_constraintTop_toTopOf="@+id/hw_due_date"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="@+id/hw_due_date"
-                app:layout_constraintStart_toStartOf="parent"
-               />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
                 android:id="@+id/hw_due_date"
@@ -87,10 +85,9 @@
                 android:layout_weight="1"
                 android:focusable="false"
                 android:inputType="date"
-                app:layout_constraintTop_toBottomOf="@id/hw_class"
                 app:layout_constraintEnd_toStartOf="@+id/hw_due_time"
                 app:layout_constraintStart_toEndOf="@id/due_title"
-                 />
+                app:layout_constraintTop_toBottomOf="@id/hw_class" />
 
             <EditText
                 android:id="@+id/hw_due_time"
@@ -99,186 +96,196 @@
                 android:layout_marginEnd="8dp"
                 android:focusable="false"
                 android:inputType="time"
-                app:layout_constraintTop_toBottomOf="@+id/hw_class"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/hw_class"
                 tools:ignore="LabelFor" />
 
             <EditText
                 android:id="@+id/hw_description"
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/hw_due_date"
+                android:layout_height="wrap_content"
                 android:hint="@string/details"
                 android:inputType="textCapSentences|textMultiLine"
-                android:maxLines="5" />
+                android:maxLines="5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/hw_due_date" />
 
             <TextView
                 android:id="@+id/category_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/hw_description"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:text="Category: "
-                />
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/category"
+                android:textSize="16sp"
+                android:labelFor="@id/hw_type"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/hw_description" />
 
             <Spinner
                 android:id="@+id/hw_type"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
+                android:layout_margin="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
                 app:layout_constraintBottom_toBottomOf="@+id/category_title"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/add_category"
                 app:layout_constraintStart_toEndOf="@+id/category_title"
+                app:layout_constraintTop_toTopOf="@+id/category_title" />
+
+            <ImageView
+                android:id="@+id/add_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/add_category_description"
+                android:onClick="openTypeActivity"
+                android:src="@drawable/ic_add_circle_black_24dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/category_title" />
 
 
             <CheckBox
                 android:id="@+id/is_priority"
-                android:layout_width="wrap_content"
-                android:layout_height="33dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="20dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/category_title" />
 
             <TextView
-                android:id="@+id/textView2"
+                android:id="@+id/priority_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_weight="1"
-                android:paddingEnd="8dp"
-                android:paddingStart="8dp"
                 android:text="@string/priority_assignment"
                 app:layout_constraintBottom_toBottomOf="@+id/is_priority"
                 app:layout_constraintStart_toEndOf="@+id/is_priority"
                 app:layout_constraintTop_toTopOf="@+id/is_priority" />
 
 
-            <LinearLayout
-                android:id="@+id/custom_notification"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="toggleCustomNotification"
-                android:orientation="horizontal"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:visibility="gone">
+            <!--<LinearLayout-->
+                <!--android:id="@+id/custom_notification"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:onClick="toggleCustomNotification"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:paddingBottom="8dp"-->
+                <!--android:paddingTop="8dp"-->
+                <!--android:visibility="gone">-->
 
-                <CheckBox
-                    android:id="@+id/enable_custom_notification"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:onClick="toggleCustomNotification" />
+                <!--<CheckBox-->
+                    <!--android:id="@+id/enable_custom_notification"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:focusable="false"-->
+                    <!--android:onClick="toggleCustomNotification" />-->
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingEnd="8dp"
-                    android:paddingStart="8dp"
-                    android:text="Custom notification" />
-            </LinearLayout>
+                <!--<TextView-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:paddingEnd="8dp"-->
+                    <!--android:paddingStart="8dp"-->
+                    <!--android:text="Custom notification" />-->
+            <!--</LinearLayout>-->
 
-            <LinearLayout
-                android:id="@+id/reminder_display"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone">
+            <!--<LinearLayout-->
+                <!--android:id="@+id/reminder_display"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:visibility="gone">-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Remind me " />
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="Remind me " />-->
 
-                <EditText
-                    android:id="@+id/n_days"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:text="1" />
+                <!--<EditText-->
+                    <!--android:id="@+id/n_days"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:focusable="false"-->
+                    <!--android:text="1" />-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" days before at " />
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text=" days before at " />-->
 
-                <EditText
-                    android:id="@+id/n_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:text="8:00 am" />
-            </LinearLayout>
+                <!--<EditText-->
+                    <!--android:id="@+id/n_time"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:focusable="false"-->
+                    <!--android:text="8:00 am" />-->
+            <!--</LinearLayout>-->
 
-            <LinearLayout
-                android:id="@+id/custom_notification_2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:onClick="toggleExtraNotification"
-                android:orientation="horizontal"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:visibility="gone">
+            <!--<LinearLayout-->
+                <!--android:id="@+id/custom_notification_2"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:onClick="toggleExtraNotification"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:paddingBottom="8dp"-->
+                <!--android:paddingTop="8dp"-->
+                <!--android:visibility="gone">-->
 
-                <CheckBox
-                    android:id="@+id/extra_notification"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:onClick="toggleExtraNotification" />
+                <!--<CheckBox-->
+                    <!--android:id="@+id/extra_notification"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:focusable="false"-->
+                    <!--android:onClick="toggleExtraNotification" />-->
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingEnd="8dp"
-                    android:paddingStart="8dp"
-                    android:text="Extra notification?" />
+                <!--<TextView-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:paddingEnd="8dp"-->
+                    <!--android:paddingStart="8dp"-->
+                    <!--android:text="Extra notification?" />-->
 
-            </LinearLayout>
+            <!--</LinearLayout>-->
 
-            <LinearLayout
-                android:id="@+id/extra_reminder_display"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone">
+            <!--<LinearLayout-->
+                <!--android:id="@+id/extra_reminder_display"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal"-->
+                <!--android:visibility="gone">-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Remind me " />
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="Remind me " />-->
 
-                <EditText
-                    android:id="@+id/r2_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:text="7" />
+                <!--<EditText-->
+                    <!--android:id="@+id/r2_date"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:focusable="false"-->
+                    <!--android:text="7" />-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=" days before at " />
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text=" days before at " />-->
 
-                <EditText
-                    android:id="@+id/r2_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:text="8:00 am" />
-            </LinearLayout>
+                <!--<EditText-->
+                    <!--android:id="@+id/r2_time"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:focusable="false"-->
+                    <!--android:text="8:00 am" />-->
+            <!--</LinearLayout>-->
 
         </android.support.constraint.ConstraintLayout>
     </ScrollView>

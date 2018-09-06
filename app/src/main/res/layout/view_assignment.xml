@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/assignment_box"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/white"
+    android:background="@color/backgroundWhite"
     android:elevation="4dp"
     android:orientation="horizontal"
     android:padding="4dp"
@@ -15,14 +16,30 @@
 
     <TextView
         android:id="@+id/title"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:padding="4dp"
         android:text="@string/default_title"
+        android:textSize="16sp"
         android:textStyle="bold"
+        android:maxLines="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:layout_marginStart="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/title"
+        app:layout_constraintStart_toEndOf="@+id/title"
+        app:layout_constraintTop_toTopOf="@+id/title"
+        tools:text="⋅ Category"
+        android:textStyle="italic"
+        android:textAllCaps="true"
+        android:textSize="12sp"/>
 
     <TextView
         android:id="@+id/class_name"
@@ -31,6 +48,7 @@
         android:maxLines="1"
         android:padding="4dp"
         android:text="@string/default_class"
+        android:textSize="10sp"
         android:textAllCaps="true"
         app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
