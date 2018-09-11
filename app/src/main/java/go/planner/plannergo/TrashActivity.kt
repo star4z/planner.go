@@ -101,9 +101,9 @@ class TrashActivity : Activity() {
         body.removeAllViews()
         Log.v("TrashActivity", FileIO.deletedAssignments.toString())
 
-        addHeading("Assignments in the trash are permanently deleted after 30 days.")
+        addHeading(R.string.deletion_is_permanent)
         if (FileIO.deletedAssignments.isEmpty())
-            addHeading("The trash is empty.")
+            addHeading(R.string.trash_is_empty)
         else {
             for (assignment: NewAssignment in FileIO.deletedAssignments) {
                 val nextView = layoutInflater.inflate(
@@ -123,17 +123,18 @@ class TrashActivity : Activity() {
                 }
 
                 nextView.findViewById<ImageView>(R.id.delete).setOnClickListener {
+                    title = if (assignment.title == "") getString(R.string.mThis) else "'${assignment.title}'"
                     AlertDialog.Builder(this)
-                            .setTitle("Permanently delete this?")
-                            .setMessage("'${if (assignment.title == "") "This" else "'$assignment.title'"}' will be gone forever.")
-                            .setPositiveButton("Delete") { _, _ ->
+                            .setTitle(R.string.perm_delete_check)
+                            .setMessage("$title ${R.string.gone_forever}")
+                            .setPositiveButton(R.string.delete) { _, _ ->
                                 run {
                                     FileIO.deletedAssignments.remove(assignment)
                                     FileIO.writeFiles(this)
                                     loadPanels()
                                 }
                             }
-                            .setNegativeButton("Keep", null)
+                            .setNegativeButton(R.string.keep, null)
                             .show()
                 }
                 body.addView(nextView)
@@ -141,14 +142,13 @@ class TrashActivity : Activity() {
         }
     }
 
-    private fun addHeading(inText: String) {
-        val outText = if (inText == "") "Untitled" else inText
+    private fun addHeading(inText: Int) {
         val header = layoutInflater.inflate(
                 R.layout.view_sort_header,
                 findViewById<View>(android.R.id.content) as ViewGroup,
                 false
         ) as TextView
-        header.text = outText
+        header.setText(inText)
         body.addView(header)
     }
 
@@ -165,16 +165,16 @@ class TrashActivity : Activity() {
             }
             R.id.empty_trash -> {
                 AlertDialog.Builder(this)
-                        .setTitle("Are you sure you want to empty the trash?")
-                        .setMessage("You will not be able to undo this action.")
-                        .setPositiveButton("Yes") { _, _ ->
+                        .setTitle(R.string.empty_trash_check)
+                        .setMessage(R.string.no_undo)
+                        .setPositiveButton(R.string.yes) { _, _ ->
                             run {
                                 FileIO.deletedAssignments.clear()
                                 FileIO.writeFiles(this)
                                 loadPanels()
                             }
                         }
-                        .setNegativeButton("No", null)
+                        .setNegativeButton(R.string.no, null)
                         .show()
             }
         }

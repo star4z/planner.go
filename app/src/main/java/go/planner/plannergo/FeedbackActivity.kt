@@ -57,7 +57,7 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider {
         else
             AcquireFragment()
 
-        mBillingManager = BillingManager(this, mViewController.updateListener)
+        mBillingManager = BillingManager(this, @Suppress("INACCESSIBLE_TYPE") mViewController.updateListener)
 
         mScreenMain = findViewById(R.id.screen_main)
 
@@ -81,7 +81,7 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider {
     }
 
     fun replayTutorial(@Suppress("UNUSED_PARAMETER") view: View) {
-        startActivity(Intent(this, TutorialActivity::class.java))
+        startActivity(Intent(this, TutorialActivityTitle::class.java))
     }
 
     fun openDonationDialog(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -104,13 +104,13 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider {
     fun openEmailForFeedback(@Suppress("UNUSED_PARAMETER") view: View) {
         val intent = Intent(android.content.Intent.ACTION_SENDTO)
         intent.type = "text/plain"
-        intent.putExtra(Intent.EXTRA_SUBJECT, "Planner Agenda Feedback")
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Planner Agenda Feedback")//English, since it's for me to read
         intent.data = Uri.parse("mailto:benjaminphillipsdeveloper@gmail.com")
 
         try {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            Toast.makeText(this, "Could not find an email app.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.email_app_missing, Toast.LENGTH_LONG).show()
         }
     }
 

@@ -27,8 +27,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
 
 
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle("Settings");
-        toolbar.setNavigationContentDescription("Back");
+        toolbar.setTitle(R.string.settings);
+        toolbar.setNavigationContentDescription(R.string.back);
         if (ColorPicker.getColorSecondaryText() == Color.BLACK) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
         } else {
@@ -61,7 +61,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
         if (getFragmentManager().getBackStackEntryCount() == 0) {
             super.onBackPressed();
         } else {
-            toolbar.setTitle("Settings");
+            toolbar.setTitle(R.string.settings);
             getFragmentManager().popBackStack();
         }
     }
@@ -74,7 +74,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
                 if (getFragmentManager().getBackStackEntryCount() == 0) {
                     NavUtils.navigateUpFromSameTask(this);
                 } else {
-                    toolbar.setTitle("Settings");
+                    toolbar.setTitle(R.string.set);
                     getFragmentManager().popBackStack();
                 }
                 return true;
@@ -85,7 +85,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
     @Override
     public void onNestedPreferenceSelected(int key) {
         //if multiple nested preference screens are made, this needs to be rewritten
-        toolbar.setTitle("Notifications");
+        toolbar.setTitle(R.string.notifications);
 
         getFragmentManager().beginTransaction().replace(
                 R.id.parent,

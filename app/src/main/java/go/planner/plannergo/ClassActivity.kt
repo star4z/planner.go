@@ -13,7 +13,7 @@ said that they don't want suggested
 class ClassActivity : ListActivity() {
 
     override fun initToolbar() {
-        toolbar.title = "Classes"
+        toolbar.setTitle(R.string.classes)
     }
 
     override fun getData(): ArrayList<String> {

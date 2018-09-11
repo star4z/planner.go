@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.support.v4.app.NavUtils
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -104,17 +103,17 @@ abstract class ListActivity : AppCompatActivity() {
 
     fun addNew(@Suppress("UNUSED_PARAMETER") view: View) {
         val editText = layoutInflater.inflate(
-                R.layout.view_edit_text_list_item,
+                R.layout.dialog_edit_text,
                 findViewById(android.R.id.content),
                 false) as EditText
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         AlertDialog.Builder(this)
-                .setTitle("Add new item:")
+                .setTitle(R.string.add_new)
                 .setView(editText)
-                .setPositiveButton("Save") { _: DialogInterface, _: Int ->
+                .setPositiveButton(R.string.save) { _: DialogInterface, _: Int ->
                     run {
                         if (data.contains(editText.text.toString())) {
-                            val text = "You can't have duplicates!"
+                            val text = R.string.no_duplicates
                             Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
                         } else {
                             data.add(editText.text.toString())
@@ -124,7 +123,7 @@ abstract class ListActivity : AppCompatActivity() {
                         imm.hideSoftInputFromWindow(editText.windowToken, 0)
                     }
                 }
-                .setNegativeButton("Cancel") {_, _ ->
+                .setNegativeButton(R.string.cancel) {_, _ ->
                     imm.hideSoftInputFromWindow(editText.windowToken, 0)
                 }
                 .show()

@@ -128,7 +128,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                         setContentIntent(pendingIntent).setSmallIcon(R.drawable.ic_notification).
                         addAction(new Action(
                                 R.drawable.ic_check_default_24dp,
-                                "Done",
+                                context.getString(R.string.done),
                                 PendingIntent.getBroadcast(context, 0, doneIntent, PendingIntent.FLAG_UPDATE_CURRENT))).
                         setAutoCancel(true).
                         build();

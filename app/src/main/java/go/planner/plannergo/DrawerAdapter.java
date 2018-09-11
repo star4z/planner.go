@@ -59,18 +59,8 @@ public class DrawerAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View view = (position == selectedPos) ?
-                inflater.inflate(R.layout.view_drawer_list_item_selected, null) :
-                inflater.inflate(R.layout.view_drawer_list_item, null); //I'm not sure why but this only works when the root is null else the app crashes
-
-//            View view = convertView;
-//            if (convertView == null) {
-//                Log.v(TAG, "convertView was null");
-//                view = inflater.inflate(R.layout.view_drawer_list_item, parent); //I'm not sure why but this only works when the root is null else the app crashes
-//            } else {
-//                Log.v(TAG, "convertView was !null");
-//            }
-
-
+                inflater.inflate(R.layout.view_drawer_list_item_selected, parent, false) :
+                inflater.inflate(R.layout.view_drawer_list_item, parent, false); //I'm not sure why but this only works when the root is null else the app crashes
 
         TextView text = view.findViewById(R.id.nBar_item_text);
         ImageView icon = view.findViewById(R.id.nBar_item_icon);

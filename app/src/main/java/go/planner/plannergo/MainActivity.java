@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         File file = new File(getFilesDir(), "planner.info");
         try {
             if (file.createNewFile()) {
-                startActivity(new Intent(this, TutorialActivity.class));
+                startActivity(new Intent(this, TutorialActivityTitle.class));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -265,16 +265,16 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_delete_all:
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
-                alertDialog.setTitle("Are you sure you want to delete all assignments?");
-                alertDialog.setMessage("They will be moved to trash and deleted after 30 days");
-                alertDialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                alertDialog.setTitle(R.string.delete_all);
+                alertDialog.setMessage(R.string.move_to_trash_note);
+                alertDialog.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         FileIO.deleteAll(assignments, MainActivity.this);
                         loadPanels(assignments);
                     }
                 });
-                alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                alertDialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
@@ -305,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
         parent.removeAllViews();
 
         if (assignments.isEmpty()) {
-            addHeading("There are no assignments.\nTo create a new assignment, press the +");
+            addHeading(R.string.empty_assignment_set);
         } else {
             Comparator<NewAssignment> comparator;
 
@@ -378,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (!priorityAssignments.isEmpty()) {
-            final TextView heading = addHeading("Priority");
+            final TextView heading = addHeading(R.string.priority);
             final RecyclerView recyclerView = createRecyclerViewForList(priorityAssignments, heading);
 
             parent.addView(recyclerView);
@@ -415,7 +415,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (!overdueAssignments.isEmpty()) {
-            TextView heading = addHeading("Overdue");
+            TextView heading = addHeading(R.string.due_overdue);
             RecyclerView recyclerView = createRecyclerViewForList(overdueAssignments, heading);
             parent.addView(recyclerView);
         }
@@ -476,7 +476,7 @@ public class MainActivity extends AppCompatActivity {
             if (last == null) {
                 lastHeading = (a.title.length() > 0)
                         ? addHeading(Character.toString(a.title.toUpperCase().charAt(0)))
-                        : addHeading("Untitled");
+                        : addHeading(R.string.untitled);
                 group = new ArrayList<>();
             } else if (a.title.length() > 0 && !Character.toString(a.title.toUpperCase().charAt(0)).equals(last)) {
                 RecyclerView rV = createRecyclerViewForList(group, lastHeading);
@@ -561,14 +561,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     TextView addHeading(String text) {
-        if (text.equals(""))
-            text = "Untitled";
         TextView header = (TextView) getLayoutInflater().inflate(
                 R.layout.view_sort_header,
                 (ViewGroup) findViewById(android.R.id.content),
                 false
         );
-        header.setText(text);
+        header.setText((text.equals("")? getString(R.string.untitled): text));
         parent.addView(header);
         return header;
     }

@@ -22,7 +22,7 @@
                 android:background="@color/textBlack"
                 app:navigationContentDescription="@string/open_nav_menu"
                 app:navigationIcon="@drawable/ic_dehaze_white_24dp"
-                app:title="In Progress"
+                app:title="@string/header_in_progress"
                 app:titleTextColor="@color/textWhite" />
 
             <android.support.v7.widget.RecyclerView

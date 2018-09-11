@@ -18,7 +18,7 @@
         app:navigationContentDescription="@string/back"
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="New assignment"
+        app:title="@string/new_a"
         app:titleTextColor="#FFFFFFFF" />
 
     <ScrollView
@@ -139,11 +139,13 @@
 
             <ImageView
                 android:id="@+id/add_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:contentDescription="@string/add_category_description"
                 android:onClick="openTypeActivity"
+                android:padding="12dp"
                 android:src="@drawable/ic_add_circle_black_24dp"
+                app:layout_constraintBottom_toBottomOf="@+id/category_title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/category_title" />
 
@@ -168,124 +170,6 @@
                 app:layout_constraintBottom_toBottomOf="@+id/is_priority"
                 app:layout_constraintStart_toEndOf="@+id/is_priority"
                 app:layout_constraintTop_toTopOf="@+id/is_priority" />
-
-
-            <!--<LinearLayout-->
-                <!--android:id="@+id/custom_notification"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:onClick="toggleCustomNotification"-->
-                <!--android:orientation="horizontal"-->
-                <!--android:paddingBottom="8dp"-->
-                <!--android:paddingTop="8dp"-->
-                <!--android:visibility="gone">-->
-
-                <!--<CheckBox-->
-                    <!--android:id="@+id/enable_custom_notification"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:focusable="false"-->
-                    <!--android:onClick="toggleCustomNotification" />-->
-
-                <!--<TextView-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:paddingEnd="8dp"-->
-                    <!--android:paddingStart="8dp"-->
-                    <!--android:text="Custom notification" />-->
-            <!--</LinearLayout>-->
-
-            <!--<LinearLayout-->
-                <!--android:id="@+id/reminder_display"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:orientation="horizontal"-->
-                <!--android:visibility="gone">-->
-
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="Remind me " />-->
-
-                <!--<EditText-->
-                    <!--android:id="@+id/n_days"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:focusable="false"-->
-                    <!--android:text="1" />-->
-
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text=" days before at " />-->
-
-                <!--<EditText-->
-                    <!--android:id="@+id/n_time"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:focusable="false"-->
-                    <!--android:text="8:00 am" />-->
-            <!--</LinearLayout>-->
-
-            <!--<LinearLayout-->
-                <!--android:id="@+id/custom_notification_2"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:onClick="toggleExtraNotification"-->
-                <!--android:orientation="horizontal"-->
-                <!--android:paddingBottom="8dp"-->
-                <!--android:paddingTop="8dp"-->
-                <!--android:visibility="gone">-->
-
-                <!--<CheckBox-->
-                    <!--android:id="@+id/extra_notification"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:focusable="false"-->
-                    <!--android:onClick="toggleExtraNotification" />-->
-
-                <!--<TextView-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:paddingEnd="8dp"-->
-                    <!--android:paddingStart="8dp"-->
-                    <!--android:text="Extra notification?" />-->
-
-            <!--</LinearLayout>-->
-
-            <!--<LinearLayout-->
-                <!--android:id="@+id/extra_reminder_display"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:orientation="horizontal"-->
-                <!--android:visibility="gone">-->
-
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="Remind me " />-->
-
-                <!--<EditText-->
-                    <!--android:id="@+id/r2_date"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:focusable="false"-->
-                    <!--android:text="7" />-->
-
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text=" days before at " />-->
-
-                <!--<EditText-->
-                    <!--android:id="@+id/r2_time"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:focusable="false"-->
-                    <!--android:text="8:00 am" />-->
-            <!--</LinearLayout>-->
 
         </android.support.constraint.ConstraintLayout>
     </ScrollView>

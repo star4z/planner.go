@@ -11,9 +11,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     style="@style/CardViewStyle"
     android:layout_height="@dimen/sku_details_row_height">
@@ -47,7 +46,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/single_padding"
-                android:layout_marginLeft="@dimen/single_padding"
                 android:textColor="@color/ascent_color"
                 android:textSize="@dimen/sku_details_row_text_size"
                 android:textStyle="bold" />
@@ -58,22 +56,23 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:layout_marginTop="@dimen/single_padding">
+            android:layout_marginTop="@dimen/single_padding"
+            tools:ignore="UseCompoundDrawables">
 
             <ImageView
                 android:id="@+id/sku_icon"
                 android:gravity="start"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/icon_desc" />
 
             <TextView
                 android:id="@+id/description"
                 android:layout_marginStart="@dimen/single_padding"
-                android:layout_marginLeft="@dimen/single_padding"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/sku_details_row_description_text_size"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
 
         </LinearLayout>
 

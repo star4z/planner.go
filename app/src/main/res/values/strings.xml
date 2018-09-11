@@ -1,200 +1,209 @@
 <resources>
     <string name="app_name">Planner</string>
 
+    <!--Reusable actions-->
+    <string name="undo">Undo</string>
+    <string name="done">Done</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="close">Close</string>
+    <string name="save">Save</string>
+    <string name="set">Set</string>
+    <string name="cancel">Cancel</string>
+    <string name="search">Search</string>
+    <string name="back">Back</string>
+    <string name="keep">Keep</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+
     <!-- MainActivity headers-->
     <string name="due_today">Due Today</string>
     <string name="due_tomorrow">Due Tomorrow</string>
     <string name="due_upcoming">Upcoming</string>
     <string name="due_overdue">Overdue</string>
+    <string name="priority">Priority</string>
+    <string name="untitled">Untitled</string>
     <string name="no_upcoming_assignments">No upcoming assignments!</string>
     <string name="no_completed_assignments">No completed assignments.</string>
-
-    <string name="undo">Undo</string>
 
     <!-- Navigation Pane/Title bar -->
     <string name="header_in_progress">In Progress</string>
     <string name="header_completed">Completed</string>
     <string name="trash">Trash</string>
     <string name="settings">Settings</string>
+    <string name="notifications">Notifications</string>
 
-    <!-- dialog_new_assignment descriptors-->
-    <string name="new_a">New Assignment</string>
-    <string name="save">Save</string>
-    <string name="set">Set</string>
-    <string name="cancel">Cancel</string>
-
-    <!-- Icon descriptions-->
-    <string name="edit">Edit</string>
-    <string name="delete">Delete</string>
-    <string name="close">Close</string>
-
-    <!--Default texts for assignmentDetailsDialog -->
-    <string name="default_title">Title</string>
-    <string name="default_class">className</string>
-    <string name="default_date">Wed, Dec 10, 2017</string>
-    <string name="lorum_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,quis
-        nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
-        irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
-        anim id est laborum.
-    </string>
-
-
-    <!-- NewAssignmentDialog text -->
-    <string name="enter_class">Enter class</string>
-    <string name="description">Description</string>
-    <string name="enter_title_of_assignment">Enter title of assignment</string>
-
-    <string name="search">Search</string>
-
+    <!--Options Menu options-->
     <string name="sort_date">Earliest date first</string>
     <string name="sort_class">Alphabetically by class</string>
     <string name="sort_title">Alphabetically by title</string>
     <string name="sort_type">Group by category</string>
-
-
-    <string name="default_type">Category</string>
-    <string name="list_item_icon">List Item Icon</string>
-    <string name="title_activity_settings">Settings</string>
-    <string name="overdue_last_setting">Put overdue items last</string>
-    <string name="about">About</string>
-    <string name="setting_default_sort">Default sort</string>
-    <string name="about_text0">© 2018 Benjamin Phillips\nMade with Android Studio\n\nSome assets ©Google under the Apache 2.0 license.</string>
-    <string name="default_subtitle">Subtitle stuffy stuff</string>
-
-    <string name="import_assignments">Import assignments</string>
-    <string name="export_assignments">Export assignments</string>
-
-    <string name="channel_name">Main Channel</string>
-    <string name="channel_description">Notification channel for reminders</string>
-    <string name="setting_notification_reminder_time_title">Remind me the day before at</string>
-    <string name="due">Due:</string>
-    <string name="title_activity_prefs">Settings</string>
-
-    <!-- Strings related to Settings -->
-
-    <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
-
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
-
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
-
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
-
-    <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array>
-
-    <string-array name="list_preference_entries">
-        <item>Entry 1</item>
-        <item>Entry 2</item>
-        <item>Entry 3</item>
-    </string-array>
-
-    <string-array name="list_preference_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
-    <string-array name="multi_select_list_preference_default_value" />
-
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
-    <!-- Example settings for Notifications -->
-    <string name="pref_header_notifications">Notifications</string>
-
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-
-    <string name="pref_title_vibrate">Vibrate</string>
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="restore">Restore</string>
-    <string name="details">Enter any extra details here</string>
-    <string name="priority_assignment">Priority assignment</string>
     <string name="clear_all">Clear all</string>
     <string name="edit_assignment_types">Edit categories</string>
     <string name="edit_classes">Edit classes</string>
-    <string name="empty_trash">Empty trash</string>
-    <string name="completed_note">(COMPLETED)</string>
 
-    <!-- Tutorial text snippits -->
-    <string name="tut_text_01">Hi!</string>
-    <string name="tut_text_02">Here\'s an awesome app to help you keep track of your assignments</string>
-    <string name="tut_text_03">Tap the button below to create a new assignment- We\'ll fill it out for you this time.</string>
-    <string name="skip">skip tutorial</string>
-    <string name="start">Start Tutorial</string>
+    <!--AboutActivity-->
+    <string name="about_text0">© 2018 Benjamin Phillips\nMade with Android Studio\n\nSome assets ©Google under the Apache 2.0 license.</string>
 
+    <!--AssignmentActivity-->
+    <string name="do_not_ask_again">Don\'t ask me again</string>
+    <string name="changes_wont_be_saved">If you leave now, any changes you made will not be saved.</string>
+    <string name="do_not_save">Leave without saving?</string>
+    <string name="leave">Leave</string>
+    <string name="stay">Stay</string>
     <string name="category">Category:</string>
-    <string name="add_category_description">Add a new category of assignments</string>
+    <string name="add_category_description">Add a new category</string>
+    <string name="completed_note">(COMPLETED)</string>
+    <string name="details">Add details</string>
+    <string name="priority_assignment">Priority assignment</string>
+    <string name="due">Due:</string>
 
+    <!--AssignmentDetailsActivity-->
+    <string name="assignment_details">Assignment details</string>
+
+    <!--AssignmentItemAdapter update status Snackbar text bits-->
+    <string name="assignment">assignment</string>
+    <!--These strings are grammar dependent in their usage:
+     "Marked [assignment.title|assignment] as [in progress|complete]."
+     If changes need to be made to the format to support a language feel free to reach out.-->
+    <string name="eos_ip">in progress.</string><!--eos == "end of sentence" -->
+    <string name="eos_c">complete.</string>
+    <string name="marked">Marked </string>
+    <string name="as"> as </string>
+
+    <!--ClassesActivity-->
+    <string name="classes">Classes</string>
+
+    <!--FeedbackActivity-->
+    <string name="donate">Donate</string>
+    <string name="email_app_missing">"Could not find an email app."</string>
+    <string name="about">About</string>
     <string name="send_feedback">Send Feedback</string>
     <string name="rate_us">Rate us!</string>
     <string name="repeat_tutorial">Repeat Tutorial</string>
     <string name="donation_plea">It takes a lot of time and effort to make this app, so any donations would be really appreciated! Thanks!</string>
     <string name="greeting">Hi there!</string>
 
-    <!--Billing text -->
+    <!--FileIO-->
+    <string name="assignments_deleted">Assignments deleted.</string>
+    <string name="untitled_assignment">untitled assignment</string>
+    <string name="deleted">Deleted </string>
 
+    <!--ListActivity-->
+    <string name="list_item_icon">List Item Icon</string>
+    <string name="add_new">Add new item:</string>
+    <string name="no_duplicates">You can\'t have duplicates!</string>
+
+    <!--MainActivity delete all dialog-->
+    <string name="delete_all">Are you sure you want to delete all assignments?</string>
+    <string name="move_to_trash_note">They will be moved to trash and deleted after 30 days</string>
+    <string name="empty_assignment_set">There are no assignments.\nTo create a new assignment, press the +</string>
+
+    <!-- NewAssignmentActivity-->
+    <string name="new_a">New Assignment</string>
+    <string name="default_title">Title</string>
+    <string name="default_class">className</string>
+    <string name="default_date">Wed, Dec 10, 2017</string>
+    <string name="enter_class">Enter class/course</string>
+    <string name="default_type">Category</string>
+    <string name="enter_title_of_assignment">Enter title</string>
+
+    <!--SettingsActivity-->
+    <string name="pref_color_scheme">Color Scheme</string>
+    <string name="pref_class_colors">Color code titles by class</string>
+    <string name="pref_show_time">Show time for assignments</string>
+    <string name="pref_enable_priority">Put priority items first</string>
+    <string name="pref_overdue_last">Put overdue items last</string>
+    <string name="default_subtitle">Subtitle stuffy stuff</string>
+    <string name="pref_notifications">Notifications</string>
+    <string name="appearance">Appearance</string>
+    <string name="experience">Experience</string>
+    <string name="pref_notify">Notify me at </string>
+    <string name="pref_days_before">Days before deadline</string>
+    <string name="pref_2_notifs">I want two notifications</string>
+
+    <!--TrashActivity-->
+    <string name="deletion_is_permanent">Assignments in the trash are permanently deleted after 30 days.</string>
+    <string name="trash_is_empty">The trash is empty.</string>
+    <!--Usage: [This|assignment.title] will be gone forever.-->
+    <string name="mThis">This</string>
+    <string name="perm_delete_check">Permanently delete this?</string>
+    <string name="gone_forever">will be gone forever."</string>
+    <string name="empty_trash_check">Are you sure you want to empty the trash?</string><!--could use delete_all-->
+    <string name="no_undo">You will not be able to undo this action.</string>
+    <string name="empty_trash">Empty trash</string>
+    <string name="restore">Restore</string>
+
+    <!-- TutorialActivityTitle-->
+    <string name="tut_text_a">Hi!</string>
+    <string name="tut_text_b">Here\'s an awesome app to help you keep track of your assignments</string>
+    <string name="tut_text_c">Tap the button below to create a new assignment- We\'ll fill it out for you this time.</string>
+    <string name="skip">skip tutorial</string>
+    <string name="start">Start Tutorial</string>
+
+    <!--TutorialActivity-->
+    <string name="tut_text_01">The plus button in the bottom right corner creates assignments.</string>
+    <string name="tut_text_02">Tap it to create an assignment.</string>
+    <string name="tut_text_03">Here\'s your first assignment (We\'ve filled it out for you)</string>
+    <string name="tut_text_04">The title is in bold, and the due date is on the right.</string>
+    <string name="tut_text_05">Swipe it to the right to mark it as done.</string>
+    <string name="tut_text_06">All right!</string>
+    <string name="tut_text_07">Note the words at the top of your screen. They mean you\'ll find your incomplete assignments here.</string>
+    <string name="tut_text_08">Now tap the icon in the top left to open the menu drawer, and select \'Completed\'</string>
+    <string name="tut_text_09">Checked off assignments show up here.</string>
+    <string name="tut_text_10">We\'ve had enough of this assignment—delete it by swiping it to the left.</string>
+    <string name="tut_text_11">Great</string>
+    <string name="tut_text_12">Now note there\'s three little dots in the top</string>
+    <string name="tut_text_13">They open a menu primarily for changing the organization of the assignments</string>
+    <string name="tut_text_14">Right now we\'re going to use it for something else:</string>
+    <string name="tut_text_15">We\'re going to add a category you can use to organize your assignments.</string>
+    <string name="tut_text_16">Tap the 3 dots at the top right and select \'Edit categories\'</string>
+    <string name="tut_text_17">Press the plus button to make a new category</string>
+    <string name="tut_text_18">Now, when you make a new assignment, you can select \"</string>
+    <string name="tut_text_18_">\" as the category</string>
+    <string name="tut_text_19">Well that\s it for this tutorial!</string>
+    <string name="tut_text_20">Press the back arrow at the top left to end the tutorial</string>
+    <string name="got_it">Got it</string>
+    <string name="add_category">Add a new category! </string>
+    <string name="hw_1">Homework #1</string>
+    <string name="math">Math</string>
+
+    <!--TypeActivity-->
+    <string name="categories">Categories</string>
+
+    <!--Notifications-->
+    <string name="channel_name">Main Channel</string>
+    <string name="channel_description">Notification channel for reminders</string>
+    <string name="setting_notification_reminder_time_title">Remind me the day before at</string>
+
+    <!--Billing text -->
     <string name="alert_error_consuming">Error while consuming: %1$s</string>
     <string name="alert_already_purchased">Item is already purchased</string>
-
     <string name="content_description_app_loading_image">App loading image</string>
     <string name="button_purchase">Purchase</string>
     <string name="button_buy">Buy</string>
     <string name="button_own">Own</string>
     <string name="button_update">Update</string>
     <string name="button_change">Change</string>
-
     <string name="header_inapp">Donation options</string>
     <string name="header_subscriptions">Subscriptions</string>
-
     <string name="error_no_skus">We didn\'t find any SKUs to display&#8230; Check your internet
         connection and make sure your Google Developer Console was setup correctly.</string>
     <string name="error_billing_unavailable">Billing unavailable. Make sure your Google Play app
         is setup correctly</string>
     <string name="error_billing_default">Billing unavailable. Please check your device.</string>
-
-    <string name="back">Back</string>
     <string name="open_nav_menu">Open navigation menu</string>
-
     <string name="empty_list">List is empty.</string>
     <string name="empty_list_content_descr">Indicates when the list is empty.</string>
+    <string name="icon_desc">Fancy shmancy icon</string>
+
+    <!--dialog_tutorial_list_add-->
+    <string name="enter_a_category_name">Enter a category name</string>
+    <string name="or">OR</string>
+    <string name="pick_an_option_below">Pick an option below</string>
+    <string name="essays">Essays</string>
+    <string name="studying">Studying</string>
+    <string name="everything_else">Everything else</string>
 
 </resources>

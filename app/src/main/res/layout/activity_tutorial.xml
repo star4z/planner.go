@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TutorialActivity"
+    tools:context=".TutorialActivityTitle"
     android:background="@android:color/holo_blue_light">
 
     <TextView
         android:id="@+id/t1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/tut_text_01"
+        android:text="@string/tut_text_a"
         android:textColor="@android:color/white"
         android:textSize="48sp"
         android:layout_margin="48dp"
@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
-        android:text="@string/tut_text_02"
+        android:text="@string/tut_text_b"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"

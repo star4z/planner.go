@@ -23,11 +23,17 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
 
     private static String TAG = "AssignmentItemAdapter";
 
+    Activity activity;
     ArrayList<NewAssignment> dataSet;
     private SharedPreferences prefs;
     private int sortIndex;
 
-    Activity activity;
+    AssignmentItemAdapter(ArrayList<NewAssignment> dataSet, int sortIndex, Activity activity) {
+        this.dataSet = dataSet;
+        this.sortIndex = sortIndex;
+        this.activity = activity;
+        prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout itemView;
@@ -74,12 +80,6 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         }
     }
 
-    AssignmentItemAdapter(ArrayList<NewAssignment> dataSet, int sortIndex, Activity activity) {
-        this.dataSet = dataSet;
-        this.sortIndex = sortIndex;
-        this.activity = activity;
-        prefs = PreferenceManager.getDefaultSharedPreferences(activity);
-    }
 
     @NonNull
     @Override
@@ -93,6 +93,11 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         NewAssignment a = dataSet.get(position);
         ViewHolder vh = (ViewHolder) holder;
+
+
+        if (prefs != null && prefs.getBoolean("pref_class_colors_enabled", false))
+            vh.title.setTextColor(ColorPicker.getClassColor(a.className));
+
         vh.title.setText(a.title);
         vh.category.setText(a.type);
         vh.className.setText(a.className);
@@ -149,18 +154,18 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
      * @param a assignment; uses title to give personalized pop-up message.
      */
     private void createSnackBarPopup(final NewAssignment a) {
-        String title = (a.title.equals("")) ? "assignment" : "'" + a.title + "'";
-        String status = a.completed ? "complete." : "in progress.";
+        String title = (a.title.equals("")) ? activity.getString(R.string.assignment) : "'" + a.title + "'";
+        String status = activity.getString(a.completed ? R.string.eos_c : R.string.eos_ip);
 
         Log.v(TAG, "title.length=" + title.length());
 
-        if (title.length() > 18){
+        if (title.length() > 18) {
             title = title.substring(0, 15) + "...'";
         }
 
         Snackbar snackbar = Snackbar.make(
                 activity.findViewById(R.id.coordinator),
-                "Marked " + title + " as " + status,
+                activity.getString(R.string.marked) + title + " as " + status,
                 Snackbar.LENGTH_LONG
         );
 

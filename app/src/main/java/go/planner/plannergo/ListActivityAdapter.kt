@@ -22,7 +22,7 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
     private val notifyEmptyTextView = TextView(c)
 
     /**
-     * Provides reference points for the views in a list_activity_item
+     * Provides reference points for the views in a view_list_activity_item
      */
     class ViewHolder(val v: View) : RecyclerView.ViewHolder(v) {
         val textView: TextView = v.findViewById(R.id.textView)
@@ -36,28 +36,28 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         //inflate layout
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.list_activity_item, parent, false) as LinearLayout
+                .inflate(R.layout.view_list_activity_item, parent, false) as LinearLayout
 
         //create ViewHolder from layout and attach OnClickListeners
         val holder = ViewHolder(view)
         holder.edit.setOnClickListener {
             val editText = c.layoutInflater.inflate(
-                    R.layout.view_edit_text_list_item,
+                    R.layout.dialog_edit_text,
                     c.findViewById(android.R.id.content) as ViewGroup,
                     false) as EditText
             editText.text = SpannableStringBuilder(data[holder.adapterPosition])
 
             val imm = c.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             val builder = AlertDialog.Builder(c)
-                    .setTitle("Edit")
+                    .setTitle(R.string.edit)
                     .setView(editText)
-                    .setPositiveButton("Save") { _, _ ->
+                    .setPositiveButton(R.string.save) { _, _ ->
                         run {
                             updateData(view, editText.text.toString())
                             imm.hideSoftInputFromWindow(editText.windowToken, 0)
                         }
                     }
-                    .setNegativeButton("Cancel") { _, _ ->
+                    .setNegativeButton(R.string.cancel) { _, _ ->
                         run {
                             imm.hideSoftInputFromWindow(editText.windowToken, 0)
                         }

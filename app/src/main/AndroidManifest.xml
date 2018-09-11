@@ -82,8 +82,8 @@
         <activity
             android:name=".TypeActivity"
             android:parentActivityName=".MainActivity" />
+        <activity android:name=".TutorialActivityTitle" />
         <activity android:name=".TutorialActivity" />
-        <activity android:name=".TutorialActivity2" />
         <activity
             android:name=".FeedbackActivity"
             android:parentActivityName=".MainActivity" />

@@ -4,7 +4,7 @@ import kotlinx.android.synthetic.main.toolbar.*
 
 class TypeActivity : ListActivity() {
     override fun initToolbar() {
-        toolbar.title = "Categories"
+        toolbar.setTitle(R.string.categories)
     }
 
     override fun getData(): ArrayList<String> {

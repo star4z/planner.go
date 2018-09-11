@@ -14,7 +14,7 @@ public class NewAssignment extends Assignment {
     int priority = 0;
     Calendar notificationDate1;
     Calendar notificationDate2;
-    long uniqueID; //unique to each mAssignment; Differentiates assignments that are otherwise identical
+    long uniqueID; //unique to each assignment; Differentiates assignments that are otherwise identical
 
     NewAssignment(){
         this(new Assignment());
@@ -64,12 +64,13 @@ public class NewAssignment extends Assignment {
 
     @Override
     protected NewAssignment clone() {
+        super.clone();//is a waste, but apparently Java likes this better than not
         return new NewAssignment(title, className, (Calendar) dueDate.clone(), description,
                 completed, type, priority, notificationDate1, notificationDate2, uniqueID);
     }
 
     /**
-     * Checks if they are copies of the same original mAssignment; if they are, they should contain
+     * Checks if they are copies of the same original assignment; if they are, they should contain
      * the same information. This might not be true all the time in an AssignmentActivity. To compare
      * fields, use compareFields(NewAssignment).
      * @param o Another object to compare with this one.

@@ -24,6 +24,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
+import go.planner.plannergo.FileIO.getAssignment
 import kotlinx.android.synthetic.main.activity_assignment.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -138,18 +139,18 @@ abstract class AssignmentActivity : AppCompatActivity() {
                 true
             }
             android.R.id.home -> {
-                Log.d(tag, "oldAssignment == assignmet?${oldAssignment.compareFields(getAssignment())}")
+                Log.d(tag, "oldAssignment == assignment?${oldAssignment.compareFields(getAssignment())}")
                 if (oldAssignment.compareFields(getAssignment()))
                     navigateUpTo(Intent(this, MainActivity::class.java))
                 else {
                     //TODO: add don't ask me again option
                     AlertDialog.Builder(this)
-                            .setMessage("If you leave now, any changes you made will not be saved.")
-                            .setTitle("Leave without saving?")
-                            .setPositiveButton("Leave") { _, _ ->
+                            .setTitle(R.string.do_not_save)
+                            .setMessage(R.string.changes_wont_be_saved)
+                            .setPositiveButton(R.string.leave) { _, _ ->
                                 navigateUpTo(Intent(this, MainActivity::class.java))
                             }
-                            .setNegativeButton("Go back", null)
+                            .setNegativeButton(R.string.stay, null)
                             .create().show()
                 }
                 true
@@ -217,12 +218,11 @@ abstract class AssignmentActivity : AppCompatActivity() {
         }, date.get(YEAR), date.get(MONTH), date.get(DAY_OF_MONTH))
     }
 
-    @SuppressWarnings("unused parameter")
     fun openTypeActivity(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivityForResult(Intent(this, TypeActivity::class.java), 0)
     }
 
-    //Updates type spinner when user returns to activity from type editor
+    /**Updates type spinner when user returns to activity from type editor*/
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         updateTypeSpinner()

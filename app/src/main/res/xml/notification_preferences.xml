@@ -6,19 +6,19 @@
         android:defaultValue="true"
         android:key="pref_notif_enabled"
         android:layout="@layout/preference_heading"
-        android:title="Notifications" />
+        android:title="@string/pref_notifications" />
 
     <go.planner.plannergo.TimePreference
         android:defaultValue="46800000"
         android:key="pref_notif_time"
         android:layout="@layout/preference"
         android:dependency="pref_notif_enabled"
-        android:title="Notify me at " />
+        android:title="@string/pref_notify" />
 
     <go.planner.plannergo.NumberPreference
         android:defaultValue="1"
         android:key="pref_notif_days_before"
-        android:title="Days before deadline"
+        android:title="@string/pref_days_before"
         android:dependency="pref_notif_enabled"
         android:layout="@layout/preference"/>
 
@@ -27,19 +27,19 @@
         android:key="pref_extra_notif_enabled"
         android:layout="@layout/preference"
         android:dependency="pref_notif_enabled"
-        android:title="I want two notifications" />
+        android:title="@string/pref_2_notifs" />
 
     <go.planner.plannergo.TimePreference
         android:defaultValue="46800000"
         android:key="pref_notif_time_extra"
         android:layout="@layout/preference"
         android:dependency="pref_extra_notif_enabled"
-        android:title="Notify me at"/>
+        android:title="@string/pref_notify"/>
 
     <go.planner.plannergo.NumberPreference
         android:defaultValue="7"
         android:key="pref_notif_days_before_extra"
-        android:title="Days before deadline"
+        android:title="@string/pref_days_before"
         android:dependency="pref_extra_notif_enabled"
         android:layout="@layout/preference"/>
 

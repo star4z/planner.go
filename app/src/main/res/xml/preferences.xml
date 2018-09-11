@@ -2,58 +2,46 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="Settings">
 
-    <PreferenceCategory android:title="Appearance">
+    <PreferenceCategory android:title="@string/appearance">
         <ListPreference
             android:defaultValue="Mint"
             android:entries="@array/color_palettes"
             android:entryValues="@array/color_palettes"
             android:key="pref_color_scheme"
             android:layout="@layout/preference"
-            android:title="Color Scheme" />
+            android:title="@string/pref_color_scheme" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="pref_class_colors_enabled"
+            android:layout="@layout/preference"
+            android:title="@string/pref_class_colors"/>
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="pref_time_enabled"
             android:layout="@layout/preference"
-            android:title="Show time for assignments" />
+            android:title="@string/pref_show_time" />
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="pref_priority_first"
             android:layout="@layout/preference"
-            android:title="Show important items first" />
+            android:title="@string/pref_enable_priority" />
 
         <SwitchPreference
             android:defaultValue="true"
             android:key="pref_overdue_last"
             android:layout="@layout/preference"
-            android:title="Show overdue items last" />
+            android:title="@string/pref_overdue_last" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Experience">
+    <PreferenceCategory android:title="@string/experience">
         <Preference
             android:key="NOTIFICATIONS_KEY"
             android:layout="@layout/preference"
             android:persistent="false"
-            android:title="Notifications" />
+            android:title="@string/pref_notifications" />
     </PreferenceCategory>
-
-    <!--<PreferenceCategory android:title="Help &amp; Feedback">
-        <Preference
-            android:layout="@layout/preference"
-            android:title="Send Feedback">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="mailto:benjaminphillipsdeveloper@gmail.com?subject=School Agenda App"/>
-        </Preference>
-
-        <Preference
-            android:layout="@layout/preference"
-            android:title="@string/about">
-            <intent
-                android:targetClass="go.planner.plannergo.AboutActivity"
-                android:targetPackage="go.planner.plannergo" />
-        </Preference>
-    </PreferenceCategory>-->
 
 </PreferenceScreen>

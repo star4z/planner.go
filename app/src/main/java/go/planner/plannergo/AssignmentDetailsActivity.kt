@@ -24,7 +24,7 @@ class AssignmentDetailsActivity : AssignmentActivity() {
     }
 
     override fun initViews() {
-        toolbar.title = "Assignment details"
+        toolbar.setTitle(R.string.assignment_details)
         hw_title.text = SpannableStringBuilder(mAssignment.title)
         hw_class.text = SpannableStringBuilder(mAssignment.className)
         hw_due_date.text = SpannableStringBuilder(dateFormat.format(mAssignment.dueDate.time))

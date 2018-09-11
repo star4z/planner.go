@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="32dp">
@@ -14,7 +13,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:hint="Enter a category name"
+        android:hint="@string/enter_a_category_name"
         android:inputType="textCapSentences"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -27,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="OR"
+        android:text="@string/or"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,7 +43,7 @@
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
         android:paddingTop="8dp"
-        android:text="Pick an option below"
+        android:text="@string/pick_an_option_below"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView8" />
@@ -64,7 +63,7 @@
         android:id="@+id/priority_text"
         style="@style/SuggestionTextStyle"
         android:layout_marginTop="8dp"
-        android:text="Essays"
+        android:text="@string/essays"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView1" />
@@ -72,7 +71,7 @@
     <TextView
         android:id="@+id/textView3"
         style="@style/SuggestionTextStyle"
-        android:text="Studying"
+        android:text="@string/studying"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/priority_text" />
@@ -80,7 +79,7 @@
     <TextView
         android:id="@+id/textView4"
         style="@style/SuggestionTextStyle"
-        android:text="Everything else"
+        android:text="@string/everything_else"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
