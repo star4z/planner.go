@@ -3,13 +3,11 @@
     android:title="Settings">
 
     <PreferenceCategory android:title="@string/appearance">
-        <ListPreference
-            android:defaultValue="Mint"
-            android:entries="@array/color_palettes"
-            android:entryValues="@array/color_palettes"
-            android:key="pref_color_scheme"
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="pref_dark_mode"
             android:layout="@layout/preference"
-            android:title="@string/pref_color_scheme" />
+            android:title="Dark mode" />
 
         <SwitchPreference
             android:defaultValue="false"

@@ -1,9 +1,7 @@
 package go.planner.plannergo
 
-import android.graphics.Color
 import android.text.SpannableStringBuilder
 import android.util.Log
-import android.view.Menu
 import android.view.View
 import kotlinx.android.synthetic.main.activity_assignment.*
 import java.util.*
@@ -17,7 +15,7 @@ class NewAssignmentActivity : AssignmentActivity() {
      */
     override fun manageVisibility() {
         hw_due_time.visibility =
-                if (prefs.getBoolean("pref_time_enabled", true)) {
+                if (prefs.getBoolean(Settings.timeEnabled, true)) {
                     View.VISIBLE
                 } else {
                     View.GONE
@@ -46,14 +44,6 @@ class NewAssignmentActivity : AssignmentActivity() {
             Log.v( "NewAssignmentActivity", "due time clicked")
             dueTimePickerDialog!!.show()
         }
-    }
-
-
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        val color = if (ColorPicker.getColorAssignmentText() == Color.BLACK)
-            R.color.textBlack else R.color.textWhite
-        setToolbarMenuItemTextColor(toolbar, color, R.id.save_assignment)
-        return super.onPrepareOptionsMenu(menu)
     }
 
 

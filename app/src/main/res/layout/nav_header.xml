@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
+    android:elevation="2dp"
+    android:fitsSystemWindows="true"
+    android:gravity="bottom">
+
+    <ImageView
+        android:id="@+id/nBar_item_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/list_item_icon"
+        android:minHeight="?attr/actionBarSize"
+        android:minWidth="?attr/actionBarSize"
+        android:padding="16dp"
+        android:src="@drawable/ic_collections_bookmark_green_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/nBar_item_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:gravity="center_vertical"
+        android:text="@string/app_name"
+        android:textAlignment="gravity"
+        android:textColor="@color/textWhite"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@id/nBar_item_icon"
+        app:layout_constraintStart_toEndOf="@+id/nBar_item_icon"
+        app:layout_constraintTop_toTopOf="@id/nBar_item_icon" />
+
+
+</android.support.constraint.ConstraintLayout>

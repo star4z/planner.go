@@ -3,34 +3,26 @@ package go.planner.plannergo
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.annotation.ColorRes
-import android.support.annotation.IdRes
 import android.support.v4.content.ContextCompat
+import android.support.v4.graphics.ColorUtils
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.view.menu.ActionMenuItemView
-import android.support.v7.widget.ActionMenuView
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.Spinner
-import go.planner.plannergo.FileIO.getAssignment
+import android.widget.*
 import kotlinx.android.synthetic.main.activity_assignment.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Calendar.*
 
-abstract class AssignmentActivity : AppCompatActivity() {
+abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
     private val tag = "AssignmentActivity"
 
     //Keeps old data in case edits were accidental
@@ -40,6 +32,8 @@ abstract class AssignmentActivity : AppCompatActivity() {
 
     //Settings file
     internal lateinit var prefs: SharedPreferences
+    internal lateinit var colorScheme: ColorScheme
+    private var schemeSet = false
 
     //Listeners
     internal var dueTimePickerDialog: TimePickerDialog? = null
@@ -49,7 +43,7 @@ abstract class AssignmentActivity : AppCompatActivity() {
     internal var timeFormat = SimpleDateFormat("h:mm a".toLowerCase(), Locale.US)
 
     private lateinit var typeSpinner: Spinner
-    private val layoutID = android.R.layout.simple_dropdown_item_1line
+    private var layoutID = 0
 
 
     /**
@@ -59,10 +53,11 @@ abstract class AssignmentActivity : AppCompatActivity() {
      * @param savedInstanceState for restoring state
      */
     override fun onCreate(savedInstanceState: Bundle?) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        setColorScheme()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_assignment)
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         val thisIntent = intent
 
@@ -73,7 +68,14 @@ abstract class AssignmentActivity : AppCompatActivity() {
         //Set up autocomplete for class field
         val classArrayList = FileIO.classNames
         val classes = classArrayList.toTypedArray()
+
+        layoutID = if (colorScheme.mode == ColorScheme.MODE_DARK)
+            R.layout.spinner_item_dark
+        else
+            android.R.layout.simple_dropdown_item_1line
         val classAdapter = ArrayAdapter(this, layoutID, classes)
+
+
         hw_class.setAdapter(classAdapter)
         hw_class.threshold = 0
 
@@ -82,7 +84,12 @@ abstract class AssignmentActivity : AppCompatActivity() {
         manageVisibility()
         setUpListeners()
         initViews()
-        initToolbar()
+        setSupportActionBar(toolbar)
+    }
+
+    override fun onResume() {
+        checkForColorSchemeUpdate()
+        super.onResume()
     }
 
     /**
@@ -91,28 +98,15 @@ abstract class AssignmentActivity : AppCompatActivity() {
     private fun updateTypeSpinner() {
         val typesArrayList = FileIO.types
         val types = typesArrayList.toTypedArray()
+
+        layoutID = if (colorScheme.mode == ColorScheme.MODE_DARK)
+            R.layout.spinner_item_dark
+        else
+            android.R.layout.simple_dropdown_item_1line
+
         val typesAdapter = ArrayAdapter(this, layoutID, types)
         typeSpinner = findViewById(R.id.hw_type)
         typeSpinner.adapter = typesAdapter
-    }
-
-
-    private fun initToolbar() {
-        val appBar = findViewById<Toolbar>(R.id.toolbar)
-        appBar.setBackgroundColor(ColorPicker.getColorAssignment())
-        appBar.setTitleTextColor(ColorPicker.getColorAssignmentText())
-        val menuIcon: Drawable? = if (ColorPicker.getColorAssignmentText() == Color.BLACK) {
-            appBar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp)
-            ContextCompat.getDrawable(applicationContext,
-                    R.drawable.ic_more_vert_black_24dp)
-        } else {
-            appBar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp)
-            ContextCompat.getDrawable(applicationContext,
-                    R.drawable.ic_more_vert_white_24dp)
-        }
-        appBar.overflowIcon = menuIcon
-        window.statusBarColor = ColorPicker.getColorAssignmentAccent()
-        setSupportActionBar(appBar)
     }
 
 
@@ -130,6 +124,13 @@ abstract class AssignmentActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val icon1 = getDrawable(R.drawable.ic_save_black_24dp)
+        icon1.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        menu?.getItem(0)?.icon = icon1
+        return super.onPrepareOptionsMenu(menu)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.save_assignment -> {
@@ -144,7 +145,11 @@ abstract class AssignmentActivity : AppCompatActivity() {
                     navigateUpTo(Intent(this, MainActivity::class.java))
                 else {
                     //TODO: add don't ask me again option
-                    AlertDialog.Builder(this)
+                    val style = if (colorScheme.mode == ColorScheme.MODE_DARK)
+                        R.style.DarkDialogTheme
+                    else
+                        R.style.LightDialogTheme
+                    AlertDialog.Builder(this, style)
                             .setTitle(R.string.do_not_save)
                             .setMessage(R.string.changes_wont_be_saved)
                             .setPositiveButton(R.string.leave) { _, _ ->
@@ -228,7 +233,7 @@ abstract class AssignmentActivity : AppCompatActivity() {
         updateTypeSpinner()
     }
 
-    internal fun getAssignment():NewAssignment{
+    internal fun getAssignment(): NewAssignment {
         val mTitl = hw_title.text.toString()
         val mClas = hw_class.text.toString()
         val mDate = mAssignment.dueDate
@@ -243,28 +248,66 @@ abstract class AssignmentActivity : AppCompatActivity() {
 
     internal abstract fun saveAssignment()
 
-    companion object {
+    override fun setColorScheme() {
+        val scheme = prefs.getBoolean(Settings.darkMode, true)
+        colorScheme = ColorScheme(scheme, this)
+        setTheme(colorScheme.theme)
+        Log.d(TAG, "scheme=" + scheme!!)
+    }
 
-        fun setToolbarMenuItemTextColor(toolbar: Toolbar?, @ColorRes color: Int, @IdRes resId: Int) {
-            if (toolbar != null) {
-                for (i in 0 until toolbar.childCount) {
-                    val view = toolbar.getChildAt(i)
-                    if (view is ActionMenuView) {
-// view children are accessible only after layout-ing
-                        view.post {
-                            for (j in 0 until view.childCount) {
-                                val innerView = view.getChildAt(j)
-                                if (innerView is ActionMenuItemView) {
-                                    if (resId == innerView.id) {
-                                        innerView.setTextColor(ContextCompat.getColor(toolbar.context, color))
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+    override fun getColorScheme(): ColorScheme {
+        return colorScheme
+    }
+
+    override fun checkForColorSchemeUpdate() {
+        val scheme = prefs.getBoolean(Settings.darkMode, true)
+        val newScheme = ColorScheme(scheme, this)
+        if (newScheme != colorScheme) {
+            recreate()
+        } else if (!schemeSet) {
+            applyColors()
         }
+    }
+
+    override fun applyColors() {
+        val primaryColor = colorScheme.getColor(ColorScheme.PRIMARY)
+        val textColor = colorScheme.getColor(ColorScheme.TEXT_COLOR)
+
+        parentView.setBackgroundColor(primaryColor)
+
+        toolbar.setBackgroundColor(primaryColor)
+        toolbar.setTitleTextColor(textColor)
+        toolbar.navigationIcon?.setTint(textColor)
+
+        var view: View
+        for (i in 0 until constraint_layout.childCount) {
+            view = constraint_layout.getChildAt(i)
+            (view as? TextView)?.setTextColor(textColor)
+            if (view is EditText) {
+                view.setTextColor(textColor)
+                view.setHintTextColor(ColorUtils.blendARGB(textColor,
+                        if (colorScheme.mode == ColorScheme.MODE_DARK) Color.BLACK else Color.WHITE,
+                        0.5f)
+                )
+            }
+            (view as? AutoCompleteTextView)?.setTextColor(textColor)
+            (view as? ImageView)?.imageTintList = ColorStateList.valueOf(textColor)
+
+            val states = arrayOf(
+                    intArrayOf(android.R.attr.state_checked),
+                    intArrayOf(-android.R.attr.state_checked)
+            )
+
+            val csl = ColorStateList(
+                    states,
+                    intArrayOf(
+                            ContextCompat.getColor(this, R.color.colorAccent),
+                            colorScheme.getColor(ColorScheme.TEXT_COLOR)
+                    )
+            )
+            (view as? CheckBox)?.buttonTintList = csl
+        }
+        schemeSet = true
     }
 
 }

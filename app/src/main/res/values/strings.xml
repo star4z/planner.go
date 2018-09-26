@@ -44,6 +44,7 @@
     <string name="edit_classes">Edit classes</string>
 
     <!--AboutActivity-->
+    <string name="store_link"><a href="https://play.google.com/store/apps/details?id=go.planner.plannergo">Play Store listing</a></string>
     <string name="about_text0">© 2018 Benjamin Phillips\nMade with Android Studio\n\nSome assets ©Google under the Apache 2.0 license.</string>
 
     <!--AssignmentActivity-->
@@ -69,7 +70,7 @@
      If changes need to be made to the format to support a language feel free to reach out.-->
     <string name="eos_ip">in progress.</string><!--eos == "end of sentence" -->
     <string name="eos_c">complete.</string>
-    <string name="marked">Marked </string>
+    <string name="marked">Marked</string>
     <string name="as"> as </string>
 
     <!--ClassesActivity-->
@@ -110,6 +111,7 @@
     <string name="enter_title_of_assignment">Enter title</string>
 
     <!--SettingsActivity-->
+    <string name="pref_dark_mode">Dark mode</string>
     <string name="pref_color_scheme">Color Scheme</string>
     <string name="pref_class_colors">Color code titles by class</string>
     <string name="pref_show_time">Show time for assignments</string>
@@ -163,7 +165,8 @@
     <string name="tut_text_18">Now, when you make a new assignment, you can select \"</string>
     <string name="tut_text_18_">\" as the category</string>
     <string name="tut_text_19">Well that\s it for this tutorial!</string>
-    <string name="tut_text_20">Press the back arrow at the top left to end the tutorial</string>
+    <string name="tut_text_20">(If you need to replay the tutorial, you can find it under Help &amp; Feedback)</string>
+    <string name="tut_text_21">Press the back arrow at the top left to end the tutorial</string>
     <string name="got_it">Got it</string>
     <string name="add_category">Add a new category! </string>
     <string name="hw_1">Homework #1</string>
@@ -205,5 +208,6 @@
     <string name="essays">Essays</string>
     <string name="studying">Studying</string>
     <string name="everything_else">Everything else</string>
+    <string name="add_new_item">Add new item</string>
 
 </resources>

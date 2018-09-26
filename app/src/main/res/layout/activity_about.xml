@@ -10,7 +10,7 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/about_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:backgroundTint="@color/colorAccent"
         android:elevation="4dp"
@@ -19,6 +19,7 @@
         app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="@string/about"
+        android:fitsSystemWindows="true"
         app:titleTextColor="#FFFFFFFF" />
 
     <TextView

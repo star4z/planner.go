@@ -1,9 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--Default theme-->
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#2bbd7e </color>
     <color name="colorAccentDark">#008c51</color>
+
+    <!--Dark Theme-->
+    <color name="darkPrimary">#263238</color>
+    <color name="darkPrimaryDark">#102027</color>
+    <color name="darkAccent">#00e676</color>
+    <color name="darkTextPrimary">#e8e8e8</color>
+    <color name="darkTextSecondary">#7c7c7c</color>
+    <color name="darkTextViewColor">#000a12</color>
+
+    <!--Light THeme-->
+    <color name="lightPrimary">#e0e0e0</color>
+    <color name="lightPrimaryDark">#aeaeae</color>
+    <color name="lightAccent">#00e676</color>
+    <color name="lightText">#444444</color>
+    <color name="lightTextSecondary">#707070</color>
+    <color name="lightTextViewColor">#ffffff</color>
 
     <color name="ic_launcher_background">#212121</color>
 
@@ -93,10 +110,16 @@
     <color name="textBlack">#FF000000</color>
     <color name="textGrey">#FF555555</color>
     <color name="textWhite">#FFFFFFFF</color>
-    
-    <color name="golden">#dda60f</color>
-    <color name="green">#169625</color>
-    <color name="maroon">#a21a50</color>
+
+    <!--Navigation drawer colors-->
+    <color name="nav_color_1">#2462b5</color>
+    <color name="nav_color_2">#8829c4</color>
+    <color name="nav_color_3">#a21a50</color>
+
+    <!--Toolbar text/icon colors-->
+    <color name="nav_color_1_bright">#0087ff</color>
+    <color name="nav_color_2_bright">#9800ff</color>
+    <color name="nav_color_3_bright">#ff005d</color>
 
 
     <!--Added for billing-->
@@ -109,5 +132,6 @@
     <color name="row_bg_color">#ffffff</color>
 
     <color name="disabled_color">#90b1b0</color>
-    <color name="gold">#ffbf00</color>
+
+    <color name="transparent">#00000000</color>
 </resources>

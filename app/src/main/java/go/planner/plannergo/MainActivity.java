@@ -5,10 +5,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
@@ -39,60 +42,65 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ColorSchemeActivity {
 
     private static final String TAG = "MainActivity";
 
     //Settings data
     SharedPreferences sharedPref;
     int currentSortIndex = 0;
-    boolean currentScreenIsInProgress = true;
+    FloatingActionButton fab;
+    private boolean currentScreenIsInProgress = true;
+    private ColorScheme colorScheme;
 
     //Quick references
     LinearLayout parent;
     RecyclerView.LayoutManager layoutManager;
     RecyclerView.Adapter adapter;
     Toolbar myToolbar;
+    private boolean schemeSet = false;
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private DrawerAdapter mDrawerAdapter;
 
     /**
-     * Runs when the activity is created
+     * Runs the first time this instance of the activity becomes active
      *
      * @param savedInstanceState stores state for restoring the activity
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        setColorScheme();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         checkFirstRun();
 
+
         parent = findViewById(R.id.parent);
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         myToolbar = findViewById(R.id.toolbar);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        fab = findViewById(R.id.fab);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setSupportActionBar(myToolbar);
     }
 
 
     /**
-     * Runs when the activity becomes active (again)
+     * Runs every time the activity becomes active
      */
     @Override
     protected void onResume() {
         //Update data
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        ColorPicker.setColors(this);
         FileIO.readFiles(this);
 
-        //Preform necessary resets
-        invalidateOptionsMenu();
+        checkForColorSchemeUpdate();
 
         //Call GUI setup methods
-        initFAB();
         initNavDrawer();
         loadPanels((currentScreenIsInProgress) ? FileIO.inProgressAssignments : FileIO.completedAssignments, currentSortIndex);
 
@@ -125,96 +133,6 @@ public class MainActivity extends AppCompatActivity {
         super.onNewIntent(intent);
     }
 
-    private void checkFirstRun() {
-        File file = new File(getFilesDir(), "planner.info");
-        try {
-            if (file.createNewFile()) {
-                startActivity(new Intent(this, TutorialActivityTitle.class));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initNavDrawer() {
-        String[] drawerOptions = getResources().getStringArray(R.array.drawer_options_array);
-        TypedArray tArray = getResources().obtainTypedArray(R.array.drawer_icons_array);
-        int[] drawerIcons = new int[tArray.length()];
-        for (int i = 0; i < drawerIcons.length; i++) {
-            drawerIcons[i] = tArray.getResourceId(i, 0);
-        }
-        //Recycles the TypedArray, to be re-used by a later caller.
-        //After calling this function you must not ever touch the typed array again.
-        tArray.recycle();
-
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-         mDrawerList = findViewById(R.id.drawer_list);
-
-        int selectedPos = (currentScreenIsInProgress) ? 1 : 2;
-
-        mDrawerAdapter = new DrawerAdapter(this, drawerOptions, drawerIcons, selectedPos);
-        mDrawerList.setAdapter(mDrawerAdapter);
-
-
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 1:
-                        loadPanels(FileIO.inProgressAssignments);
-                        currentScreenIsInProgress = true;
-                        break;
-                    case 2:
-                        loadPanels(FileIO.completedAssignments);
-                        currentScreenIsInProgress = false;
-                        break;
-                    case 3:
-                        startActivity(new Intent(MainActivity.this, TrashActivity.class));
-                        break;
-                    case 4:
-                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                        break;
-                    case 5:
-                        startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
-                }
-                mDrawerLayout.closeDrawers();
-            }
-        });
-    }
-
-    private void initFAB() {
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setImageResource((ColorPicker.getColorSecondaryText() == Color.BLACK) ?
-                R.drawable.ic_add_black_24dp : R.drawable.ic_add_white_24dp);
-        fab.setBackgroundTintList(ColorStateList.valueOf(ColorPicker.getColorSecondary()));
-        fab.setRippleColor(ColorPicker.getColorSecondary());
-    }
-
-    void initToolbar(boolean forInProgressAssignments) {
-        if (forInProgressAssignments) {
-            setTitle(getResources().getString(R.string.header_in_progress));
-            myToolbar.setBackgroundColor(ColorPicker.getColorPrimary());
-            myToolbar.setTitleTextColor(ColorPicker.getColorPrimaryText());
-            getWindow().setStatusBarColor(ColorPicker.getColorPrimaryAccent());
-            myToolbar.setOverflowIcon(ContextCompat.getDrawable(getApplicationContext(),
-                    (ColorPicker.getColorPrimaryText() == Color.BLACK)
-                            ? R.drawable.ic_more_vert_black_24dp
-                            : R.drawable.ic_more_vert_white_24dp));
-            myToolbar.setNavigationIcon((ColorPicker.getColorPrimaryText() == Color.BLACK)
-                    ? R.drawable.ic_dehaze_black_24dp : R.drawable.ic_dehaze_white_24dp);
-        } else {
-            setTitle(getResources().getString(R.string.header_completed));
-            myToolbar.setBackgroundColor(ColorPicker.getColorCompleted());
-            myToolbar.setTitleTextColor(ColorPicker.getColorCompletedText());
-            getWindow().setStatusBarColor(ColorPicker.getColorCompletedAccent());
-            myToolbar.setOverflowIcon(ContextCompat.getDrawable(getApplicationContext(),
-                    (ColorPicker.getColorCompletedText() == Color.BLACK)
-                            ? R.drawable.ic_more_vert_black_24dp
-                            : R.drawable.ic_more_vert_white_24dp));
-            myToolbar.setNavigationIcon((ColorPicker.getColorCompletedText() == Color.BLACK)
-                    ? R.drawable.ic_dehaze_black_24dp : R.drawable.ic_dehaze_white_24dp);
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -282,12 +200,148 @@ public class MainActivity extends AppCompatActivity {
                 });
                 alertDialog.create().show();
             default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
 
         }
     }
+
+
+    @NonNull
+    @Override
+    public ColorScheme getColorScheme() {
+        return colorScheme;
+    }
+
+    @Override
+    public void setColorScheme() {
+        boolean scheme = sharedPref.getBoolean(Settings.darkMode, true);
+        colorScheme = new ColorScheme(scheme, this);
+        setTheme(colorScheme.getTheme());
+        Log.d(TAG, "scheme=" + scheme);
+    }
+
+    @Override
+    public void checkForColorSchemeUpdate() {
+        boolean scheme = sharedPref.getBoolean(Settings.darkMode, true);
+        ColorScheme newScheme = new ColorScheme(scheme, this);
+        if (!newScheme.equals(colorScheme)) {
+            recreate();
+        } else if (!schemeSet) {
+            applyColors();
+        }
+    }
+
+    @Override
+    public void applyColors() {
+        fab.setBackgroundTintList(ColorStateList.valueOf(colorScheme.getColor(ColorScheme.ACCENT)));
+        NavigationView navView = findViewById(R.id.navigation);
+        navView.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
+        CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
+        coordinatorLayout.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
+        schemeSet = true;
+    }
+
+    private void checkFirstRun() {
+        File file = new File(getFilesDir(), "planner.info");
+        try {
+            if (file.createNewFile()) {
+                startActivity(new Intent(this, TutorialActivityTitle.class));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initNavDrawer() {
+        int StatusBarHeight = (int) Math.floor(25 * getResources().getDisplayMetrics().density);
+        Log.d(TAG, "StatusBarHeight=" + StatusBarHeight);
+
+        String[] drawerOptions = getResources().getStringArray(R.array.drawer_options_array);
+        TypedArray tArray = getResources().obtainTypedArray(R.array.drawer_icons_array);
+        int[] drawerIcons = new int[tArray.length()];
+        for (int i = 0; i < drawerIcons.length; i++) {
+            drawerIcons[i] = tArray.getResourceId(i, 0);
+        }
+        //Recycles the TypedArray, to be re-used by a later caller.
+        //After calling this function you must not ever touch the typed array again.
+        tArray.recycle();
+
+        mDrawerList = findViewById(R.id.drawer_list);
+
+        int selectedPos = currentScreenIsInProgress ? 1 : 2;
+
+        mDrawerAdapter = new DrawerAdapter(this, drawerOptions, drawerIcons, selectedPos);
+        mDrawerList.setAdapter(mDrawerAdapter);
+
+
+        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 1:
+                        loadPanels(FileIO.inProgressAssignments);
+                        currentScreenIsInProgress = true;
+                        break;
+                    case 2:
+                        loadPanels(FileIO.completedAssignments);
+                        currentScreenIsInProgress = false;
+                        break;
+                    case 3:
+                        startActivity(new Intent(MainActivity.this, TrashActivity.class));
+                        break;
+                    case 4:
+                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                        break;
+                    case 5:
+                        startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
+                }
+                mDrawerLayout.closeDrawers();
+            }
+        });
+    }
+
+
+    void initToolbar(boolean forInProgressAssignments) {
+        Drawable navIcon = myToolbar.getNavigationIcon();
+        int textColor = colorScheme.getColor(ColorScheme.TEXT_COLOR);
+        int text_black = ContextCompat.getColor(this, R.color.textBlack);
+        if (forInProgressAssignments) {
+            setTitle(getResources().getString(R.string.header_in_progress));
+            int bright_gold = ContextCompat.getColor(this, R.color.nav_color_1_bright);
+            if (colorScheme.getMode() == ColorScheme.MODE_DARK) {
+                myToolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
+
+                assert navIcon != null;
+                navIcon.setTint(bright_gold);
+
+                myToolbar.setTitleTextColor(bright_gold);
+            } else {
+                myToolbar.setBackgroundColor(bright_gold);
+
+                assert navIcon != null;
+                navIcon.setTint(textColor);
+
+                myToolbar.setTitleTextColor(text_black);
+            }
+        } else {
+            setTitle(getResources().getString(R.string.header_completed));
+            int bright_green = ContextCompat.getColor(this, R.color.nav_color_2_bright);
+            if (colorScheme.getMode() == ColorScheme.MODE_DARK) {
+                myToolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
+
+                assert navIcon != null;
+                navIcon.setTint(bright_green);
+                myToolbar.setTitleTextColor(bright_green);
+            } else {
+                myToolbar.setBackgroundColor(bright_green);
+
+                assert navIcon != null;
+                navIcon.setTint(text_black);
+                myToolbar.setTitleTextColor(text_black);
+            }
+        }
+    }
+
 
     void loadPanels(ArrayList<NewAssignment> assignments) {
         loadPanels(assignments, 0);
@@ -295,10 +349,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void loadPanels(ArrayList<NewAssignment> assignments, int sortIndex) {
-        NotificationAlarms.setNotificationTimers(this);
+        if (sharedPref.getBoolean(Settings.notifEnabled, true))
+            NotificationAlarms.setNotificationTimers(this);
         currentScreenIsInProgress = assignments == FileIO.inProgressAssignments;
         initToolbar(currentScreenIsInProgress);
-        mDrawerAdapter.setSelectedPos((currentScreenIsInProgress)? 1: 2);
+        mDrawerAdapter.setSelectedPos((currentScreenIsInProgress) ? 1 : 2);
         mDrawerList.setAdapter(mDrawerAdapter);
         currentSortIndex = sortIndex;
 
@@ -369,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
         for (NewAssignment assignment : assignments) {
             if (assignment.priority > 0) {
                 priorityAssignments.add(assignment);
-            } else if ((sharedPref.getBoolean(SettingsActivity.overdueLast, false)
+            } else if ((sharedPref.getBoolean(Settings.overdueLast, false)
                     && compareCalendars(assignment.dueDate, today) < 0)) {
                 overdueAssignments.add(assignment);
             } else {
@@ -497,7 +552,6 @@ public class MainActivity extends AppCompatActivity {
 
     RecyclerView createRecyclerViewForList(ArrayList<NewAssignment> assignments, final TextView heading) {
         final RecyclerView recyclerView = new RecyclerView(this);
-        recyclerView.setHasFixedSize(true);
 
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -535,9 +589,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
             @Override
             public void onChildViewAttachedToWindow(View view) {
-                if (heading.getVisibility() != View.VISIBLE) {
+                if (heading.getVisibility() != View.VISIBLE)
                     heading.setVisibility(View.VISIBLE);
-                }
             }
 
             @Override
@@ -549,6 +602,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.v(TAG, "count=" + count);
                 if (count <= 0) {
                     heading.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.GONE);
                 }
             }
         });
@@ -566,7 +620,8 @@ public class MainActivity extends AppCompatActivity {
                 (ViewGroup) findViewById(android.R.id.content),
                 false
         );
-        header.setText((text.equals("")? getString(R.string.untitled): text));
+        header.setText((text.equals("") ? getString(R.string.untitled) : text));
+        header.setTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR));
         parent.addView(header);
         return header;
     }

@@ -2,34 +2,41 @@ package go.planner.plannergo
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.Looper
+import android.preference.PreferenceManager
+import android.support.annotation.Nullable
+import android.support.annotation.StringRes
+import android.support.annotation.UiThread
+import android.support.constraint.ConstraintLayout
+import android.support.v4.app.DialogFragment
 import android.support.v4.app.NavUtils
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.android.billingclient.api.BillingClient
-import kotlinx.android.synthetic.main.toolbar.*
-import android.os.Looper
-import android.support.annotation.Nullable
-import android.support.annotation.StringRes
-import android.support.annotation.UiThread
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AlertDialog
-import android.util.Log
 import go.planner.plannergo.billing.BillingManager
 import go.planner.plannergo.billing.BillingManager.BILLING_MANAGER_NOT_INITIALIZED
 import go.planner.plannergo.billing.BillingProvider
 import go.planner.plannergo.skulist.AcquireFragment
+import kotlinx.android.synthetic.main.activity_feedback.*
+import kotlinx.android.synthetic.main.toolbar.*
 
 /**
  * Stores miscellaneous options that are not settings.
  * Labeled "Help and Feedback" in the app.
  * Uses billing library methods.
  */
-class FeedbackActivity : AppCompatActivity(), BillingProvider {
+class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivity {
+    private lateinit var prefs: SharedPreferences
+    private lateinit var colorScheme: ColorScheme
+    private var schemeSet = false
 
     // Debug tag, for logging
     private val tag = "BaseGamePlayActivity"
@@ -40,22 +47,30 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider {
     private lateinit var mBillingManager: BillingManager
     private lateinit var mAcquireFragment: AcquireFragment
 
-    private lateinit var mScreenMain: View
+    private lateinit var mScreenMain: ConstraintLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        setColorScheme()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_feedback)
 
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.iconBlack))
         toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
         setSupportActionBar(toolbar)
 
         mViewController = MainViewController(this)
 
-        mAcquireFragment = if (savedInstanceState != null)
-            supportFragmentManager.findFragmentByTag(dialogTag) as AcquireFragment
-        else
+        //This only threw this error when applying changes while FeedbackActivity was active.
+        //No apparent way to make it break this way in the wild, but the catch is there just to be safe.
+        mAcquireFragment = try {
+            if (savedInstanceState != null)
+                supportFragmentManager.findFragmentByTag(dialogTag) as AcquireFragment
+            else
+                AcquireFragment()
+        } catch (e: TypeCastException) {
             AcquireFragment()
+        }
+
 
         mBillingManager = BillingManager(this, @Suppress("INACCESSIBLE_TYPE") mViewController.updateListener)
 
@@ -66,7 +81,7 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider {
 
     override fun onResume() {
         super.onResume()
-
+        checkForColorSchemeUpdate()
         if (mBillingManager.billingClientResponseCode == BillingClient.BillingResponse.OK) {
             mBillingManager.queryPurchases()
         }
@@ -178,6 +193,41 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider {
         if (::mAcquireFragment.isInitialized) {
             mAcquireFragment.refreshUI()
         }
+    }
+
+    override fun setColorScheme() {
+        val scheme = prefs.getBoolean(Settings.darkMode, true)
+        colorScheme = ColorScheme(scheme, this)
+        setTheme(colorScheme.theme)
+        Log.d(TAG, "scheme=" + scheme!!)
+    }
+
+    override fun getColorScheme(): ColorScheme {
+        return colorScheme
+    }
+
+    override fun checkForColorSchemeUpdate() {
+        val scheme = prefs.getBoolean(Settings.darkMode, true)
+        val newScheme = ColorScheme(scheme, this)
+        if (newScheme != colorScheme)
+            recreate()
+        else if (!schemeSet)
+            applyColors()
+    }
+
+    override fun applyColors() {
+        val textColor = colorScheme.getColor(ColorScheme.TEXT_COLOR)
+        val primaryColor = colorScheme.getColor(ColorScheme.PRIMARY)
+        toolbar.setBackgroundColor(primaryColor)
+        toolbar.setTitleTextColor(textColor)
+        toolbar.navigationIcon?.setTint(textColor)
+        greeting.setTextColor(textColor)
+        donate_plea.setTextColor(textColor)
+        repeat_tutorial.setTextColor(textColor)
+        rate_us.setTextColor(textColor)
+        send_feedback.setTextColor(textColor)
+        about.setTextColor(textColor)
+        mScreenMain.setBackgroundColor(primaryColor)
     }
 
 }

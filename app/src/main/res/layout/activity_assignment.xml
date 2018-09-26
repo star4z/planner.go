@@ -2,16 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parentView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     tools:context="go.planner.plannergo.AssignmentActivity">
 
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
+        android:fitsSystemWindows="true"
         android:background="@color/textGrey"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
@@ -26,6 +29,7 @@
         android:layout_height="wrap_content">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/constraint_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp">
@@ -125,7 +129,7 @@
             <Spinner
                 android:id="@+id/hw_type"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
@@ -144,7 +148,7 @@
                 android:contentDescription="@string/add_category_description"
                 android:onClick="openTypeActivity"
                 android:padding="12dp"
-                android:src="@drawable/ic_add_circle_black_24dp"
+                android:src="@drawable/ic_add_dark_grey_24dp"
                 app:layout_constraintBottom_toBottomOf="@+id/category_title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/category_title" />

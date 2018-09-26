@@ -315,7 +315,7 @@ public class FileIO {
     private static Snackbar createSnackBarPopup(Activity c, NewAssignment n) {
         String title = (n.title.equals("")) ? c.getString(R.string.untitled_assignment) : "'" + n.title + "'";
         return Snackbar.make(c.findViewById(R.id.coordinator),
-                c.getString(R.string.deleted) + title + ".", Snackbar.LENGTH_LONG);
+                c.getString(R.string.deleted) + " " + title + ".", Snackbar.LENGTH_LONG);
     }
 
     /**

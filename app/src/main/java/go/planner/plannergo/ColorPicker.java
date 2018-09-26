@@ -4,12 +4,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 
 import java.util.HashMap;
 import java.util.Random;
 
+
+/**
+ * At one time it handled themes, but has since been superseded by ColorScheme
+ * It's still around because it handles class color options.
+ */
 public class ColorPicker {
 
     private static SharedPreferences preferences;

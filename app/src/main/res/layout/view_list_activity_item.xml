@@ -4,17 +4,18 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="2dp"
+    android:elevation="1dp"
     android:focusable="true">
 
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:paddingStart="32dp"
-        android:paddingEnd="32dp"
+        android:paddingEnd="20dp"
+        android:paddingStart="20dp"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
         tools:text="TextView"/>

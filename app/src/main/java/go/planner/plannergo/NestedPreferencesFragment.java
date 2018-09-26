@@ -1,7 +1,9 @@
 package go.planner.plannergo;
 
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceGroup;
 
 /**
  * Handles creation of preference sub-menus
@@ -27,8 +29,9 @@ public class NestedPreferencesFragment extends PreferenceFragment  {
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
         checkPreferenceResource();
+
+        changeTextColors();
     }
 
 
@@ -44,4 +47,30 @@ public class NestedPreferencesFragment extends PreferenceFragment  {
                 break;
         }
     }
+
+    private void changeTextColors() {
+        if (getActivity() instanceof ColorSchemeActivity) {
+            changeTextColors(getPreferenceScreen(), (ColorSchemeActivity) getActivity());
+        }
+    }
+
+    private void changeTextColors(PreferenceGroup group, ColorSchemeActivity activity) {
+        for (int i = 0; i < group.getPreferenceCount(); i++) {
+            Preference preference = group.getPreference(i);
+
+            if (preference instanceof PreferenceGroup)
+                changeTextColors((PreferenceGroup) preference, activity);
+            else {
+                switch (activity.getColorScheme().getMode()) {
+                    case ColorScheme.MODE_LIGHT:
+                        preference.setLayoutResource(R.layout.preference);
+                        break;
+                    case ColorScheme.MODE_DARK:
+                        preference.setLayoutResource(R.layout.preference_dark);
+                        break;
+                }
+            }
+        }
+    }
+
 }

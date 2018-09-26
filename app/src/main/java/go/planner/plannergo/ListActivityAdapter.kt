@@ -25,10 +25,13 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
      * Provides reference points for the views in a view_list_activity_item
      */
     class ViewHolder(val v: View) : RecyclerView.ViewHolder(v) {
-        val textView: TextView = v.findViewById(R.id.textView)
+
+        val textView: TextView = v.findViewById(R.id.title)
         val edit: ImageView = v.findViewById(R.id.edit)
         val remove: ImageView = v.findViewById(R.id.remove)
+
     }
+
 
     /**
      * Called when the RecyclerView needs a new ViewHolder
@@ -38,8 +41,18 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.view_list_activity_item, parent, false) as LinearLayout
 
+        val colorScheme = c.getColorScheme()
+
+        val bg = c.getDrawable(R.drawable.bg_list_item)
+        bg.setTint(colorScheme.getColor(ColorScheme.ASSIGNMENT_VIEW_BG))
+        view.background = bg
+
         //create ViewHolder from layout and attach OnClickListeners
         val holder = ViewHolder(view)
+        holder.textView.setTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        holder.edit.drawable.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        holder.remove.drawable.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+
         holder.edit.setOnClickListener {
             val editText = c.layoutInflater.inflate(
                     R.layout.dialog_edit_text,

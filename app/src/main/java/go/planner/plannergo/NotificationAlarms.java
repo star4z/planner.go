@@ -3,6 +3,7 @@ package go.planner.plannergo;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -20,11 +21,15 @@ import static android.content.Context.ALARM_SERVICE;
  */
 
 class NotificationAlarms {
+    private static final String TAG = "NotificationsAlarms";
 
     static void setNotificationTimers(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (!prefs.getBoolean("pref_time_enabled", true))
+        Boolean timeEnabled = prefs.getBoolean(Settings.timeEnabled, true);
+        Log.d(TAG, "timeEnabled = " + timeEnabled);
+        if (!timeEnabled) {
             return;
+        }
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
         assert alarmManager != null;
@@ -36,8 +41,7 @@ class NotificationAlarms {
     }
 
     private static void setNotificationTimer(Context context, NewAssignment assignment, AlarmManager alarmManager, SharedPreferences prefs) {
-        PendingIntent pendingIntent = AlarmBroadcastReceiver.createPendingIntent(
-                assignment, context);
+        PendingIntent pendingIntent = createPendingIntent(assignment, context);
         alarmManager.cancel(pendingIntent);
 
         //"normal" notification setting
@@ -47,7 +51,7 @@ class NotificationAlarms {
         }
 
         //extra notification setting
-        if (prefs.getBoolean("pref_extra_notif_enabled", false)) {
+        if (prefs.getBoolean(Settings.notif2Enabled, false)) {
             long extraTime = alarmTimeFromAssignment(assignment, prefs, true);
             if (time > System.currentTimeMillis()) {
                 alarmManager.set(AlarmManager.RTC_WAKEUP, extraTime, pendingIntent);
@@ -67,11 +71,11 @@ class NotificationAlarms {
         int daysBeforeDueDate;
         long notifTime;
         if (extraAssignment) {
-            daysBeforeDueDate = prefs.getInt("pref_notif_days_before_extra", 7);
-            notifTime = prefs.getLong("pref_notif_time_extra", 46800000L);
+            daysBeforeDueDate = prefs.getInt(Settings.notif2DaysBefore, 7);
+            notifTime = prefs.getLong(Settings.notif2Time, 46800000L);
         } else {
-            daysBeforeDueDate = prefs.getInt("pref_notif_days_before", 1);
-            notifTime = prefs.getLong("pref_notif_time", 46800000L);
+            daysBeforeDueDate = prefs.getInt(Settings.notif1DaysBefore, 1);
+            notifTime = prefs.getLong(Settings.notif1Time, 46800000L);
         }
         Calendar notifCalendar = Calendar.getInstance();
         notifCalendar.setTimeInMillis(notifTime);
@@ -93,5 +97,20 @@ class NotificationAlarms {
         Log.v("NotificationAlarms", "date=" + format.format(date.getTime()));
 
         return date.getTimeInMillis();
+    }
+
+    /**
+     * Returns an intent which will trigger the notification
+     *
+     * @param assignment Assignment to display
+     * @param context    necessary for system calls
+     * @return new PendingIntent with assignment id
+     */
+    private static PendingIntent createPendingIntent(NewAssignment assignment, Context context) {
+        Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+        intent.putExtra("id", assignment.uniqueID);
+        intent.setAction(AlarmBroadcastReceiver.ACTION_ALARM);
+
+        return PendingIntent.getBroadcast(context, (int) assignment.uniqueID, intent, 0);
     }
 }

@@ -7,7 +7,9 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
+import android.support.design.widget.NavigationView
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -23,16 +25,20 @@ import java.io.File
 
 const val TAG = "TutorialActivity2"
 
-class TutorialActivity : AppCompatActivity() {
+class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
 
     private lateinit var mP: MediaPlayer
     private lateinit var touchHelper: ItemTouchHelper
     private var stage = 0
 
+    private lateinit var colorScheme: ColorScheme
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        setColorScheme()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tutorial2)
 
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         fab.setOnClickListener { initStage1() }
 
         addTextView(R.string.tut_text_01)
@@ -110,6 +116,7 @@ class TutorialActivity : AppCompatActivity() {
     }
 
     private fun initNavDrawer() {
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         val drawerOptions = resources.getStringArray(R.array.drawer_options_array)
         val tArray = resources.obtainTypedArray(R.array.drawer_icons_array)
         val count = tArray.length()
@@ -155,10 +162,11 @@ class TutorialActivity : AppCompatActivity() {
         recycler_view.visibility = View.VISIBLE
 
         drawer_list.adapter = null
+        drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
         toolbar.setTitle(R.string.header_completed)
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.p1_completed))
-        window.statusBarColor = ContextCompat.getColor(this, R.color.p1_completed_dark)
+        toolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.nav_color_2_bright))
 
         touchHelper.attachToRecyclerView(null)
         touchHelper = feedRecyclerView(recycler_view, makeArray(), ItemTouchHelper.LEFT)
@@ -185,6 +193,7 @@ class TutorialActivity : AppCompatActivity() {
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
         )
         b.setPadding(16, 16, 16, 16)
+        b.setTextColor(ContextCompat.getColor(this, R.color.textBlack))
         b.visibility = View.GONE
         b.setOnClickListener {
             run {
@@ -218,10 +227,10 @@ class TutorialActivity : AppCompatActivity() {
 
         invalidateOptionsMenu()
 
-        toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
         toolbar.setTitle(R.string.categories)
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.textBlack))
-        window.statusBarColor = ContextCompat.getColor(this, R.color.textBlack)
+        toolbar.setTitleTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
+        toolbar.navigationIcon?.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
 
         fab.setOnClickListener { _ ->
 
@@ -230,8 +239,7 @@ class TutorialActivity : AppCompatActivity() {
                     findViewById(android.R.id.content),
                     false) as ConstraintLayout
 
-
-            val dialog = AlertDialog.Builder(this)
+            val dialog = AlertDialog.Builder(this, R.style.DarkDialogTheme)
                     .setTitle(R.string.add_category)
                     .setView(body)
                     .create()
@@ -242,7 +250,9 @@ class TutorialActivity : AppCompatActivity() {
             val saveButton = body.findViewById<Button>(R.id.button_save)
             saveButton.setOnClickListener {
                 run {
-                    FileIO.types.add(editText.text.toString())
+                    val newCategory = editText.text.toString()
+                    if (!FileIO.types.contains(newCategory))
+                        FileIO.types.add(newCategory)
                     FileIO.writeFiles(this@TutorialActivity)
                     dialog.dismiss()
                     initStage6(editText.text.toString())
@@ -250,7 +260,7 @@ class TutorialActivity : AppCompatActivity() {
             }
             val suggestion1 = body.findViewById<TextView>(R.id.priority_text)
             suggestion1.setOnClickListener(createListener(suggestion1.text.toString(), dialog))
-            val suggestion2 = body.findViewById<TextView>(R.id.textView3)
+            val suggestion2 = body.findViewById<TextView>(R.id.className)
             suggestion2.setOnClickListener(createListener(suggestion2.text.toString(), dialog))
             val suggestion3 = body.findViewById<TextView>(R.id.textView4)
             suggestion3.setOnClickListener(createListener(suggestion3.text.toString(), dialog))
@@ -270,7 +280,8 @@ class TutorialActivity : AppCompatActivity() {
                 if (file.createNewFile()) {
                     Log.v(TAG, "$fileName created")
                 }
-                FileIO.types.add(text)
+                if (!FileIO.types.contains(text))
+                    FileIO.types.add(text)
                 FileIO.writeFiles(this)
                 dialog.dismiss()
                 initStage6(text)
@@ -288,14 +299,18 @@ class TutorialActivity : AppCompatActivity() {
                 R.layout.view_list_activity_item,
                 linear_layout, false
         ) as LinearLayout
-        val tV = v.findViewById<TextView>(R.id.textView)
+        val tV = v.findViewById<TextView>(R.id.title)
         tV.text = newCategory
+        v.findViewById<ImageView>(R.id.edit).drawable.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        v.findViewById<ImageView>(R.id.remove).drawable.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+
 
         linear_layout.addView(v)
 
         addTextView(getString(R.string.tut_text_18) + newCategory + getString(R.string.tut_text_18_))
         addTextView(R.string.tut_text_19)
         addTextView(R.string.tut_text_20)
+        addTextView(R.string.tut_text_21)
     }
 
 
@@ -313,11 +328,11 @@ class TutorialActivity : AppCompatActivity() {
 
     private var millis = 500L
 
-    private fun addTextView(id: Int){
+    private fun addTextView(id: Int) {
         addTextView(resources.getString(id))
     }
 
-    private fun addTextView(text: String){
+    private fun addTextView(text: String) {
         addTextView(text, millis)
         millis += 1500
     }
@@ -347,5 +362,24 @@ class TutorialActivity : AppCompatActivity() {
         for (i in views)
             linear_layout.removeView(i)
         millis = 500
+    }
+
+    override fun getColorScheme(): ColorScheme {
+        return colorScheme
+    }
+
+    override fun setColorScheme() {
+        colorScheme = ColorScheme(true, this)
+        setTheme(colorScheme.theme)
+    }
+
+    override fun checkForColorSchemeUpdate() {
+
+    }
+
+    override fun applyColors() {
+        val navView = findViewById<NavigationView>(R.id.navigation)
+        navView.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
+        coordinator.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
     }
 }

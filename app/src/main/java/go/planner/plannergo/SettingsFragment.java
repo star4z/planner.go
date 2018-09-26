@@ -12,6 +12,7 @@ import android.preference.MultiSelectListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceGroup;
 import android.preference.RingtonePreference;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -25,6 +26,7 @@ import java.util.Set;
  */
 
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener {
+    private static String TAG = "SettingsFragment";
     private Callback callback;
 
     private static final String KEY_NOTIFY = "NOTIFICATIONS_KEY";
@@ -60,6 +62,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
 
+        changeTextColors();
+
         initSummary();
     }
 
@@ -82,11 +86,37 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         return false;
     }
 
+    private void changeTextColors() {
+        if (getActivity() instanceof ColorSchemeActivity) {
+            changeTextColors(getPreferenceScreen(), (ColorSchemeActivity) getActivity());
+        }
+    }
+
+    private void changeTextColors(PreferenceGroup group, ColorSchemeActivity activity) {
+        for (int i = 0; i < group.getPreferenceCount(); i++) {
+            Preference preference = group.getPreference(i);
+
+            if (preference instanceof PreferenceGroup)
+                changeTextColors((PreferenceGroup) preference, activity);
+            else {
+                switch (activity.getColorScheme().getMode()) {
+                    case ColorScheme.MODE_LIGHT:
+                        preference.setLayoutResource(R.layout.preference);
+                        break;
+                    case ColorScheme.MODE_DARK:
+                        preference.setLayoutResource(R.layout.preference_dark);
+                        break;
+                }
+            }
+        }
+    }
+
+
     /**
      * Update summary
      *
      * @param sharedPreferences settings file
-     * @param pref preference to update the summary of
+     * @param pref              preference to update the summary of
      */
     protected void updatePrefsSummary(SharedPreferences sharedPreferences,
                                       Preference pref) {
@@ -97,10 +127,10 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         if (pref instanceof ListPreference) {
             // List Preference
             ListPreference listPref = (ListPreference) pref;
-            Log.v("SettingsFragment","listPrefEntry=" + listPref.getEntry());
-            if (listPref.getEntry() == null){
+            Log.v("SettingsFragment", "listPrefEntry=" + listPref.getEntry());
+            if (listPref.getEntry() == null) {
                 listPref.setValueIndex(0);
-                Log.v("SettingsFragment","after change, listPrefEntry=" + listPref.getEntry());
+                Log.v("SettingsFragment", "after change, listPrefEntry=" + listPref.getEntry());
             }
             listPref.setSummary(listPref.getEntry());
 
@@ -144,8 +174,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                 pref.setSummary(ringtone.getTitle(getActivity()));
             }
 
-        }
-        else if (pref instanceof NumberPreference) {
+        } else if (pref instanceof NumberPreference) {
             // My NumberPicker Preference
             NumberPreference nPickerPref = (NumberPreference) pref;
             nPickerPref.setSummary(nPickerPref.getValue());
@@ -162,7 +191,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     /*
      * Init single Preference
-	 */
+     */
     protected void initPrefsSummary(SharedPreferences sharedPreferences,
                                     Preference p) {
         if (p instanceof PreferenceCategory) {
@@ -177,11 +206,13 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(Settings.darkMode))
+            getActivity().recreate();
         updatePrefsSummary(sharedPreferences, findPreference(key));
-
     }
 
     public interface Callback {
         void onNestedPreferenceSelected(int key);
     }
+
 }

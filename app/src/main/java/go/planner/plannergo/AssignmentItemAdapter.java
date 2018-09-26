@@ -20,39 +20,47 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class AssignmentItemAdapter extends RecyclerView.Adapter {
-
     private static String TAG = "AssignmentItemAdapter";
 
     Activity activity;
     ArrayList<NewAssignment> dataSet;
     private SharedPreferences prefs;
     private int sortIndex;
+    private ColorScheme colorScheme;
 
     AssignmentItemAdapter(ArrayList<NewAssignment> dataSet, int sortIndex, Activity activity) {
         this.dataSet = dataSet;
         this.sortIndex = sortIndex;
         this.activity = activity;
+        if (activity instanceof MainActivity)
+            colorScheme = ((MainActivity) activity).getColorScheme();
+        else {
+            Log.d(TAG, "Could not get colorScheme.");
+            colorScheme = new ColorScheme(true, activity);
+        }
+
         prefs = PreferenceManager.getDefaultSharedPreferences(activity);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout itemView;
-        TextView title, className, date, category;
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        NewAssignment a = dataSet.get(position);
+        ViewHolder vh = (ViewHolder) holder;
 
-        ViewHolder(ConstraintLayout itemView) {
-            this(itemView, true);
-        }
+        if (prefs != null && prefs.getBoolean(Settings.classColorsEnabled, false))
+            vh.title.setTextColor(ColorPicker.getClassColor(a.className));
 
-        ViewHolder(ConstraintLayout itemView, boolean swipeable) {
-            super(itemView);
-            this.itemView = itemView;
-            title = this.itemView.findViewById(R.id.title);
-            if (swipeable) {
-                className = this.itemView.findViewById(R.id.class_name);
-                date = this.itemView.findViewById(R.id.date);
-                category = this.itemView.findViewById(R.id.category);
-            }
-        }
+        vh.title.setText(a.title);
+        vh.category.setText(a.type);
+        vh.className.setText(a.className);
+
+        SimpleDateFormat dateFormat = (prefs.getBoolean(Settings.timeEnabled, false))
+                ? new SimpleDateFormat("h:mm a EEE, MM/dd/yy", Locale.US)
+                : new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
+
+        vh.date.setText(dateFormat.format(a.dueDate.getTime()));
+
+        vh.itemView.setOnClickListener(new BodyClickListener(a, activity));
     }
 
     /**
@@ -89,26 +97,44 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         return new ViewHolder(v);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        NewAssignment a = dataSet.get(position);
-        ViewHolder vh = (ViewHolder) holder;
+    /**
+     * Creates snackBar in activity with option to undo completion state change.
+     * Used only when the assignment is marked done, NOT when it is deleted. (See
+     * FileIO.deleteAssignment().)
+     *
+     * @param a assignment; uses title to give personalized pop-up message.
+     */
+    private void createSnackBarPopup(final NewAssignment a) {
+        String title = (a.title.equals("")) ? activity.getString(R.string.assignment) : "'" + a.title + "'";
+        String status = activity.getString(a.completed ? R.string.eos_c : R.string.eos_ip);
 
+        Log.v(TAG, "title.length=" + title.length());
 
-        if (prefs != null && prefs.getBoolean("pref_class_colors_enabled", false))
-            vh.title.setTextColor(ColorPicker.getClassColor(a.className));
+        if (title.length() > 18) {
+            title = title.substring(0, 15) + "...'";
+        }
 
-        vh.title.setText(a.title);
-        vh.category.setText(a.type);
-        vh.className.setText(a.className);
+        Snackbar snackbar = Snackbar.make(
+                activity.findViewById(R.id.coordinator),
+                activity.getString(R.string.marked) + " " + title + " as " + status,
+                Snackbar.LENGTH_LONG
+        );
 
-        SimpleDateFormat dateFormat = (prefs.getBoolean(SettingsActivity.timeEnabled, false))
-                ? new SimpleDateFormat("h:mm a EEE, MM/dd/yy", Locale.US)
-                : new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
+        snackbar.setAction(R.string.undo, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeAssignmentStatus(a);
+                dataSet.add(a);
+                if (activity instanceof MainActivity) {
+                    ((MainActivity) activity).loadPanels(
+                            a.completed ? FileIO.completedAssignments : FileIO.inProgressAssignments,
+                            sortIndex
+                    );
+                }
+            }
+        });
 
-        vh.date.setText(dateFormat.format(a.dueDate.getTime()));
-
-        vh.itemView.setOnClickListener(new BodyClickListener(a, activity));
+        snackbar.show();
     }
 
     @Override
@@ -146,38 +172,27 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         return a;
     }
 
-    /**
-     * Creates snackBar in activity with option to undo completion state change.
-     * Used only when the assignment is marked done, NOT when it is deleted. (See
-     * FileIO.deleteAssignment().)
-     *
-     * @param a assignment; uses title to give personalized pop-up message.
-     */
-    private void createSnackBarPopup(final NewAssignment a) {
-        String title = (a.title.equals("")) ? activity.getString(R.string.assignment) : "'" + a.title + "'";
-        String status = activity.getString(a.completed ? R.string.eos_c : R.string.eos_ip);
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        ConstraintLayout itemView;
+        TextView title, className, date, category;
 
-        Log.v(TAG, "title.length=" + title.length());
+        ViewHolder(ConstraintLayout itemView) {
+            super(itemView);
+            this.itemView = itemView;
 
-        if (title.length() > 18) {
-            title = title.substring(0, 15) + "...'";
+            title = this.itemView.findViewById(R.id.title);
+            className = this.itemView.findViewById(R.id.class_name);
+            date = this.itemView.findViewById(R.id.date);
+            category = this.itemView.findViewById(R.id.category);
+
+            int textColor = colorScheme.getColor(ColorScheme.TEXT_COLOR);
+            title.setTextColor(textColor);
+            className.setTextColor(textColor);
+            date.setTextColor(textColor);
+            category.setTextColor(textColor);
+
+            this.itemView.setBackgroundColor(colorScheme.getColor(ColorScheme.ASSIGNMENT_VIEW_BG));
         }
-
-        Snackbar snackbar = Snackbar.make(
-                activity.findViewById(R.id.coordinator),
-                activity.getString(R.string.marked) + title + " as " + status,
-                Snackbar.LENGTH_LONG
-        );
-
-        snackbar.setAction(R.string.undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeAssignmentStatus(a);
-                dataSet.add(a);
-            }
-        });
-
-        snackbar.show();
     }
 
 

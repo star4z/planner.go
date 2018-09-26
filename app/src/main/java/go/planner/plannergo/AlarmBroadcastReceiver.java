@@ -34,6 +34,7 @@ import static android.os.Build.VERSION_CODES.O;
 
 public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
+
     public static final String ACTION_ALARM = "planner.app.Alarm1";
     public static final String MARK_DONE = "planner.app.MarkDone";
 
@@ -49,7 +50,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         if (ACTION_ALARM.equals(intent.getAction())) {
             NewAssignment assignment = FileIO.getAssignment(intent.getLongExtra("id", -1L));
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-            boolean timeEnabled = preferences.getBoolean("pref_time_enabled", true);
+            boolean timeEnabled = preferences.getBoolean(Settings.timeEnabled, true);
 
             createNotification(assignment, timeEnabled, context);
 
@@ -139,18 +140,5 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     }
 
 
-    /**
-     * Returns an intent which will trigger the notification
-     *
-     * @param assignment Assignment to display
-     * @param context necessary for system calls
-     * @return new PendingIntent with assignment id
-     */
-    public static PendingIntent createPendingIntent(NewAssignment assignment,  Context context) {
-        Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
-        intent.putExtra("id", assignment.uniqueID);
-        intent.setAction(AlarmBroadcastReceiver.ACTION_ALARM);
 
-        return PendingIntent.getBroadcast(context, (int) assignment.uniqueID, intent, 0);
-    }
 }

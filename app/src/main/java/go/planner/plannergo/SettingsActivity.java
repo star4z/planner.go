@@ -1,42 +1,44 @@
 package go.planner.plannergo;
 
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
 
-public class SettingsActivity extends AppCompatActivity implements SettingsFragment.Callback {
+import org.jetbrains.annotations.NotNull;
 
-    public static final String timeEnabled = "pref_time_enabled";
-    public static final String overdueLast = "pref_overdue_last";
+public class SettingsActivity extends AppCompatActivity implements SettingsFragment.Callback, ColorSchemeActivity {
+    private static final String TAG = "SettingsActivity";
 
     private static final String TAG_NESTED = "TAG_NESTED";
 
     private Toolbar toolbar;
+    private LinearLayout parent;
+
+    private SharedPreferences prefs;
+    private ColorScheme colorScheme;
+    private boolean schemeSet = false;
 
     public boolean listStyled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        setColorScheme();
 
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prefs);
 
-
+        parent = findViewById(R.id.parent);
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.settings);
         toolbar.setNavigationContentDescription(R.string.back);
-        if (ColorPicker.getColorSecondaryText() == Color.BLACK) {
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-        } else {
-            toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        }
         setSupportActionBar(toolbar);
-
-
 
         if (savedInstanceState == null) {
             // Display the fragment
@@ -46,12 +48,10 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
         }
     }
 
+
     @Override
     protected void onResume() {
-        ColorPicker.setColors(this);
-        toolbar.setBackgroundColor(ColorPicker.getColorSecondary());
-        toolbar.setTitleTextColor(ColorPicker.getColorSecondaryText());
-        getWindow().setStatusBarColor(ColorPicker.getColorSecondaryAccent());
+        checkForColorSchemeUpdate();
         super.onResume();
     }
 
@@ -74,7 +74,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
                 if (getFragmentManager().getBackStackEntryCount() == 0) {
                     NavUtils.navigateUpFromSameTask(this);
                 } else {
-                    toolbar.setTitle(R.string.set);
+                    toolbar.setTitle(R.string.settings);
                     getFragmentManager().popBackStack();
                 }
                 return true;
@@ -96,4 +96,40 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
 
     }
 
+    @Override
+    public void setColorScheme() {
+        boolean scheme = prefs.getBoolean(Settings.darkMode, true);
+        colorScheme = new ColorScheme(scheme, this);
+        if (colorScheme.getMode() == ColorScheme.MODE_DARK)
+            setTheme(R.style.DarkTheme_Fade);
+        else
+            setTheme(R.style.LightTheme_Fade);
+        Log.d(TAG, "scheme=" + scheme);
+    }
+
+    @NotNull
+    @Override
+    public ColorScheme getColorScheme() {
+        return colorScheme;
+    }
+
+    @Override
+    public void checkForColorSchemeUpdate() {
+        boolean isDarkMode = prefs.getBoolean(Settings.darkMode, true);
+        ColorScheme newScheme = new ColorScheme(isDarkMode, this);
+        if (!newScheme.equals(colorScheme))
+            recreate();
+        else if (!schemeSet)
+            applyColors();
+    }
+
+    @Override
+    public void applyColors() {
+        toolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
+        toolbar.setTitleTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR));
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        toolbar.getNavigationIcon().setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR));
+        parent.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
+        schemeSet = true;
+    }
 }

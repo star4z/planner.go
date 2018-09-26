@@ -4,7 +4,11 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.SharedPreferences
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.preference.PreferenceManager
+import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -16,26 +20,31 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_list.*
 import kotlinx.android.synthetic.main.toolbar.*
 
 /**
  * For displaying and editing simple lists.
  */
-abstract class ListActivity : AppCompatActivity() {
+abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
+    private lateinit var viewManager: LinearLayoutManager
     private lateinit var data: ArrayList<String>
+
+    private lateinit var prefs: SharedPreferences
+
+    private lateinit var colorScheme: ColorScheme
+    private var schemeSet = false
 
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        setColorScheme()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_list)
 
         initToolbar()
-
-        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.iconBlack))
-        toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
 
         setSupportActionBar(toolbar)
 
@@ -60,6 +69,11 @@ abstract class ListActivity : AppCompatActivity() {
             adapter = viewAdapter
 
         }
+    }
+
+    override fun onResume() {
+        checkForColorSchemeUpdate()
+        super.onResume()
     }
 
     abstract fun initToolbar()
@@ -123,13 +137,45 @@ abstract class ListActivity : AppCompatActivity() {
                         imm.hideSoftInputFromWindow(editText.windowToken, 0)
                     }
                 }
-                .setNegativeButton(R.string.cancel) {_, _ ->
+                .setNegativeButton(R.string.cancel) { _, _ ->
                     imm.hideSoftInputFromWindow(editText.windowToken, 0)
                 }
                 .show()
                 .setCanceledOnTouchOutside(false)
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 
+    }
+
+    override fun setColorScheme() {
+        val scheme = prefs.getBoolean(Settings.darkMode, true)
+        colorScheme = ColorScheme(scheme, this)
+        setTheme(colorScheme.theme)
+        Log.d(TAG, "scheme=" + scheme!!)
+    }
+
+    override fun getColorScheme(): ColorScheme {
+        return colorScheme
+    }
+
+    override fun checkForColorSchemeUpdate() {
+        val scheme = prefs.getBoolean(Settings.darkMode, true)
+        val newScheme = ColorScheme(scheme, this)
+        if (newScheme != colorScheme) {
+            recreate()
+        } else if (!schemeSet) {
+            applyColors()
+        }
+    }
+
+    override fun applyColors() {
+        fab.backgroundTintList = ColorStateList.valueOf(colorScheme.getColor(ColorScheme.ACCENT))
+        findViewById<ConstraintLayout>(R.id.parent).setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
+        recyclerView.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
+        toolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
+        toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
+        toolbar.navigationIcon?.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        toolbar.setTitleTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        schemeSet = true
     }
 
     private inline fun consume(f: () -> Unit): Boolean {

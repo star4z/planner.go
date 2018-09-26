@@ -3,11 +3,15 @@ package go.planner.plannergo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -24,6 +28,7 @@ public class DrawerAdapter extends BaseAdapter {
     private int[] drawerIcons;
     private static LayoutInflater inflater = null;
     private int selectedPos;
+    private Context c;
 
     DrawerAdapter(Activity activity, String[] drawerOptions, int[] drawerIcons, int selectedPos) {
         this.drawerOptions = drawerOptions;
@@ -31,6 +36,7 @@ public class DrawerAdapter extends BaseAdapter {
         this.selectedPos = selectedPos;
         inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         res = activity.getResources();
+        c = activity;
     }
 
     public void setSelectedPos(int selectedPos) {
@@ -60,24 +66,51 @@ public class DrawerAdapter extends BaseAdapter {
 
         View view = (position == selectedPos) ?
                 inflater.inflate(R.layout.view_drawer_list_item_selected, parent, false) :
-                inflater.inflate(R.layout.view_drawer_list_item, parent, false); //I'm not sure why but this only works when the root is null else the app crashes
+                inflater.inflate(R.layout.view_drawer_list_item, parent, false);
 
         TextView text = view.findViewById(R.id.nBar_item_text);
         ImageView icon = view.findViewById(R.id.nBar_item_icon);
 
+
+        if (c instanceof ColorSchemeActivity) {
+            ColorScheme scheme = ((ColorSchemeActivity) c).getColorScheme();
+            if (position == 0) {
+                if (scheme.getMode() == ColorScheme.MODE_DARK)
+                    view.setBackgroundColor(scheme.getColor(ColorScheme.PRIMARY_DARK));
+                else
+                    view.setBackgroundColor(ContextCompat.getColor(c, R.color.colorPrimary));
+            } else {
+                view.setBackgroundColor(scheme.getColor(ColorScheme.PRIMARY));
+                text.setTextColor(scheme.getColor(ColorScheme.TEXT_COLOR));
+            }
+            if (position == selectedPos) {
+                LinearLayout l = view.findViewById(R.id.nBar_item);
+                Drawable d = l.getBackground();
+                d.setTint(scheme.getColor(ColorScheme.TEXT_COLOR));
+            }
+        }
+
+
         switch (position) {
             case 0:
-                view.setBackgroundColor(ColorPicker.getColorPrimary());
-                text.setTextColor(ColorPicker.getColorPrimaryText());
+                text.setTextColor(ContextCompat.getColor(c, R.color.textWhite));
+                int statusBarHeight = (int) Math.floor(25 * res.getDisplayMetrics().density);
+                Log.d(TAG, "StatusBarHeight=" + statusBarHeight);
+
+                final float scale = c.getResources().getDisplayMetrics().density;
+                int pixels = (int) (16 * scale + 0.5f);
+
+                view.setPadding(view.getPaddingLeft(), statusBarHeight + pixels - 3, view.getPaddingRight(),
+                        view.getPaddingBottom());
                 break;
             case 1:
-                text.setTextColor(res.getColor(R.color.golden));
+                text.setTextColor(res.getColor(R.color.nav_color_1));
                 break;
             case 2:
-                text.setTextColor(res.getColor(R.color.green));
+                text.setTextColor(res.getColor(R.color.nav_color_2));
                 break;
             case 3:
-                text.setTextColor(res.getColor(R.color.maroon));
+                text.setTextColor(res.getColor(R.color.nav_color_3));
                 break;
         }
 

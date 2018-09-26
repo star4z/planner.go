@@ -7,6 +7,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.design.widget.CoordinatorLayout
+import android.support.design.widget.NavigationView
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.DrawerLayout
 import android.util.Log
@@ -21,30 +23,30 @@ import kotlinx.android.synthetic.main.activity_trash.*
  * Displays deleted assignments. Does not do any sorting in order to handle larger quantities of
  * assignments than would be expected in MainActivity, for example.
  */
-class TrashActivity : Activity() {
-
+class TrashActivity : Activity(), ColorSchemeActivity {
     private lateinit var prefs: SharedPreferences
+    private lateinit var colorScheme: ColorScheme
+    private var schemeSet = false
+
     private lateinit var mDrawerLayout: DrawerLayout
 
     @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        setColorScheme()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trash)
 
         setActionBar(toolbar)
         toolbar.title = "Trash"
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
-            toolbar.overflowIcon = ContextCompat.getDrawable(applicationContext, R.drawable.ic_more_vert_white_24dp)
-
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.textWhite))
 
         FileIO.readFiles(this)
     }
 
     override fun onResume() {
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        checkForColorSchemeUpdate()
 
-        ColorPicker.setColors(this)
         invalidateOptionsMenu()
         setUpNavDrawer()
 
@@ -53,6 +55,42 @@ class TrashActivity : Activity() {
         loadPanels()
 
         super.onResume()
+    }
+
+    override fun setColorScheme() {
+        val scheme = prefs.getBoolean(Settings.darkMode, true)
+        colorScheme = ColorScheme(scheme, this)
+        setTheme(colorScheme.theme)
+        Log.d(TAG, "scheme=$scheme")
+    }
+
+    override fun getColorScheme(): ColorScheme {
+        return colorScheme
+    }
+
+    override fun checkForColorSchemeUpdate() {
+        val newScheme = ColorScheme(prefs.getBoolean(Settings.darkMode, true), this)
+        if (newScheme != colorScheme)
+            recreate()
+        else if (!schemeSet)
+            applyColors()
+    }
+
+    override fun applyColors() {
+        val navView = findViewById<NavigationView>(R.id.navigation)
+        navView.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
+        val coordinatorLayout = findViewById<CoordinatorLayout>(R.id.coordinator)
+        coordinatorLayout.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
+        if (colorScheme.mode == ColorScheme.MODE_DARK) {
+            toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.nav_color_3_bright))
+            toolbar.navigationIcon.setTint(ContextCompat.getColor(this, R.color.nav_color_3_bright))
+            toolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
+        } else {
+            toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.textBlack))
+            toolbar.navigationIcon.setTint(ContextCompat.getColor(this, R.color.textBlack))
+            toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.nav_color_3_bright))
+        }
+        schemeSet = true
     }
 
     private fun setUpNavDrawer() {
@@ -111,8 +149,19 @@ class TrashActivity : Activity() {
                         findViewById(android.R.id.content),
                         false
                 )
-                nextView.findViewById<TextView>(R.id.textView).text = assignment.title
-                nextView.findViewById<TextView>(R.id.textView3).text = assignment.className
+
+                nextView.setBackgroundColor(colorScheme.getColor(ColorScheme.ASSIGNMENT_VIEW_BG))
+
+                val textColor = colorScheme.getColor(ColorScheme.TEXT_COLOR)
+
+                val titleView = nextView.findViewById<TextView>(R.id.title)
+                titleView.text = assignment.title
+                titleView.setTextColor(textColor)
+                val className = nextView.findViewById<TextView>(R.id.className)
+                className.text = assignment.className
+                className.setTextColor(textColor)
+                nextView.findViewById<ImageView>(R.id.restore).drawable.setTint(textColor)
+                nextView.findViewById<ImageView>(R.id.delete).drawable.setTint(textColor)
 
 
                 nextView.findViewById<ImageView>(R.id.restore).setOnClickListener {
@@ -123,10 +172,10 @@ class TrashActivity : Activity() {
                 }
 
                 nextView.findViewById<ImageView>(R.id.delete).setOnClickListener {
-                    title = if (assignment.title == "") getString(R.string.mThis) else "'${assignment.title}'"
+                    val title = if (assignment.title == "") getString(R.string.mThis) else "'${assignment.title}'"
                     AlertDialog.Builder(this)
                             .setTitle(R.string.perm_delete_check)
-                            .setMessage("$title ${R.string.gone_forever}")
+                            .setMessage("$title ${getString(R.string.gone_forever)}")
                             .setPositiveButton(R.string.delete) { _, _ ->
                                 run {
                                     FileIO.deletedAssignments.remove(assignment)
@@ -149,7 +198,15 @@ class TrashActivity : Activity() {
                 false
         ) as TextView
         header.setText(inText)
+        header.setTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR))
         body.addView(header)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        val icon = getDrawable(R.drawable.ic_trash_grey_24dp)
+        icon.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        menu?.getItem(0)?.icon = icon
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

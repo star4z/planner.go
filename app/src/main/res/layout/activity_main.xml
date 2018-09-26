@@ -15,27 +15,33 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <include
+            <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/toolbar"
-                layout="@layout/toolbar" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/nav_color_1_bright"
+                android:elevation="4dp"
+                android:fitsSystemWindows="true"
+                app:navigationContentDescription="@string/open_nav_menu"
+                app:navigationIcon="@drawable/ic_dehaze_white_24dp" />
 
 
             <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <!--formerly bg: #f9f9f9-->
                 <LinearLayout
                     android:id="@+id/parent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#f9f9f9"
                     android:clipToPadding="false"
                     android:orientation="vertical"
-                    android:paddingBottom="96dp" />
+                    android:background="#00000000"
+                    android:paddingBottom="74dp" />
 
             </android.support.v4.widget.NestedScrollView>
-
-
         </LinearLayout>
 
         <android.support.design.widget.FloatingActionButton
@@ -45,23 +51,27 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
             android:onClick="createNew"
-            android:src="@drawable/ic_add_white_24dp"
+            android:src="@drawable/ic_add_black_24dp"
+            app:backgroundTint="@color/darkAccent"
             app:fabSize="normal" />
 
-        <include layout="@layout/view_action_button_menu" />
     </android.support.design.widget.CoordinatorLayout>
 
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start">
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header"
+        app:itemBackground="@drawable/nav_item">
 
         <ListView
             android:id="@+id/drawer_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:dividerHeight="0dp"
-            android:divider="@null"/>
+            android:divider="@null"
+            android:fitsSystemWindows="true" />
     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

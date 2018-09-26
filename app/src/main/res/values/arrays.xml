@@ -25,8 +25,6 @@
         <item>Project</item>
     </string-array>
 
-
-
     <string-array name="sort_types">
         <item>@string/sort_date</item>
         <item>@string/sort_class</item>
@@ -42,9 +40,13 @@
     </string-array>
 
     <string-array name="color_palettes">
-        <item>Monochrome</item>
-        <item>Mint</item>
-        <item>Space White</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+
+    <string-array name="color_palette_values">
+        <item>LIGHT</item>
+        <item>DARK</item>
     </string-array>
 
     <integer-array name="bright_palette">

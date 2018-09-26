@@ -2,11 +2,11 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <include
-        android:id="@+id/toolbar"
         layout="@layout/toolbar" />
 
     <TextView
@@ -17,6 +17,7 @@
         android:labelFor="@id/recycler_view"
         android:contentDescription="@string/empty_list_content_descr"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
+        android:background="@android:color/transparent"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <android.support.v7.widget.RecyclerView
@@ -27,12 +28,14 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:clipToPadding="true"
-        app:layout_constraintStart_toStartOf="parent"
+        android:clipToPadding="false"
+        android:paddingBottom="74dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
+        app:layout_constraintVertical_bias="1.0" />
 
 
     <android.support.design.widget.FloatingActionButton
@@ -41,7 +44,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:onClick="addNew"
-        android:src="@drawable/ic_add_white_24dp"
+        android:contentDescription="@string/add_new_item"
+        android:src="@drawable/ic_add_dark_grey_24dp"
         app:fabSize="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
