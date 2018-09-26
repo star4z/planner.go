@@ -173,8 +173,28 @@
         <item name="android:background">@color/lightPrimary</item>
         <item name="android:textColor">@color/lightText</item>
         <item name="android:textColorPrimary">@color/lightTextSecondary</item>
-
     </style>
 
+    <style name="DialogEditText">
+        <item name="android:id">@id/edit_text</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:inputType">textCapSentences</item>
+        <item name="android:hint">@string/default_title</item>
+    </style>
+
+    <style name="DialogEditText.Dark">
+        <item name="android:background">@color/darkPrimary</item>
+        <item name="android:textColor">@color/darkTextPrimary</item>
+        <item name="android:textColorHint">@color/darkTextSecondary</item>
+    </style>
+
+    <style name="DialogEditText.Light">
+        <item name="android:background">@color/lightPrimary</item>
+        <item name="android:textColor">@color/lightText</item>
+        <item name="android:textColorHint">@color/lightTextSecondary</item>
+    </style>
 
 </resources>

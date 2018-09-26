@@ -1,5 +1,6 @@
 package go.planner.plannergo;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
@@ -8,9 +9,6 @@ import android.util.Log;
 import java.util.ArrayList;
 
 public class ColorScheme {
-    //Not originally redundant with isDarkMode; allows for case specific text contrast options in some situations
-    static final int MODE_LIGHT = 0;
-    static final int MODE_DARK = 1;
     //indices
     static final int PRIMARY = 0; //App bar, layout background, and navigation bar
     static final int PRIMARY_DARK = 1; //Notification bar
@@ -19,12 +17,15 @@ public class ColorScheme {
     static final int TEXT_COLOR = 4; //Text color
     static final int SUB_TEXT_COLOR = 5;
     private static final String TAG = "ColorScheme";
+    @SuppressLint("StaticFieldLeak")
+    public static final ColorScheme SCHEME_DARK = new ColorScheme(true);
+    @SuppressLint("StaticFieldLeak")
+    public static final ColorScheme SCHEME_LIGHT = new ColorScheme(false);
+
     private ArrayList<Integer> colors;
     private int theme;
-    private int mode;
     private boolean isDarkMode;
     private Context c;
-    private String scheme;
 
     ColorScheme(boolean isDarkMode, Context c) {
         this.c = c;
@@ -32,7 +33,7 @@ public class ColorScheme {
 
         if (isDarkMode) {
             theme = R.style.DarkTheme;
-            mode = MODE_DARK;
+
             colors = new ArrayList<>();
             addColor(PRIMARY, R.color.darkPrimary);
             addColor(PRIMARY_DARK, R.color.darkPrimaryDark);
@@ -42,7 +43,6 @@ public class ColorScheme {
             addColor(SUB_TEXT_COLOR, R.color.darkTextSecondary);
         } else {
             theme = R.style.LightTheme;
-            mode = MODE_LIGHT;
             colors = new ArrayList<>();
             addColor(PRIMARY, R.color.lightPrimary);
             addColor(PRIMARY_DARK, R.color.lightPrimaryDark);
@@ -53,16 +53,13 @@ public class ColorScheme {
         }
     }
 
-    public String getScheme() {
-        return scheme;
-    }
-
-    public void setScheme(String scheme) {
-        this.scheme = scheme;
-    }
-
-    public int getMode() {
-        return mode;
+    private ColorScheme(boolean isDarkMode) {
+        this.isDarkMode = isDarkMode;
+        if (isDarkMode) {
+            theme = R.style.DarkTheme;
+        } else {
+            theme = R.style.LightTheme;
+        }
     }
 
     public int getColor(int pos) {
@@ -85,19 +82,6 @@ public class ColorScheme {
         ColorScheme that = (ColorScheme) o;
 
         return isDarkMode == that.isDarkMode;
-    }
-
-    @Override
-    public int hashCode() {
-        return scheme != null ? scheme.hashCode() : 0;
-    }
-
-    @Override
-    public String toString() {
-        return "ColorScheme{" +
-                "colors=" + colors +
-                ", scheme='" + scheme + '\'' +
-                '}';
     }
 
     private void addColor(int pos, int color) {

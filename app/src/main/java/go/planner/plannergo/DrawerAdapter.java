@@ -75,7 +75,7 @@ public class DrawerAdapter extends BaseAdapter {
         if (c instanceof ColorSchemeActivity) {
             ColorScheme scheme = ((ColorSchemeActivity) c).getColorScheme();
             if (position == 0) {
-                if (scheme.getMode() == ColorScheme.MODE_DARK)
+                if (scheme == ColorScheme.SCHEME_DARK)
                     view.setBackgroundColor(scheme.getColor(ColorScheme.PRIMARY_DARK));
                 else
                     view.setBackgroundColor(ContextCompat.getColor(c, R.color.colorPrimary));

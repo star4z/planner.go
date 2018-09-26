@@ -199,7 +199,7 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
         val scheme = prefs.getBoolean(Settings.darkMode, true)
         colorScheme = ColorScheme(scheme, this)
         setTheme(colorScheme.theme)
-        Log.d(TAG, "scheme=" + scheme!!)
+        Log.d(TAG, "scheme=$scheme")
     }
 
     override fun getColorScheme(): ColorScheme {
@@ -223,6 +223,7 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
         toolbar.navigationIcon?.setTint(textColor)
         greeting.setTextColor(textColor)
         donate_plea.setTextColor(textColor)
+        donate1.setTextColor(ContextCompat.getColor(this, R.color.textBlack))
         repeat_tutorial.setTextColor(textColor)
         rate_us.setTextColor(textColor)
         send_feedback.setTextColor(textColor)

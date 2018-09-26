@@ -88,7 +88,10 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             R.id.empty_trash -> {
-                AlertDialog.Builder(this)
+                AlertDialog.Builder(this, if (colorScheme == ColorScheme.SCHEME_DARK)
+                    R.style.DarkDialogTheme
+                else
+                    R.style.LightDialogTheme)
                         .setTitle("Are you sure you want to delete all items?")
                         .setMessage("You will not be able to undo this action.")
                         .setPositiveButton("Yes") { _, _ ->
@@ -120,8 +123,14 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
                 R.layout.dialog_edit_text,
                 findViewById(android.R.id.content),
                 false) as EditText
+        editText.setTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        editText.setHintTextColor(colorScheme.getColor(ColorScheme.SUB_TEXT_COLOR))
+
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        AlertDialog.Builder(this)
+        AlertDialog.Builder(this, if (colorScheme == ColorScheme.SCHEME_DARK)
+            R.style.DarkDialogTheme
+        else
+            R.style.LightDialogTheme)
                 .setTitle(R.string.add_new)
                 .setView(editText)
                 .setPositiveButton(R.string.save) { _: DialogInterface, _: Int ->
@@ -150,7 +159,7 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
         val scheme = prefs.getBoolean(Settings.darkMode, true)
         colorScheme = ColorScheme(scheme, this)
         setTheme(colorScheme.theme)
-        Log.d(TAG, "scheme=" + scheme!!)
+        Log.d(TAG, "scheme=$scheme")
     }
 
     override fun getColorScheme(): ColorScheme {

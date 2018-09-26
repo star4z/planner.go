@@ -99,14 +99,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             if (preference instanceof PreferenceGroup)
                 changeTextColors((PreferenceGroup) preference, activity);
             else {
-                switch (activity.getColorScheme().getMode()) {
-                    case ColorScheme.MODE_LIGHT:
-                        preference.setLayoutResource(R.layout.preference);
-                        break;
-                    case ColorScheme.MODE_DARK:
-                        preference.setLayoutResource(R.layout.preference_dark);
-                        break;
-                }
+                if (activity.getColorScheme().equals(ColorScheme.SCHEME_LIGHT))
+                    preference.setLayoutResource(R.layout.preference);
+                else
+                    preference.setLayoutResource(R.layout.preference_dark);
+
             }
         }
     }

@@ -81,7 +81,7 @@ class TrashActivity : Activity(), ColorSchemeActivity {
         navView.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
         val coordinatorLayout = findViewById<CoordinatorLayout>(R.id.coordinator)
         coordinatorLayout.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
-        if (colorScheme.mode == ColorScheme.MODE_DARK) {
+        if (colorScheme == ColorScheme.SCHEME_DARK) {
             toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.nav_color_3_bright))
             toolbar.navigationIcon.setTint(ContextCompat.getColor(this, R.color.nav_color_3_bright))
             toolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
@@ -173,7 +173,10 @@ class TrashActivity : Activity(), ColorSchemeActivity {
 
                 nextView.findViewById<ImageView>(R.id.delete).setOnClickListener {
                     val title = if (assignment.title == "") getString(R.string.mThis) else "'${assignment.title}'"
-                    AlertDialog.Builder(this)
+                    AlertDialog.Builder(this, if (colorScheme == ColorScheme.SCHEME_DARK)
+                        R.style.DarkDialogTheme
+                    else
+                        R.style.LightDialogTheme)
                             .setTitle(R.string.perm_delete_check)
                             .setMessage("$title ${getString(R.string.gone_forever)}")
                             .setPositiveButton(R.string.delete) { _, _ ->
@@ -221,7 +224,10 @@ class TrashActivity : Activity(), ColorSchemeActivity {
                 return true
             }
             R.id.empty_trash -> {
-                AlertDialog.Builder(this)
+                AlertDialog.Builder(this, if (colorScheme == ColorScheme.SCHEME_DARK)
+                    R.style.DarkDialogTheme
+                else
+                    R.style.LightDialogTheme)
                         .setTitle(R.string.empty_trash_check)
                         .setMessage(R.string.no_undo)
                         .setPositiveButton(R.string.yes) { _, _ ->

@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class SettingsActivity extends AppCompatActivity implements SettingsFragment.Callback, ColorSchemeActivity {
     private static final String TAG = "SettingsActivity";
 
@@ -23,8 +25,6 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
     private SharedPreferences prefs;
     private ColorScheme colorScheme;
     private boolean schemeSet = false;
-
-    public boolean listStyled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +100,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
     public void setColorScheme() {
         boolean scheme = prefs.getBoolean(Settings.darkMode, true);
         colorScheme = new ColorScheme(scheme, this);
-        if (colorScheme.getMode() == ColorScheme.MODE_DARK)
+        if (colorScheme.equals(ColorScheme.SCHEME_DARK))
             setTheme(R.style.DarkTheme_Fade);
         else
             setTheme(R.style.LightTheme_Fade);
@@ -128,7 +128,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
         toolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
         toolbar.setTitleTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR));
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        toolbar.getNavigationIcon().setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR));
+        Objects.requireNonNull(toolbar.getNavigationIcon()).setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR));
         parent.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
         schemeSet = true;
     }

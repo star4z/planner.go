@@ -182,7 +182,10 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 return true;
 
             case R.id.action_delete_all:
-                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+                final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this,
+                        colorScheme.equals(ColorScheme.SCHEME_DARK) ?
+                                R.style.DarkDialogTheme :
+                                R.style.LightDialogTheme);
                 alertDialog.setTitle(R.string.delete_all);
                 alertDialog.setMessage(R.string.move_to_trash_note);
                 alertDialog.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
@@ -308,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         if (forInProgressAssignments) {
             setTitle(getResources().getString(R.string.header_in_progress));
             int bright_gold = ContextCompat.getColor(this, R.color.nav_color_1_bright);
-            if (colorScheme.getMode() == ColorScheme.MODE_DARK) {
+            if (colorScheme.equals(ColorScheme.SCHEME_DARK)) {
                 myToolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
 
                 assert navIcon != null;
@@ -326,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         } else {
             setTitle(getResources().getString(R.string.header_completed));
             int bright_green = ContextCompat.getColor(this, R.color.nav_color_2_bright);
-            if (colorScheme.getMode() == ColorScheme.MODE_DARK) {
+            if (colorScheme.equals(ColorScheme.SCHEME_DARK)) {
                 myToolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
 
                 assert navIcon != null;

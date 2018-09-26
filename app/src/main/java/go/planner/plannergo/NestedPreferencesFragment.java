@@ -10,7 +10,7 @@ import android.preference.PreferenceGroup;
  * Created by bdphi on 3/15/2018.
  */
 
-public class NestedPreferencesFragment extends PreferenceFragment  {
+public class NestedPreferencesFragment extends PreferenceFragment {
 
     public static final int KEY_NOTIFY = 1;
 
@@ -61,16 +61,15 @@ public class NestedPreferencesFragment extends PreferenceFragment  {
             if (preference instanceof PreferenceGroup)
                 changeTextColors((PreferenceGroup) preference, activity);
             else {
-                switch (activity.getColorScheme().getMode()) {
-                    case ColorScheme.MODE_LIGHT:
-                        preference.setLayoutResource(R.layout.preference);
-                        break;
-                    case ColorScheme.MODE_DARK:
-                        preference.setLayoutResource(R.layout.preference_dark);
-                        break;
-                }
+                if (activity.getColorScheme().equals(ColorScheme.SCHEME_LIGHT))
+                    preference.setLayoutResource(R.layout.preference);
+
+                else
+                    preference.setLayoutResource(R.layout.preference_dark);
+
             }
         }
     }
-
 }
+
+

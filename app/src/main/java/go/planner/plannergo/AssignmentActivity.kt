@@ -69,7 +69,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
         val classArrayList = FileIO.classNames
         val classes = classArrayList.toTypedArray()
 
-        layoutID = if (colorScheme.mode == ColorScheme.MODE_DARK)
+        layoutID = if (colorScheme == ColorScheme.SCHEME_DARK)
             R.layout.spinner_item_dark
         else
             android.R.layout.simple_dropdown_item_1line
@@ -99,7 +99,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
         val typesArrayList = FileIO.types
         val types = typesArrayList.toTypedArray()
 
-        layoutID = if (colorScheme.mode == ColorScheme.MODE_DARK)
+        layoutID = if (colorScheme == ColorScheme.SCHEME_DARK)
             R.layout.spinner_item_dark
         else
             android.R.layout.simple_dropdown_item_1line
@@ -145,7 +145,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
                     navigateUpTo(Intent(this, MainActivity::class.java))
                 else {
                     //TODO: add don't ask me again option
-                    val style = if (colorScheme.mode == ColorScheme.MODE_DARK)
+                    val style = if (colorScheme == ColorScheme.SCHEME_DARK)
                         R.style.DarkDialogTheme
                     else
                         R.style.LightDialogTheme
@@ -252,7 +252,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
         val scheme = prefs.getBoolean(Settings.darkMode, true)
         colorScheme = ColorScheme(scheme, this)
         setTheme(colorScheme.theme)
-        Log.d(TAG, "scheme=" + scheme!!)
+        Log.d(TAG, "scheme=$scheme")
     }
 
     override fun getColorScheme(): ColorScheme {
@@ -286,7 +286,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
             if (view is EditText) {
                 view.setTextColor(textColor)
                 view.setHintTextColor(ColorUtils.blendARGB(textColor,
-                        if (colorScheme.mode == ColorScheme.MODE_DARK) Color.BLACK else Color.WHITE,
+                        if (colorScheme == ColorScheme.SCHEME_DARK) Color.BLACK else Color.WHITE,
                         0.5f)
                 )
             }

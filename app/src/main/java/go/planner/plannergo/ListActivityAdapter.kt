@@ -59,9 +59,15 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
                     c.findViewById(android.R.id.content) as ViewGroup,
                     false) as EditText
             editText.text = SpannableStringBuilder(data[holder.adapterPosition])
+            editText.setTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+            editText.setHintTextColor(colorScheme.getColor(ColorScheme.SUB_TEXT_COLOR))
+
 
             val imm = c.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            val builder = AlertDialog.Builder(c)
+            val builder = AlertDialog.Builder(c, if (colorScheme == ColorScheme.SCHEME_DARK)
+                R.style.DarkDialogTheme
+            else
+                R.style.LightDialogTheme)
                     .setTitle(R.string.edit)
                     .setView(editText)
                     .setPositiveButton(R.string.save) { _, _ ->
@@ -105,7 +111,7 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
      * Determines the length of the array
      */
     override fun getItemCount(): Int {
-        if (data.size == 0){
+        if (data.size == 0) {
             c.recycler_view_label.setText(R.string.empty_list)
         } else {
             c.recycler_view_label.text = ""
