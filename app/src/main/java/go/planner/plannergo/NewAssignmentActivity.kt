@@ -53,7 +53,7 @@ class NewAssignmentActivity : AssignmentActivity() {
 
         val type = if (hw_type.selectedItem != null) hw_type.selectedItem.toString() else ""
 
-        mAssignment = NewAssignment(
+        mAssignment = Assignment(
                 hw_title.text.toString(),
                 hw_class.text.toString(),
                 mAssignment.dueDate,

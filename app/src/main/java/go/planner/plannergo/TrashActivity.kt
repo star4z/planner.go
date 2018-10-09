@@ -143,7 +143,7 @@ class TrashActivity : Activity(), ColorSchemeActivity {
         if (FileIO.deletedAssignments.isEmpty())
             addHeading(R.string.trash_is_empty)
         else {
-            for (assignment: NewAssignment in FileIO.deletedAssignments) {
+            for (assignment: Assignment in FileIO.deletedAssignments) {
                 val nextView = layoutInflater.inflate(
                         R.layout.view_deleted_item,
                         findViewById(android.R.id.content),

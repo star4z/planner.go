@@ -67,7 +67,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
         } else if (MARK_DONE.equals(intent.getAction())) {
             long id = intent.getLongExtra(ID, -1L);
-            NewAssignment doneAssignment = FileIO.getAssignment(id);
+            Assignment doneAssignment = FileIO.getAssignment(id);
             Log.d(TAG, "doneAssignment=" + doneAssignment);
 
             //cancel notification

@@ -60,7 +60,7 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
         addTextView(R.string.tut_text_05)
     }
 
-    private fun feedRecyclerView(recyclerView: RecyclerView, assignments: ArrayList<NewAssignment>, direction: Int): ItemTouchHelper {
+    private fun feedRecyclerView(recyclerView: RecyclerView, assignments: ArrayList<Assignment>, direction: Int): ItemTouchHelper {
         recyclerView.setHasFixedSize(true)
 
         val layoutManager = LinearLayoutManager(this)
@@ -314,12 +314,12 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
     }
 
 
-    private fun makeArray(): ArrayList<NewAssignment> {
-        val newAssignment = NewAssignment()
+    private fun makeArray(): ArrayList<Assignment> {
+        val newAssignment = Assignment()
         newAssignment.title = getString(R.string.hw_1)
         newAssignment.className = getString(R.string.math)
 
-        val array = ArrayList<NewAssignment>()
+        val array = ArrayList<Assignment>()
         array.add(newAssignment)
         return array
     }

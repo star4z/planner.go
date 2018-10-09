@@ -1,24 +1,28 @@
 package go.planner.plannergo;
 
-import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.Serializable;
 import java.util.Calendar;
 
 /**
- * Stores info on an oldAssignment for Planner
- * Created by bdphi on 10/23/2017.
+ * Enabled the extension of the Assignment class without
+ * <p>
+ * Created by bdphi on 2/28/2018.
  */
 
-public class Assignment implements Comparable<Assignment>, Serializable {
+public class Assignment implements Serializable {
+    private final static String TAG = "Assignment";
     String title;
     String className;
     Calendar dueDate;
     String description;
     boolean completed;
     String type;
+    int priority = 0;
+    Calendar notificationDate1;
+    Calendar notificationDate2;
+    long uniqueID; //unique to each assignment; Differentiates assignments that are otherwise identical
 
     Assignment() {
         title = "";
@@ -27,100 +31,86 @@ public class Assignment implements Comparable<Assignment>, Serializable {
         description = "";
         completed = false;
         type = "Written";
+        uniqueID = System.currentTimeMillis();
     }
 
-
-    Assignment(String title, String className, Calendar dueDate, String description, boolean completed, String type) {
+    Assignment(String title, String className, Calendar dueDate, String description,
+               boolean completed, String type, int priority, Calendar notificationDate1,
+               Calendar notificationDate2, long uniqueID)
+    {
         this.title = title;
         this.className = className;
         this.dueDate = dueDate;
         this.description = description;
         this.completed = completed;
         this.type = type;
+        this.priority = priority;
+        this.notificationDate1 = notificationDate1;
+        this.notificationDate2 = notificationDate2;
+        this.uniqueID = uniqueID;
     }
 
-    Assignment(String title, String className, Calendar dueDate, String description, boolean completed) {
-        this(title, className, dueDate, description, completed, "Written");
+    Assignment(Assignment assignment) {
+        title = assignment.title;
+        className = assignment.className;
+        dueDate = assignment.dueDate;
+        description = assignment.description;
+        completed = assignment.completed;
+        type = assignment.type;
+        priority = assignment.priority;
+        notificationDate1 = assignment.notificationDate1;
+        notificationDate2 = assignment.notificationDate2;
+        uniqueID = assignment.uniqueID;
     }
 
-    Assignment(String title, String className, Calendar dueDate, String description) {
-        this(title, className, dueDate, description, false);
-    }
-
-    Assignment(Bundle bundle) {
-        title = bundle.getString("title");
-        className = bundle.getString("class");
-        dueDate = Calendar.getInstance();
-        int year = bundle.getInt("year");
-        int month = bundle.getInt("month");
-        int date = bundle.getInt("date");
-        dueDate.set(year, month, date);
-        description = bundle.getString("description");
-        completed = bundle.getBoolean("completed");
-        type = bundle.getString("type");
-//        Log.v("Assignment", "bundle constructor, type=" + type);
-
-    }
-
-    Bundle generateBundle() {
-        Bundle args = new Bundle();
-
-        args.putString("title", title);
-        args.putString("class", className);
-        args.putInt("year", dueDate.get(Calendar.YEAR));
-        args.putInt("month", dueDate.get(Calendar.MONTH));
-        args.putInt("date", dueDate.get(Calendar.DATE));
-        args.putString("description", description);
-        args.putBoolean("completed", completed);
-//        Log.v("Assignment", "generateBundle, type=" + type);
-        args.putString("type", type);
-
-        return args;
-    }
-
-    protected Assignment clone(){
-        return new Assignment(title, className, dueDate, description, completed, type);
-    }
+    /**
+     * Checks if they are copies of the same original assignment; if they are, they should contain
+     * the same information. This might not be true all the time in an AssignmentActivity. To compare
+     * fields, use compareFields(Assignment).
+     * @param o Another object to compare with this one.
+     * @return true if they are both instances of Assignment and share a unique ID, else false.
+     *
+     */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Assignment)) return false;
-
-        Assignment that = (Assignment) o;
-
-        return title.equals(that.title) && (className != null ? className.equals(that.className) : that.className == null);
+        return o instanceof Assignment && ((Assignment) o).uniqueID == uniqueID;
     }
 
     @Override
     public int hashCode() {
-        int result = title.hashCode();
-        result = 31 * result + (className != null ? className.hashCode() : 0);
-        return result;
+        return (int) uniqueID;
     }
 
+    /**
+     * String representation of Assignment
+     *
+     * @return ID number; ID numbers should only be the same if they reference the same object
+     */
     @Override
     public String toString() {
-        return "Assignment[title=" + title + ",className=" + className
-                + ",description=" + description + ",completed=" + completed + ",type=" + type;
+        return "#" + uniqueID + ", " + title;
     }
 
-    static int spinnerPosition(String type) {
-        switch (type) {
-            default:
-                Log.v("SpinnerPosition", "default case");
-            case "Written":
-                return 0;
-            case "Studying":
-                return 1;
-            case "Online":
-                return 2;
-            case "Project":
-                return 3;
-        }
+
+    public int spinnerPosition() {
+        int pos = FileIO.types.indexOf(type);
+        Log.v(TAG, "spinnerPosition=" + pos);
+        return (pos >= 0) ? pos : 0;
     }
 
-    @Override
-    public int compareTo(@NonNull Assignment o) {
-        return dueDate.compareTo(o.dueDate);
+    /**
+     * Checks if all fields except unique ID between two instances are the same.
+     * Normally does not need to be checked.
+     * Neglects notificationDates because they are unused.
+     * @return true if all editable fields are the same.
+     */
+    public boolean compareFields(Assignment o) {
+        return title.equals(o.title)
+                && className.equals(o.className)
+                && dueDate.equals(o.dueDate)
+                && description.equals(o.description)
+                && completed == o.completed
+                && type.equals(o.type)
+                && priority == o.priority;
     }
 }

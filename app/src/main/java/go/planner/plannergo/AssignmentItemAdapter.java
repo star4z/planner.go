@@ -26,14 +26,14 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
     private static String TAG = "AssignmentItemAdapter";
 
     Activity activity;
-    ArrayList<NewAssignment> dataSet;
+    ArrayList<Assignment> dataSet;
     private SharedPreferences prefs;
     private int sortIndex;
     private ColorScheme colorScheme;
     private static HashMap<String, Integer> classColors;
 
 
-    AssignmentItemAdapter(ArrayList<NewAssignment> dataSet, int sortIndex, Activity activity) {
+    AssignmentItemAdapter(ArrayList<Assignment> dataSet, int sortIndex, Activity activity) {
         this.dataSet = dataSet;
         this.sortIndex = sortIndex;
         this.activity = activity;
@@ -79,47 +79,13 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
     }
 
     /**
-     * Handles clicking of the view (Displays details)
-     */
-    class BodyClickListener implements View.OnClickListener {
-        NewAssignment assignment;
-
-        Activity activity;
-
-        BodyClickListener(NewAssignment assignment, Activity activity) {
-            this.assignment = assignment;
-            this.activity = activity;
-        }
-
-        @Override
-        public void onClick(View v) {
-            Bundle args = new Bundle();
-            args.putLong("uniqueID", assignment.uniqueID);
-            args.putInt("sortIndex", sortIndex);
-
-            Intent intent = new Intent(activity, AssignmentDetailsActivity.class);
-            intent.putExtras(args);
-            activity.startActivityForResult(intent, 1);
-        }
-    }
-
-
-    @NonNull
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ConstraintLayout v = (ConstraintLayout) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.view_assignment, parent, false);
-        return new ViewHolder(v);
-    }
-
-    /**
      * Creates snackBar in activity with option to undo completion state change.
      * Used only when the assignment is marked done, NOT when it is deleted. (See
      * FileIO.deleteAssignment().)
      *
      * @param a assignment; uses title to give personalized pop-up message.
      */
-    private void createSnackBarPopup(final NewAssignment a) {
+    private void createSnackBarPopup(final Assignment a) {
         String title = (a.title.equals("")) ? activity.getString(R.string.assignment) : "'" + a.title + "'";
         String status = activity.getString(a.completed ? R.string.eos_c : R.string.eos_ip);
 
@@ -152,28 +118,37 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         snackbar.show();
     }
 
+
+    @NonNull
     @Override
-    public int getItemCount() {
-        return dataSet.size();
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ConstraintLayout v = (ConstraintLayout) LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.view_assignment, parent, false);
+        return new ViewHolder(v);
     }
 
     void removeAt(int position) {
         Log.v("Adapter", "Removed item at position " + position);
-        NewAssignment a = dataSet.get(position);
+        Assignment a = dataSet.get(position);
         FileIO.deleteAssignment(activity, a);
         dataSet.remove(position);
         notifyItemRemoved(position);
     }
 
+    @Override
+    public int getItemCount() {
+        return dataSet.size();
+    }
+
     void toggleDone(int position) {
-        NewAssignment a = dataSet.get(position);
-        NewAssignment b = changeAssignmentStatus(a);
+        Assignment a = dataSet.get(position);
+        Assignment b = changeAssignmentStatus(a);
         createSnackBarPopup(b);
         dataSet.remove(position);
         notifyItemRemoved(position);
     }
 
-    private NewAssignment changeAssignmentStatus(NewAssignment a) {
+    private Assignment changeAssignmentStatus(Assignment a) {
         a.completed = !a.completed;
         if (a.completed) {
             FileIO.inProgressAssignments.remove(a);
@@ -185,6 +160,27 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         FileIO.writeFiles(activity);
         notifyDataSetChanged();
         return a;
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Assignment a = dataSet.get(position);
+        ViewHolder vh = (ViewHolder) holder;
+
+        if (prefs != null && prefs.getBoolean(Settings.classColorsEnabled, false))
+            vh.title.setTextColor(getClassColor(a.className));
+
+        vh.title.setText(a.title);
+        vh.category.setText(a.type);
+        vh.className.setText(a.className);
+
+        SimpleDateFormat dateFormat = (prefs.getBoolean(Settings.timeEnabled, false))
+                ? new SimpleDateFormat("h:mm a EEE, MM/dd/yy", Locale.US)
+                : new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
+
+        vh.date.setText(dateFormat.format(a.dueDate.getTime()));
+
+        vh.itemView.setOnClickListener(new BodyClickListener(a, activity));
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -219,25 +215,29 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         );
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        NewAssignment a = dataSet.get(position);
-        ViewHolder vh = (ViewHolder) holder;
+    /**
+     * Handles clicking of the view (Displays details)
+     */
+    class BodyClickListener implements View.OnClickListener {
+        Assignment assignment;
 
-        if (prefs != null && prefs.getBoolean(Settings.classColorsEnabled, false))
-            vh.title.setTextColor(getClassColor(a.className));
+        Activity activity;
 
-        vh.title.setText(a.title);
-        vh.category.setText(a.type);
-        vh.className.setText(a.className);
+        BodyClickListener(Assignment assignment, Activity activity) {
+            this.assignment = assignment;
+            this.activity = activity;
+        }
 
-        SimpleDateFormat dateFormat = (prefs.getBoolean(Settings.timeEnabled, false))
-                ? new SimpleDateFormat("h:mm a EEE, MM/dd/yy", Locale.US)
-                : new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
+        @Override
+        public void onClick(View v) {
+            Bundle args = new Bundle();
+            args.putLong("uniqueID", assignment.uniqueID);
+            args.putInt("sortIndex", sortIndex);
 
-        vh.date.setText(dateFormat.format(a.dueDate.getTime()));
-
-        vh.itemView.setOnClickListener(new BodyClickListener(a, activity));
+            Intent intent = new Intent(activity, AssignmentDetailsActivity.class);
+            intent.putExtras(args);
+            activity.startActivityForResult(intent, 1);
+        }
     }
 
 

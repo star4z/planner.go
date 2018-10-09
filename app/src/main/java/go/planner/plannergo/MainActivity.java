@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        final ArrayList<NewAssignment> assignments;
+        final ArrayList<Assignment> assignments;
         if (getTitle().toString().equals(getResources().getString(R.string.header_completed)))
             assignments = FileIO.completedAssignments;
         else
@@ -346,12 +346,12 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
 
-    void loadPanels(ArrayList<NewAssignment> assignments) {
+    void loadPanels(ArrayList<Assignment> assignments) {
         loadPanels(assignments, 0);
     }
 
 
-    public void loadPanels(ArrayList<NewAssignment> assignments, int sortIndex) {
+    public void loadPanels(ArrayList<Assignment> assignments, int sortIndex) {
         if (sharedPref.getBoolean(Settings.notifEnabled, true))
             NotificationAlarms.setNotificationTimers(this);
         currentScreenIsInProgress = assignments == FileIO.inProgressAssignments;
@@ -365,14 +365,14 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         if (assignments.isEmpty()) {
             addHeading(R.string.empty_assignment_set);
         } else {
-            Comparator<NewAssignment> comparator;
+            Comparator<Assignment> comparator;
 
             switch (sortIndex) {
                 default:
                 case 0: //sort by date
-                    comparator = new Comparator<NewAssignment>() {
+                    comparator = new Comparator<Assignment>() {
                         @Override
-                        public int compare(NewAssignment o1, NewAssignment o2) {
+                        public int compare(Assignment o1, Assignment o2) {
                             return o1.dueDate.compareTo(o2.dueDate);
                         }
                     };
@@ -380,9 +380,9 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     addViewsByDate(assignments);
                     break;
                 case 1: //sort by class
-                    comparator = new Comparator<NewAssignment>() {
+                    comparator = new Comparator<Assignment>() {
                         @Override
-                        public int compare(NewAssignment o1, NewAssignment o2) {
+                        public int compare(Assignment o1, Assignment o2) {
                             return o1.className.toUpperCase().compareTo(o2.className.toUpperCase());
                         }
                     };
@@ -390,9 +390,9 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     addViewsByClass(assignments);
                     break;
                 case 2: //sort by type
-                    comparator = new Comparator<NewAssignment>() {
+                    comparator = new Comparator<Assignment>() {
                         @Override
-                        public int compare(NewAssignment o1, NewAssignment o2) {
+                        public int compare(Assignment o1, Assignment o2) {
                             return o1.type.toUpperCase().compareTo(o2.type.toUpperCase());
                         }
                     };
@@ -400,9 +400,9 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     addViewsByType(assignments);
                     break;
                 case 3: //sort by title
-                    comparator = new Comparator<NewAssignment>() {
+                    comparator = new Comparator<Assignment>() {
                         @Override
-                        public int compare(NewAssignment o1, NewAssignment o2) {
+                        public int compare(Assignment o1, Assignment o2) {
                             return o1.title.toUpperCase().compareTo(o2.title.toUpperCase());
                         }
                     };
@@ -415,16 +415,16 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
 
-    void addViewsByDate(ArrayList<NewAssignment> assignments) {
+    void addViewsByDate(ArrayList<Assignment> assignments) {
         Calendar today = Calendar.getInstance();
         Calendar tomorrow = (Calendar) today.clone();
         tomorrow.add(Calendar.DATE, 1);
 
-        ArrayList<NewAssignment> priorityAssignments = new ArrayList<>();
-        ArrayList<NewAssignment> overdueAssignments = new ArrayList<>();
-        ArrayList<NewAssignment> everythingElse = new ArrayList<>();
+        ArrayList<Assignment> priorityAssignments = new ArrayList<>();
+        ArrayList<Assignment> overdueAssignments = new ArrayList<>();
+        ArrayList<Assignment> everythingElse = new ArrayList<>();
 
-        for (NewAssignment assignment : assignments) {
+        for (Assignment assignment : assignments) {
             if (assignment.priority > 0) {
                 priorityAssignments.add(assignment);
             } else if ((sharedPref.getBoolean(Settings.overdueLast, false)
@@ -443,13 +443,13 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         }
 
         if (!everythingElse.isEmpty()) {
-            NewAssignment previous = null;
+            Assignment previous = null;
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US);
-            ArrayList<NewAssignment> currentGroup = new ArrayList<>();
+            ArrayList<Assignment> currentGroup = new ArrayList<>();
 
             TextView lastHeading = null;
-            for (NewAssignment assignment : everythingElse) {
+            for (Assignment assignment : everythingElse) {
                 if (previous == null) {
                     lastHeading = addDateHeading(dateFormat, today, tomorrow, assignment.dueDate);
                     currentGroup = new ArrayList<>();
@@ -479,12 +479,12 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         }
     }
 
-    void addViewsByClass(ArrayList<NewAssignment> assignments) {
-        ArrayList<NewAssignment> group = new ArrayList<>();
+    void addViewsByClass(ArrayList<Assignment> assignments) {
+        ArrayList<Assignment> group = new ArrayList<>();
 
         String last = null;
         TextView lastHeading = null;
-        for (NewAssignment a : assignments) {
+        for (Assignment a : assignments) {
             if (!a.className.toUpperCase().equals(last)) {
                 if (last != null) {
                     RecyclerView rV = createRecyclerViewForList(group, lastHeading);
@@ -502,12 +502,12 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         }
     }
 
-    void addViewsByType(ArrayList<NewAssignment> assignments) {
-        ArrayList<NewAssignment> group = new ArrayList<>();
+    void addViewsByType(ArrayList<Assignment> assignments) {
+        ArrayList<Assignment> group = new ArrayList<>();
 
         String last = null;
         TextView lastHeading = null;
-        for (NewAssignment a : assignments) {
+        for (Assignment a : assignments) {
             if (!a.type.toUpperCase().equals(last)) {
                 if (last != null) {
                     RecyclerView rV = createRecyclerViewForList(group, lastHeading);
@@ -525,12 +525,12 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         }
     }
 
-    void addViewsByTitle(ArrayList<NewAssignment> assignments) {
-        ArrayList<NewAssignment> group = new ArrayList<>();
+    void addViewsByTitle(ArrayList<Assignment> assignments) {
+        ArrayList<Assignment> group = new ArrayList<>();
 
         String last = null;
         TextView lastHeading = null;
-        for (NewAssignment a : assignments) {
+        for (Assignment a : assignments) {
             if (last == null) {
                 lastHeading = (a.title.length() > 0)
                         ? addHeading(Character.toString(a.title.toUpperCase().charAt(0)))
@@ -553,7 +553,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         }
     }
 
-    RecyclerView createRecyclerViewForList(ArrayList<NewAssignment> assignments, final TextView heading) {
+    RecyclerView createRecyclerViewForList(ArrayList<Assignment> assignments, final TextView heading) {
         final RecyclerView recyclerView = new RecyclerView(this);
 
         layoutManager = new LinearLayoutManager(this);

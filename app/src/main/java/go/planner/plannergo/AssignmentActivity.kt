@@ -26,9 +26,9 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
     private val tag = "AssignmentActivity"
 
     //Keeps old data in case edits were accidental
-    private lateinit var oldAssignment: NewAssignment
+    private lateinit var oldAssignment: Assignment
     //Reads and writes involve this object
-    internal lateinit var mAssignment: NewAssignment
+    internal lateinit var mAssignment: Assignment
 
     //Settings file
     internal lateinit var prefs: SharedPreferences
@@ -233,7 +233,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
         updateTypeSpinner()
     }
 
-    internal fun getAssignment(): NewAssignment {
+    internal fun getAssignment(): Assignment {
         val mTitl = hw_title.text.toString()
         val mClas = hw_class.text.toString()
         val mDate = mAssignment.dueDate
@@ -243,7 +243,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
         val mPrio = if (is_priority.isChecked) 1 else 0
         val mUID = mAssignment.uniqueID
 
-        return NewAssignment(mTitl, mClas, mDate, mDesc, mComp, mType, mPrio, null, null, mUID)
+        return Assignment(mTitl, mClas, mDate, mDesc, mComp, mType, mPrio, null, null, mUID)
     }
 
     internal abstract fun saveAssignment()

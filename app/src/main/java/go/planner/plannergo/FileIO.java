@@ -27,9 +27,9 @@ public class FileIO {
     
     private static final String TAG = "FileIO";
 
-    final static ArrayList<NewAssignment> inProgressAssignments = new ArrayList<>();
-    final static ArrayList<NewAssignment> completedAssignments = new ArrayList<>();
-    final static ArrayList<NewAssignment> deletedAssignments = new ArrayList<>();
+    final static ArrayList<Assignment> inProgressAssignments = new ArrayList<>();
+    final static ArrayList<Assignment> completedAssignments = new ArrayList<>();
+    final static ArrayList<Assignment> deletedAssignments = new ArrayList<>();
 
     final static ArrayList<String> classNames = new ArrayList<>();
     final static ArrayList<String> types = new ArrayList<>();
@@ -80,7 +80,7 @@ public class FileIO {
 
     /**
      * Writes all assignments to file, plus a fileVersion and a length.
-     * Uses writeAssignment(NewAssignment, ObjectOutputStream)
+     * Uses writeAssignment(Assignment, ObjectOutputStream)
      *
      * @param context used to access files directory
      * @throws IOException caused by file writing problems
@@ -97,10 +97,10 @@ public class FileIO {
         oos.writeInt(totalThings);
         double fileVersion = 2;
         oos.writeDouble(fileVersion);
-        for (NewAssignment assignment : inProgressAssignments) {
+        for (Assignment assignment : inProgressAssignments) {
             writeAssignment(assignment, oos);
         }
-        for (NewAssignment assignment : completedAssignments) {
+        for (Assignment assignment : completedAssignments) {
             writeAssignment(assignment, oos);
         }
 
@@ -123,7 +123,7 @@ public class FileIO {
      * @param oos        Stream to write to
      * @throws IOException when file error occurs
      */
-    private static void writeAssignment(NewAssignment assignment, ObjectOutputStream oos) throws IOException {
+    private static void writeAssignment(Assignment assignment, ObjectOutputStream oos) throws IOException {
         oos.writeObject(assignment.title);
         oos.writeObject(assignment.className);
         oos.writeObject(assignment.dueDate);
@@ -149,7 +149,7 @@ public class FileIO {
         double fileVersion = ois.readDouble();
         Log.v(TAG, "fileVersion=" + fileVersion);
         for (int i = 0; i < total; i++) {
-            NewAssignment a = readAssignment(ois, fileVersion);
+            Assignment a = readAssignment(ois, fileVersion);
             addAssignment(a);
             Log.v(TAG, a.toString());
         }
@@ -164,11 +164,11 @@ public class FileIO {
      * @param ois         Stream from which to read
      * @param fileVersion if version is not current Version, skips some lines and fills them in with
      *                    default values
-     * @return NewAssignment from file
+     * @return Assignment from file
      * @throws IOException            ois finishes
      * @throws ClassNotFoundException was not able to find object of the given type
      */
-    private static NewAssignment readAssignment(ObjectInputStream ois, double fileVersion) throws IOException, ClassNotFoundException {
+    private static Assignment readAssignment(ObjectInputStream ois, double fileVersion) throws IOException, ClassNotFoundException {
 
         String mTitl = (String) ois.readObject(); //title
         String mClass = (String) ois.readObject();//className
@@ -185,7 +185,7 @@ public class FileIO {
         notification2.setTimeInMillis(mNot2);
         long mID = ois.readLong();
 
-        return new NewAssignment(
+        return new Assignment(
                 mTitl, mClass, mDate, mDesc, mCompl, mType, mPrio, notification1, notification2, mID
         );
     }
@@ -193,24 +193,24 @@ public class FileIO {
     /**
      * The proper way to access an assignment as of v.0.12.
      * Finds the assignment with the correct ID number, and if it exists, returns it.
-     * If it does not exist, returns a new instance of NewAssignment.
+     * If it does not exist, returns a new instance of Assignment.
      *
      * @param uniqueID ID uniquely identifies assignment based on internal
      * @return Assignment with the given uniqueID
      */
-    public static NewAssignment getAssignment(long uniqueID) {
-        NewAssignment newAssignment = new NewAssignment();
-        newAssignment.uniqueID = uniqueID;
-        int check = inProgressAssignments.indexOf(newAssignment);
+    public static Assignment getAssignment(long uniqueID) {
+        Assignment assignment = new Assignment();
+        assignment.uniqueID = uniqueID;
+        int check = inProgressAssignments.indexOf(assignment);
         if (check > -1) {
             return inProgressAssignments.get(check);
         } else {
-            check = completedAssignments.indexOf(newAssignment);
+            check = completedAssignments.indexOf(assignment);
             if (check > -1) {
                 return completedAssignments.get(check);
             }
         }
-        return new NewAssignment();
+        return new Assignment();
     }
 
     /**
@@ -221,7 +221,7 @@ public class FileIO {
      *
      * @param assignment Assignment to be added
      */
-    public static void addAssignment(NewAssignment assignment) {
+    public static void addAssignment(Assignment assignment) {
         Log.v(TAG, "addAssignment " + assignment);
         if (assignment.dueDate == null) {
             Log.v(TAG, "null dateView");
@@ -244,7 +244,7 @@ public class FileIO {
      * @param context    Used to create SnackBar pop-up.
      * @param assignment Assignment to delete.
      */
-    public static void deleteAssignment(final Activity context, final NewAssignment assignment) {
+    public static void deleteAssignment(final Activity context, final Assignment assignment) {
         if (assignment.completed) {
             FileIO.completedAssignments.remove(assignment);
         } else {
@@ -258,7 +258,7 @@ public class FileIO {
          * the copy ("alt" for "alternate") is removed from the trash, and the original with the
          * original unique ID is added back to list from whence it came.
          */
-        final NewAssignment alt = assignment.clone();
+        final Assignment alt = new Assignment(assignment);
         alt.uniqueID = System.currentTimeMillis();
         deletedAssignments.add(alt);
         writeFiles(context);
@@ -288,19 +288,19 @@ public class FileIO {
      * @param assignments List of assignments to delete.
      * @param c           Context, used to create SnackBar pop-up;
      */
-    public static void deleteAll(ArrayList<NewAssignment> assignments, final Activity c) {
+    public static void deleteAll(ArrayList<Assignment> assignments, final Activity c) {
         Log.v(TAG, "IPA=" + inProgressAssignments);
         if (assignments.isEmpty()) return;
         long id = System.currentTimeMillis();
         if (assignments.get(0).completed) {
-            for (NewAssignment a : completedAssignments) {
+            for (Assignment a : completedAssignments) {
                 a.uniqueID = id;
                 id++;
                 deletedAssignments.add(a);
             }
             completedAssignments.clear();
         } else {
-            for (NewAssignment a : inProgressAssignments) {
+            for (Assignment a : inProgressAssignments) {
                 a.uniqueID = id;
                 id++;
                 deletedAssignments.add(a);
@@ -313,7 +313,7 @@ public class FileIO {
                 R.string.assignments_deleted, Snackbar.LENGTH_LONG).show();
     }
 
-    private static Snackbar createSnackBarPopup(Activity c, NewAssignment n) {
+    private static Snackbar createSnackBarPopup(Activity c, Assignment n) {
         String title = (n.title.equals("")) ? c.getString(R.string.untitled_assignment) : "'" + n.title + "'";
         return Snackbar.make(c.findViewById(R.id.coordinator),
                 c.getString(R.string.deleted) + " " + title + ".", Snackbar.LENGTH_LONG);
@@ -359,7 +359,7 @@ public class FileIO {
             oos.writeDouble(fileVersion);
             Calendar today = Calendar.getInstance();
             Calendar aDate = new GregorianCalendar(); //assignment creation date
-            for (NewAssignment assignment : deletedAssignments) {
+            for (Assignment assignment : deletedAssignments) {
                 aDate.setTimeInMillis(assignment.uniqueID);
                 switch (today.get(Calendar.MONTH) - aDate.get(Calendar.MONTH)) {
                     case 0:
@@ -392,14 +392,14 @@ public class FileIO {
     }
 
 
-    public static void replaceAssignment(Context context, NewAssignment newAssignment) {
-        int indexOf = inProgressAssignments.indexOf(newAssignment);
+    public static void replaceAssignment(Context context, Assignment assignment) {
+        int indexOf = inProgressAssignments.indexOf(assignment);
         if (indexOf > -1) {
-            inProgressAssignments.set(indexOf, newAssignment);
+            inProgressAssignments.set(indexOf, assignment);
         } else {
-            indexOf = completedAssignments.indexOf(newAssignment);
+            indexOf = completedAssignments.indexOf(assignment);
             if (indexOf > -1) {
-                completedAssignments.set(indexOf, newAssignment);
+                completedAssignments.set(indexOf, assignment);
             }
         }
         writeFiles(context);

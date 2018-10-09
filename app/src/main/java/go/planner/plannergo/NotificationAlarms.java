@@ -34,13 +34,13 @@ class NotificationAlarms {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
         assert alarmManager != null;
 
-        for (NewAssignment assignment : FileIO.inProgressAssignments) {
+        for (Assignment assignment : FileIO.inProgressAssignments) {
             setNotificationTimer(context, assignment, alarmManager, prefs);
         }
 
     }
 
-    private static void setNotificationTimer(Context context, NewAssignment assignment, AlarmManager alarmManager, SharedPreferences prefs) {
+    private static void setNotificationTimer(Context context, Assignment assignment, AlarmManager alarmManager, SharedPreferences prefs) {
         PendingIntent pendingIntent = createPendingIntent(assignment, context);
         alarmManager.cancel(pendingIntent);
 
@@ -67,7 +67,7 @@ class NotificationAlarms {
      * @param assignment assignment to retrieve date from
      * @return time for alarm to go off, in milliseconds
      */
-    private static long alarmTimeFromAssignment(NewAssignment assignment, SharedPreferences prefs, boolean extraAssignment) {
+    private static long alarmTimeFromAssignment(Assignment assignment, SharedPreferences prefs, boolean extraAssignment) {
         int daysBeforeDueDate;
         long notifTime;
         if (extraAssignment) {
@@ -106,7 +106,7 @@ class NotificationAlarms {
      * @param context    necessary for system calls
      * @return new PendingIntent with assignment id
      */
-    private static PendingIntent createPendingIntent(NewAssignment assignment, Context context) {
+    private static PendingIntent createPendingIntent(Assignment assignment, Context context) {
         Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
         intent.putExtra(AlarmBroadcastReceiver.ID, assignment.uniqueID);
         intent.putExtra(AlarmBroadcastReceiver.TITLE, assignment.title);
