@@ -25,9 +25,9 @@ class NotificationAlarms {
 
     static void setNotificationTimers(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Boolean timeEnabled = prefs.getBoolean(Settings.timeEnabled, true);
-        Log.d(TAG, "timeEnabled = " + timeEnabled);
-        if (!timeEnabled) {
+        Boolean notifEnabled = prefs.getBoolean(Settings.notifEnabled, true);
+        Log.d(TAG, "notifEnabled = " + notifEnabled);
+        if (!notifEnabled) {
             return;
         }
 
@@ -94,7 +94,7 @@ class NotificationAlarms {
         date.set(Calendar.MINUTE, alarmMinuteOfDay);
         date.set(Calendar.SECOND, 0);
         date.set(Calendar.MILLISECOND, 0);
-        Log.v("NotificationAlarms", "date=" + format.format(date.getTime()));
+        Log.v(TAG, "date=" + format.format(date.getTime()));
 
         return date.getTimeInMillis();
     }
@@ -108,7 +108,10 @@ class NotificationAlarms {
      */
     private static PendingIntent createPendingIntent(NewAssignment assignment, Context context) {
         Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
-        intent.putExtra("id", assignment.uniqueID);
+        intent.putExtra(AlarmBroadcastReceiver.ID, assignment.uniqueID);
+        intent.putExtra(AlarmBroadcastReceiver.TITLE, assignment.title);
+        intent.putExtra(AlarmBroadcastReceiver.TEXT, assignment.className);
+        intent.putExtra(AlarmBroadcastReceiver.DUE_DATE, assignment.dueDate.getTimeInMillis());
         intent.setAction(AlarmBroadcastReceiver.ACTION_ALARM);
 
         return PendingIntent.getBroadcast(context, (int) assignment.uniqueID, intent, 0);

@@ -3,6 +3,7 @@ package go.planner.plannergo;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -17,7 +18,9 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Random;
 
 public class AssignmentItemAdapter extends RecyclerView.Adapter {
     private static String TAG = "AssignmentItemAdapter";
@@ -27,6 +30,8 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
     private SharedPreferences prefs;
     private int sortIndex;
     private ColorScheme colorScheme;
+    private static HashMap<String, Integer> classColors;
+
 
     AssignmentItemAdapter(ArrayList<NewAssignment> dataSet, int sortIndex, Activity activity) {
         this.dataSet = dataSet;
@@ -42,25 +47,35 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         prefs = PreferenceManager.getDefaultSharedPreferences(activity);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        NewAssignment a = dataSet.get(position);
-        ViewHolder vh = (ViewHolder) holder;
+    /**
+     * All-in-one class color code handler
+     * Creates new set of colors if necessary
+     * Adds a new item to set if necessary
+     * Based on class name, returns color int
+     *
+     * @param className school class name; compared to FileIO.classes data
+     * @return color as int from classColors
+     */
+    private static int getClassColor(String className) {
+        if (classColors == null) {
+            classColors = new HashMap<>();
 
-        if (prefs != null && prefs.getBoolean(Settings.classColorsEnabled, false))
-            vh.title.setTextColor(ColorPicker.getClassColor(a.className));
+            Random random = new Random(System.currentTimeMillis());
 
-        vh.title.setText(a.title);
-        vh.category.setText(a.type);
-        vh.className.setText(a.className);
+            for (String c : FileIO.classNames) {
+                int color = generateClassColor(random);
+                classColors.put(c, color);
+            }
+        }
 
-        SimpleDateFormat dateFormat = (prefs.getBoolean(Settings.timeEnabled, false))
-                ? new SimpleDateFormat("h:mm a EEE, MM/dd/yy", Locale.US)
-                : new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
+        if (!classColors.containsKey(className)) {
+            Random random = new Random(System.currentTimeMillis());
 
-        vh.date.setText(dateFormat.format(a.dueDate.getTime()));
+            int color = generateClassColor(random);
+            classColors.put(className, color);
+        }
 
-        vh.itemView.setOnClickListener(new BodyClickListener(a, activity));
+        return classColors.get(className);
     }
 
     /**
@@ -193,6 +208,36 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
 
             this.itemView.setBackgroundColor(colorScheme.getColor(ColorScheme.ASSIGNMENT_VIEW_BG));
         }
+    }
+
+    private static int generateClassColor(Random r) {
+        return Color.argb(
+                255,
+                r.nextInt(200),
+                r.nextInt(200),
+                r.nextInt(200)
+        );
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        NewAssignment a = dataSet.get(position);
+        ViewHolder vh = (ViewHolder) holder;
+
+        if (prefs != null && prefs.getBoolean(Settings.classColorsEnabled, false))
+            vh.title.setTextColor(getClassColor(a.className));
+
+        vh.title.setText(a.title);
+        vh.category.setText(a.type);
+        vh.className.setText(a.className);
+
+        SimpleDateFormat dateFormat = (prefs.getBoolean(Settings.timeEnabled, false))
+                ? new SimpleDateFormat("h:mm a EEE, MM/dd/yy", Locale.US)
+                : new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
+
+        vh.date.setText(dateFormat.format(a.dueDate.getTime()));
+
+        vh.itemView.setOnClickListener(new BodyClickListener(a, activity));
     }
 
 

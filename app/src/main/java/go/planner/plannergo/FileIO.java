@@ -17,8 +17,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
- * Handles file reading and writing and stores the values
+ * Handles file reading and writing and stores the values for other classes to reference and modify.
  * <p>
+ * @author bdphi
  * Created by bdphi on 2/24/2018.
  */
 

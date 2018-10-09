@@ -12,7 +12,7 @@
     <color name="darkAccent">#00e676</color>
     <color name="darkTextPrimary">#e8e8e8</color>
     <color name="darkTextSecondary">#7c7c7c</color>
-    <color name="darkTextViewColor">#000a12</color>
+    <color name="darkTextViewColor">#102027</color>
 
     <!--Light THeme-->
     <color name="lightPrimary">#e0e0e0</color>
@@ -24,78 +24,6 @@
 
     <color name="ic_launcher_background">#212121</color>
 
-    <!-- Palette 1: Bright -->
-    <color name="p1_primary">#3F51B5</color>
-    <color name="p1_primary_dark">#303F9F</color>
-    <color name="p1_secondary">#FF4081</color>
-    <color name="p1_secondary_dark">#c60055</color>
-    <color name="p1_completed">#4CAF50</color>
-    <color name="p1_completed_dark">#087F23</color>
-    <color name="p1_assignment">#ffa726</color>
-    <color name="p1_assignment_dark">#c77800</color>
-
-    <!-- Palette 2: Earthy -->
-    <color name="p2_primary">#4e342e</color>
-    <color name="p2_primary_accent">#260e04</color>
-    <color name="p2_secondary">#004d40</color>
-    <color name="p2_secondary_accent">#00251a</color>
-    <color name="p2_completed">#888c4e</color>
-    <color name="p2_completed_accent">#5a5f23</color>
-    <color name="p2_assignment">#311b92</color>
-    <color name="p2_assignment_accent">#000063</color>
-
-    <!-- Palette 3: Ice Cream-->
-    <color name="p3_primary">#90caf9</color>
-    <color name="p3_primary_accent">#5d99c6</color>
-    <color name="p3_secondary">#f8bbd0</color>
-    <color name="p3_secondary_accent">#c48b9f</color>
-    <color name="p3_completed">#c8e6c9</color>
-    <color name="p3_completed_accent">#97b498</color>
-    <color name="p3_assignment">#ffecb3</color>
-    <color name="p3_assignment_accent">#cbba83</color>
-
-    <!-- Palette 4: Monochrome -->
-    <color name="p4_primary">#212121</color>
-    <color name="p4_primary_accent">#000000</color>
-    <color name="p4_secondary">#212121</color>
-    <color name="p4_secondary_accent">#000000</color>
-    <color name="p4_completed">#212121</color>
-    <color name="p4_completed_accent">#000000</color>
-    <color name="p4_assignment">#212121</color>
-    <color name="p4_assignment_accent">#000000</color>
-
-
-    <!-- Palette 5: Patriotic -->
-    <color name="p5_primary">#b71c1c</color>
-    <color name="p5_primary_accent">#7f0000</color>
-    <color name="p5_secondary">#1a237e</color>
-    <color name="p5_secondary_accent">#000051</color>
-    <color name="p5_completed">#4caf50</color>
-    <color name="p5_completed_accent">#087f23</color>
-    <color name="p5_assignment">#fafafa</color>
-    <color name="p5_assignment_accent">#c7c7c7</color>
-
-    <!-- Palette 6: Mint -->
-    <color name="p6_primary">#263238</color>
-    <color name="p6_primary_accent">#000a12</color>
-    <color name="p6_secondary">#b9f6ca</color>
-    <color name="p6_secondary_accent">#88c399</color>
-    <color name="p6_completed">#757575</color>
-    <color name="p6_completed_accent">#494949</color>
-    <color name="p6_assignment">#69f0ae</color>
-    <color name="p6_assignment_accent">#2bbd7e</color>
-
-    <!--Palette 7: Space White-->
-    <color name="p7_primary">#FFFFFF</color>
-    <color name="p7_primary_accent">#E0E0E0</color>
-    <color name="p7_secondary">#b9f6ca</color>
-    <color name="p7_secondary_accent">#88c399</color>
-    <color name="p7_completed">#FFFFFF</color>
-    <color name="p7_completed_accent">#E0E0E0</color>
-    <color name="p7_assignment">#FFFFFF</color>
-    <color name="p7_assignment_accent">#E0E0E0</color>
-
-
     <color name="iconWhite">#FFFFFFFF</color>
     <color name="iconGrey">#FFA9A9A9</color>
     <color name="iconBlack">#FF000000</color>
@@ -105,11 +33,10 @@
     <color name="backgroundLightGrey">#DADEE5</color>
     <color name="backgroundLimeGreen">#75f9b8</color>
 
-    <color name="fillerOffWhite">#eafcf9</color>
-
     <color name="textBlack">#FF000000</color>
     <color name="textGrey">#FF555555</color>
     <color name="textWhite">#FFFFFFFF</color>
+
 
     <!--Navigation drawer colors-->
     <color name="nav_color_1">#2462b5</color>
@@ -118,7 +45,7 @@
 
     <!--Toolbar text/icon colors-->
     <color name="nav_color_1_bright">#0087ff</color>
-    <color name="nav_color_2_bright">#9800ff</color>
+    <color name="nav_color_2_bright">#d000ff</color>
     <color name="nav_color_3_bright">#ff005d</color>
 
 
@@ -126,12 +53,8 @@
     <color name="primary_color">#37474F</color>
     <color name="primary_color_dark">#263238</color>
     <color name="ascent_color">#4285F4</color>
-
     <color name="list_bg_color">#eeeeee</color>
     <color name="row_header_bg_color">#ffffff</color>
     <color name="row_bg_color">#ffffff</color>
 
-    <color name="disabled_color">#90b1b0</color>
-
-    <color name="transparent">#00000000</color>
 </resources>

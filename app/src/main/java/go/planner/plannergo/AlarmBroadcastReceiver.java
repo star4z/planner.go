@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Action;
@@ -29,6 +30,9 @@ import static android.os.Build.VERSION_CODES.O;
  *
  * There are some unregulated long to int casts, which may produce incorrect calls in unlikely cases.
  *
+ * This class also contains strings that are not in the XML because getting data from the app while
+ * the activity is not running seems to not happen consistently.
+ *
  * Created by Ben Phillips on 2/16/2018.
  */
 
@@ -37,6 +41,10 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
     public static final String ACTION_ALARM = "planner.app.Alarm1";
     public static final String MARK_DONE = "planner.app.MarkDone";
+    static final String TITLE = "assignment.title";
+    static final String TEXT = "assignment.classname";
+    static final String ID = "assignment.id";
+    static final String DUE_DATE = "assignment.dueDate";
 
     /**
      * Handles creation and dismissal of notifications
@@ -47,15 +55,18 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.v("AlarmBroadcastReceiver", "alarm was received");
+
+        //I use .equals(intent.getAction()) over switch (intent.getAction()) because intent.getAction()
+        //may produce an NullPointerException. You could choose to use a try/catch or assert
+        //statement instead to clean up the code.
         if (ACTION_ALARM.equals(intent.getAction())) {
-            NewAssignment assignment = FileIO.getAssignment(intent.getLongExtra("id", -1L));
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
             boolean timeEnabled = preferences.getBoolean(Settings.timeEnabled, true);
 
-            createNotification(assignment, timeEnabled, context);
+            createNotification(intent.getExtras(), timeEnabled, context);
 
         } else if (MARK_DONE.equals(intent.getAction())) {
-            NewAssignment doneAssignment = FileIO.getAssignment(intent.getLongExtra("id", -1L));
+            NewAssignment doneAssignment = FileIO.getAssignment(intent.getLongExtra(ID, -1L));
             Log.v("AlarmBR","doneAssignment=" + doneAssignment);
 
             //cancel notification
@@ -72,11 +83,17 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     }
 
 
-    void createNotification(NewAssignment assignment, boolean timeEnabled, Context context) {
+    void createNotification(Bundle bundle, boolean timeEnabled, Context context) {
         SimpleDateFormat dateFormat = timeEnabled ?
                 new SimpleDateFormat(" - MMM dd hh:mm", Locale.US) :
                 new SimpleDateFormat(" - MMM dd", Locale.US);
-        String dateString = dateFormat.format(assignment.dueDate.getTime());
+
+        String title = bundle.getString(TITLE, "Assignment Title");
+        String text = bundle.getString(TEXT);
+        long id = bundle.getLong(ID);
+        long date = bundle.getLong(DUE_DATE, System.currentTimeMillis());
+        String dateString = dateFormat.format(date);
+
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(
                 Context.NOTIFICATION_SERVICE);
@@ -88,7 +105,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
 
         Intent doneIntent = new Intent(context, AlarmBroadcastReceiver.class);
-        doneIntent.putExtra("id", assignment.uniqueID);
+        doneIntent.putExtra("id", id);
         doneIntent.setAction(AlarmBroadcastReceiver.MARK_DONE);
 
         long[] vibrationPattern = new long[]{100, 100, 200, 100};
@@ -109,8 +126,8 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
         Notification notification = (Build.VERSION.SDK_INT < O) ?
                 new NotificationCompat.Builder(context, channelId).
-                        setContentTitle(assignment.title).
-                        setContentText(assignment.className + dateString).
+                        setContentTitle(title).
+                        setContentText(text + " " + dateString).
                         setContentIntent(pendingIntent).setSmallIcon(R.drawable.ic_notification).
                         addAction(new Action(
                                 R.drawable.ic_check_default_24dp,
@@ -124,8 +141,8 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                         setAutoCancel(true).
                         build() :
                 new NotificationCompat.Builder(context, channelId).
-                        setContentTitle(assignment.title).
-                        setContentText(assignment.className + dateString).
+                        setContentTitle(title).
+                        setContentText(text + " " + dateString).
                         setContentIntent(pendingIntent).setSmallIcon(R.drawable.ic_notification).
                         addAction(new Action(
                                 R.drawable.ic_check_default_24dp,
@@ -135,7 +152,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
                         build();
 
         assert notificationManager != null;
-        notificationManager.notify(((int) assignment.uniqueID), notification);
+        notificationManager.notify(((int) id), notification);
 
     }
 

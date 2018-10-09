@@ -7,7 +7,7 @@ import kotlinx.android.synthetic.main.toolbar.*
  */
 
 /*
-NOTE: Ignored classes? I.e. classes that exist in the assignments lists but the user has explicitly
+NOTE: Add ignored classes? I.e. classes that exist in the assignments lists but the user has explicitly
 said that they don't want suggested
 */
 class ClassActivity : ListActivity() {

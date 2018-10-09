@@ -8,8 +8,7 @@
     android:minHeight="48dp"
     android:background="@color/backgroundWhite"
     android:elevation="2dp"
-    android:orientation="horizontal"
-    android:padding="4dp">
+    android:orientation="horizontal">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -21,6 +20,7 @@
         android:elevation="2dp"
         android:orientation="horizontal"
         android:paddingStart="12dp"
+        android:layout_margin="4dp"
         android:paddingEnd="12dp">
 
         <ImageView

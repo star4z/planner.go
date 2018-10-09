@@ -20,7 +20,6 @@ import android.widget.TextView;
  */
 
 public class DrawerAdapter extends BaseAdapter {
-
     private static final String TAG = "DrawerAdapter";
 
     private Resources res;
@@ -30,6 +29,14 @@ public class DrawerAdapter extends BaseAdapter {
     private int selectedPos;
     private Context c;
 
+    /**
+     * Constructor
+     *
+     * @param activity      used for context and resource calls
+     * @param drawerOptions stores the text for all items
+     * @param drawerIcons   stores the icons for all items
+     * @param selectedPos   stores the currently active view
+     */
     DrawerAdapter(Activity activity, String[] drawerOptions, int[] drawerIcons, int selectedPos) {
         this.drawerOptions = drawerOptions;
         this.drawerIcons = drawerIcons;
@@ -39,15 +46,29 @@ public class DrawerAdapter extends BaseAdapter {
         c = activity;
     }
 
-    public void setSelectedPos(int selectedPos) {
+    /**
+     * Sets selectedPos to the input value
+     *
+     * @param selectedPos indicates which item in the drawer is "selected"
+     */
+    void setSelectedPos(int selectedPos) {
         this.selectedPos = selectedPos;
     }
 
+    /**
+     * Retrieves the number of items in the adapter
+     * @return length of drawerOptions array
+     */
     @Override
     public int getCount() {
         return drawerOptions.length;
     }
 
+    /**
+     * Returns the appropriate text corresponding to the input position
+     * @param position position of item where
+     * @return the item from drawerOptions at the designated position
+     */
     @Override
     public Object getItem(int position) {
         if (position < drawerOptions.length)
@@ -86,7 +107,7 @@ public class DrawerAdapter extends BaseAdapter {
             if (position == selectedPos) {
                 LinearLayout l = view.findViewById(R.id.nBar_item);
                 Drawable d = l.getBackground();
-                d.setTint(scheme.getColor(ColorScheme.TEXT_COLOR));
+                d.setTint(scheme.getColor(ColorScheme.ASSIGNMENT_VIEW_BG));
             }
         }
 
