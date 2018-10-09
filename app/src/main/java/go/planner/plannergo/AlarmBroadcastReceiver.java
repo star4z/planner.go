@@ -37,7 +37,7 @@ import static android.os.Build.VERSION_CODES.O;
  */
 
 public class AlarmBroadcastReceiver extends BroadcastReceiver {
-
+    private static final String TAG = "AlarmBrodcastReceiver";
 
     public static final String ACTION_ALARM = "planner.app.Alarm1";
     public static final String MARK_DONE = "planner.app.MarkDone";
@@ -54,7 +54,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.v("AlarmBroadcastReceiver", "alarm was received");
+        Log.v(TAG, "alarm was received");
 
         //I use .equals(intent.getAction()) over switch (intent.getAction()) because intent.getAction()
         //may produce an NullPointerException. You could choose to use a try/catch or assert
@@ -66,14 +66,15 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             createNotification(intent.getExtras(), timeEnabled, context);
 
         } else if (MARK_DONE.equals(intent.getAction())) {
-            NewAssignment doneAssignment = FileIO.getAssignment(intent.getLongExtra(ID, -1L));
-            Log.v("AlarmBR","doneAssignment=" + doneAssignment);
+            long id = intent.getLongExtra(ID, -1L);
+            NewAssignment doneAssignment = FileIO.getAssignment(id);
+            Log.d(TAG, "doneAssignment=" + doneAssignment);
 
             //cancel notification
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(
                     Context.NOTIFICATION_SERVICE);
             assert notificationManager != null;
-            notificationManager.cancel((int) doneAssignment.uniqueID);
+            notificationManager.cancel((int) id);
 
             FileIO.readFiles(context);
             doneAssignment.completed = true;
@@ -93,6 +94,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         long id = bundle.getLong(ID);
         long date = bundle.getLong(DUE_DATE, System.currentTimeMillis());
         String dateString = dateFormat.format(date);
+        Log.v(TAG, id + ": " + title + ", " + text);
 
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(
@@ -105,11 +107,23 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
 
 
         Intent doneIntent = new Intent(context, AlarmBroadcastReceiver.class);
-        doneIntent.putExtra("id", id);
+        doneIntent.putExtra(ID, id);
         doneIntent.setAction(AlarmBroadcastReceiver.MARK_DONE);
 
         long[] vibrationPattern = new long[]{100, 100, 200, 100};
 
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId);
+        builder.setContentTitle(title).
+                setContentText(text + " " + dateString).
+                setContentIntent(pendingIntent).
+                setSmallIcon(R.drawable.ic_notification).
+                addAction(new Action(
+                        R.drawable.ic_check_default_24dp,
+                        "Done",
+                        PendingIntent.getBroadcast(context, 0, doneIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+                )).
+                setAutoCancel(true);
         if (Build.VERSION.SDK_INT >= O) {
             String name = context.getString(R.string.channel_name);
             String description = context.getString(R.string.channel_description);
@@ -122,34 +136,45 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             mChannel.setVibrationPattern(vibrationPattern);
             assert notificationManager != null;
             notificationManager.createNotificationChannel(mChannel);
+        } else {
+            builder.setColor(ContextCompat.getColor(context, R.color.colorAccent)).
+                    setPriority(NotificationCompat.PRIORITY_HIGH).
+                    setSound(notificationSoundUri).
+                    setLights(Color.MAGENTA, 100, 10000).
+                    setVibrate(vibrationPattern);
         }
+        Notification notification = builder.build();
 
-        Notification notification = (Build.VERSION.SDK_INT < O) ?
-                new NotificationCompat.Builder(context, channelId).
-                        setContentTitle(title).
-                        setContentText(text + " " + dateString).
-                        setContentIntent(pendingIntent).setSmallIcon(R.drawable.ic_notification).
-                        addAction(new Action(
-                                R.drawable.ic_check_default_24dp,
-                                "Done",
-                                PendingIntent.getBroadcast(context, 0, doneIntent, PendingIntent.FLAG_UPDATE_CURRENT))).
-                        setColor(ContextCompat.getColor(context, R.color.colorAccent)).
-                        setPriority(NotificationCompat.PRIORITY_HIGH).
-                        setSound(notificationSoundUri).
-                        setLights(Color.MAGENTA, 100, 10000).
-                        setVibrate(vibrationPattern).
-                        setAutoCancel(true).
-                        build() :
-                new NotificationCompat.Builder(context, channelId).
-                        setContentTitle(title).
-                        setContentText(text + " " + dateString).
-                        setContentIntent(pendingIntent).setSmallIcon(R.drawable.ic_notification).
-                        addAction(new Action(
-                                R.drawable.ic_check_default_24dp,
-                                context.getString(R.string.done),
-                                PendingIntent.getBroadcast(context, 0, doneIntent, PendingIntent.FLAG_UPDATE_CURRENT))).
-                        setAutoCancel(true).
-                        build();
+//         notification = (Build.VERSION.SDK_INT < O) ?
+//                new NotificationCompat.Builder(context, channelId).
+//                        setContentTitle(title).
+//                        setContentText(text + " " + dateString).
+//                        setContentIntent(pendingIntent).
+//                        setSmallIcon(R.drawable.ic_notification).
+//                        addAction(new Action(
+//                                R.drawable.ic_check_default_24dp,
+//                                "Done",
+//                                PendingIntent.getBroadcast(context, 0, doneIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+//
+//                        )).
+//                        setColor(ContextCompat.getColor(context, R.color.colorAccent)).
+//                        setPriority(NotificationCompat.PRIORITY_HIGH).
+//                        setSound(notificationSoundUri).
+//                        setLights(Color.MAGENTA, 100, 10000).
+//                        setVibrate(vibrationPattern).
+//                        setAutoCancel(true).
+//                        build() :
+//                new NotificationCompat.Builder(context, channelId).
+//                        setContentTitle(title).
+//                        setContentText(text + " " + dateString).
+//                        setContentIntent(pendingIntent).
+//                        setSmallIcon(R.drawable.ic_notification).
+//                        addAction(new Action(
+//                                R.drawable.ic_check_default_24dp,
+//                                context.getString(R.string.done),
+//                                PendingIntent.getBroadcast(context, 0, doneIntent, PendingIntent.FLAG_UPDATE_CURRENT))).
+//                        setAutoCancel(true).
+//                        build();
 
         assert notificationManager != null;
         notificationManager.notify(((int) id), notification);

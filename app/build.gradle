@@ -7,8 +7,8 @@ android {
         applicationId "go.planner.plannergo"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 31
-        versionName "1.6.1"
+        versionCode 33
+        versionName "1.6.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

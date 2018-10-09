@@ -39,7 +39,9 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textSize="@dimen/sku_details_row_text_size"
-                android:textStyle="bold"/>
+                android:textColor="@color/textGrey"
+                android:textStyle="bold"
+                tools:text="Text" />
 
             <TextView
                 android:id="@+id/price"
@@ -72,6 +74,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/sku_details_row_description_text_size"
+                android:textColor="@color/textGrey"
                 android:layout_weight="1" />
 
         </LinearLayout>
