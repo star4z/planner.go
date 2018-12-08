@@ -20,7 +20,7 @@
     <color name="lightAccent">#00e676</color>
     <color name="lightText">#444444</color>
     <color name="lightTextSecondary">#707070</color>
-    <color name="lightTextViewColor">#ffffff</color>
+    <color name="lightTextViewColor">@color/textWhite</color>
 
     <color name="ic_launcher_background">#212121</color>
 
@@ -35,7 +35,7 @@
 
     <color name="textBlack">#FF000000</color>
     <color name="textGrey">#FF555555</color>
-    <color name="textWhite">#FFFFFFFF</color>
+    <color name="textWhite">#E6E6E6</color>
 
 
     <!--Navigation drawer colors-->

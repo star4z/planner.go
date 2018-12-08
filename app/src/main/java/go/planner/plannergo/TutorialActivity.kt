@@ -83,11 +83,7 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
                 return ItemTouchHelper.Callback.makeMovementFlags(0, direction)
             }
 
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder?, direction: Int) {
-                assert(viewHolder != null)
-
-
-
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 if (direction == ItemTouchHelper.RIGHT) {
                     adapter.notifyItemChanged(viewHolder!!.adapterPosition)
                     initStage2()

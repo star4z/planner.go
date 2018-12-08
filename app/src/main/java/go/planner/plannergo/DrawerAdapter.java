@@ -3,6 +3,7 @@ package go.planner.plannergo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -96,7 +97,8 @@ public class DrawerAdapter extends BaseAdapter {
         if (c instanceof ColorSchemeActivity) {
             ColorScheme scheme = ((ColorSchemeActivity) c).getColorScheme();
             if (position == 0) {
-                if (scheme == ColorScheme.SCHEME_DARK)
+                //Set background color of the title card based on color scheme
+                if (scheme.equals(ColorScheme.SCHEME_DARK))
                     view.setBackgroundColor(scheme.getColor(ColorScheme.PRIMARY_DARK));
                 else
                     view.setBackgroundColor(ContextCompat.getColor(c, R.color.colorPrimary));
@@ -115,6 +117,8 @@ public class DrawerAdapter extends BaseAdapter {
         switch (position) {
             case 0:
                 text.setTextColor(ContextCompat.getColor(c, R.color.textWhite));
+                text.setTextSize(20);
+                text.setTypeface(text.getTypeface(), Typeface.BOLD);
                 int statusBarHeight = (int) Math.floor(25 * res.getDisplayMetrics().density);
                 Log.d(TAG, "StatusBarHeight=" + statusBarHeight);
 

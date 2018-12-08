@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#e2e2e2" />
+    <!--To match app title text-->
+    <solid android:color="@color/textWhite" />
 
     <corners
         android:radius="32dp"/>

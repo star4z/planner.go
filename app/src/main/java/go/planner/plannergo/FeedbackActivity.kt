@@ -12,7 +12,6 @@ import android.support.annotation.StringRes
 import android.support.annotation.UiThread
 import android.support.constraint.ConstraintLayout
 import android.support.v4.app.DialogFragment
-import android.support.v4.app.NavUtils
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -88,7 +87,12 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        NavUtils.navigateUpFromSameTask(this)
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            super.onBackPressed()
+        } else {
+            toolbar.setTitle(R.string.settings)
+            supportFragmentManager.popBackStack()
+        }
         return true
     }
     override fun getBillingManager(): BillingManager {

@@ -3,7 +3,6 @@ package go.planner.plannergo;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -55,15 +54,12 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
         super.onResume();
     }
 
+    /**
+     * Respond to user's Back action
+     */
     @Override
     public void onBackPressed() {
-        Log.v("SettingsActivity", "backStackEntryCount=" + getFragmentManager().getBackStackEntryCount());
-        if (getFragmentManager().getBackStackEntryCount() == 0) {
-            super.onBackPressed();
-        } else {
-            toolbar.setTitle(R.string.settings);
-            getFragmentManager().popBackStack();
-        }
+        goBack();
     }
 
     @Override
@@ -71,12 +67,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                if (getFragmentManager().getBackStackEntryCount() == 0) {
-                    NavUtils.navigateUpFromSameTask(this);
-                } else {
-                    toolbar.setTitle(R.string.settings);
-                    getFragmentManager().popBackStack();
-                }
+                goBack();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -94,6 +85,16 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
                 addToBackStack(TAG_NESTED).
                 commit();
 
+    }
+
+    private void goBack() {
+        Log.d(TAG, "backStackEntryCount=" + getFragmentManager().getBackStackEntryCount());
+        if (getFragmentManager().getBackStackEntryCount() == 0) {
+            super.onBackPressed();
+        } else {
+            toolbar.setTitle(R.string.settings);
+            getFragmentManager().popBackStack();
+        }
     }
 
     @Override
