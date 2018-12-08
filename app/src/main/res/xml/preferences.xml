@@ -35,6 +35,12 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/experience">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="pref_save_remind"
+            android:layout="@layout/preference"
+            android:title="@string/pref_save_remind" />
+
         <Preference
             android:key="NOTIFICATIONS_KEY"
             android:layout="@layout/preference"

@@ -118,6 +118,7 @@
     <string name="pref_enable_priority">Put priority items first</string>
     <string name="pref_overdue_last">Put overdue items last</string>
     <string name="default_subtitle">Subtitle stuffy stuff</string>
+    <string name="pref_save_remind">Remind me to save unsaved changes.</string>
     <string name="pref_notifications">Notifications</string>
     <string name="appearance">Appearance</string>
     <string name="experience">Experience</string>

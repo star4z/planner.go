@@ -63,7 +63,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
 
         mAssignment = FileIO.getAssignment(if (thisIntent.extras != null) thisIntent.extras!!.getLong("uniqueID", -1L) else -1L)
         Log.v("AssignmentActivity", "mAssignment=$mAssignment")
-        oldAssignment = mAssignment.clone()
+        oldAssignment = Assignment(mAssignment)
 
         //Set up autocomplete for class field
         val classArrayList = FileIO.classNames

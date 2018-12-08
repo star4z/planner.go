@@ -41,20 +41,22 @@ class NotificationAlarms {
     }
 
     private static void setNotificationTimer(Context context, Assignment assignment, AlarmManager alarmManager, SharedPreferences prefs) {
-        PendingIntent pendingIntent = createPendingIntent(assignment, context);
-        alarmManager.cancel(pendingIntent);
+        if (!assignment.completed) {
+            PendingIntent pendingIntent = createPendingIntent(assignment, context);
+            alarmManager.cancel(pendingIntent);
 
-        //"normal" notification setting
-        long time = alarmTimeFromAssignment(assignment, prefs, false);
-        if (time > System.currentTimeMillis()) {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
-        }
-
-        //extra notification setting
-        if (prefs.getBoolean(Settings.notif2Enabled, false)) {
-            long extraTime = alarmTimeFromAssignment(assignment, prefs, true);
+            //"normal" notification setting
+            long time = alarmTimeFromAssignment(assignment, prefs, false);
             if (time > System.currentTimeMillis()) {
-                alarmManager.set(AlarmManager.RTC_WAKEUP, extraTime, pendingIntent);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, time, pendingIntent);
+            }
+
+            //extra notification setting
+            if (prefs.getBoolean(Settings.notif2Enabled, false)) {
+                long extraTime = alarmTimeFromAssignment(assignment, prefs, true);
+                if (time > System.currentTimeMillis()) {
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, extraTime, pendingIntent);
+                }
             }
         }
     }

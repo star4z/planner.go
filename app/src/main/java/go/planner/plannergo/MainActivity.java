@@ -291,6 +291,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                         break;
                     case 3:
                         startActivity(new Intent(MainActivity.this, TrashActivity.class));
+                        overridePendingTransition(0, 0);
                         break;
                     case 4:
                         startActivity(new Intent(MainActivity.this, SettingsActivity.class));
@@ -322,7 +323,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 myToolbar.setBackgroundColor(bright_gold);
 
                 assert navIcon != null;
-                navIcon.setTint(textColor);
+                navIcon.setTint(text_black);
 
                 myToolbar.setTitleTextColor(text_black);
             }

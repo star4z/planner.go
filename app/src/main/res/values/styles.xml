@@ -19,21 +19,21 @@
     </style>
 
     <style name="LightTheme.Fade">
-        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
+        <item name="android:windowAnimationStyle">@style/FadeWindowAnimationTransition</item>
     </style>
 
     <style name="DarkTheme" parent="AppTheme">
         <item name="android:colorPrimary">@color/darkPrimary</item>
         <item name="android:colorPrimaryDark">@color/darkPrimaryDark</item>
         <item name="android:colorAccent">@color/darkAccent</item>
-        <item name="android:navigationBarColor">@color/darkPrimary</item>
+        <item name="android:navigationBarColor">@color/darkPrimaryDark</item>
         <item name="actionOverflowButtonStyle">@style/OverflowMenuButtonStyleLight</item>
         <item name="android:itemBackground">@color/darkPrimary</item>
         <item name="android:textColor">@color/darkTextPrimary</item>
     </style>
 
     <style name="DarkTheme.Fade">
-        <item name="android:windowAnimationStyle">@style/WindowAnimationTransition</item>
+        <item name="android:windowAnimationStyle">@style/FadeWindowAnimationTransition</item>
     </style>
 
     <style name="OverflowMenuButtonStyleLight" parent="Widget.AppCompat.ActionButton.Overflow">
@@ -108,7 +108,7 @@
         <item name="cardPreventCornerOverlap">false</item>
     </style>
 
-    <style name="WindowAnimationTransition">
+    <style name="FadeWindowAnimationTransition">
         <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
         <item name="android:windowExitAnimation">@android:anim/fade_out</item>
     </style>

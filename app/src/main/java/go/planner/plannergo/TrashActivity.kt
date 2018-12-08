@@ -118,6 +118,7 @@ class TrashActivity : Activity(), ColorSchemeActivity {
                     }
                     finish()
                     startActivity(intent)
+                    overridePendingTransition(0, 0)
                 }
                 2 -> {
                     val intent = Intent(this, MainActivity::class.java).apply {
@@ -126,6 +127,7 @@ class TrashActivity : Activity(), ColorSchemeActivity {
                     }
                     finish()
                     startActivity(intent)
+                    overridePendingTransition(0, 0)
                 }
                 3 -> loadPanels()
                 4 -> startActivity(Intent(this@TrashActivity, SettingsActivity::class.java))
