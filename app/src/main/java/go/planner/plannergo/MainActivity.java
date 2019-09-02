@@ -21,26 +21,17 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Locale;
+import java.util.*;
 
 public class MainActivity extends AppCompatActivity implements ColorSchemeActivity {
 
@@ -108,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         super.onResume();
     }
 
+
     /**
      * Since this is a single-top activity, when a startActivity(MainActivity) is called, this
      * method handles any updates, rather than restarting the activity
@@ -154,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             case android.R.id.home:
                 mDrawerLayout.openDrawer(Gravity.START);
                 return true;
+
 //            case R.id.action_search:
             //TODO: add search function
 //                return true;
@@ -307,42 +300,33 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
     void initToolbar(boolean forInProgressAssignments) {
         Drawable navIcon = myToolbar.getNavigationIcon();
-        int textColor = colorScheme.getColor(ColorScheme.TEXT_COLOR);
-        int text_black = ContextCompat.getColor(this, R.color.textBlack);
         if (forInProgressAssignments) {
             setTitle(getResources().getString(R.string.header_in_progress));
             int bright_gold = ContextCompat.getColor(this, R.color.nav_color_1_bright);
-            if (colorScheme.equals(ColorScheme.SCHEME_DARK)) {
-                myToolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
-
-                assert navIcon != null;
-                navIcon.setTint(bright_gold);
-
-                myToolbar.setTitleTextColor(bright_gold);
-            } else {
-                myToolbar.setBackgroundColor(bright_gold);
-
-                assert navIcon != null;
-                navIcon.setTint(text_black);
-
-                myToolbar.setTitleTextColor(text_black);
-            }
+            setToolbarColorScheme(navIcon, bright_gold);
         } else {
             setTitle(getResources().getString(R.string.header_completed));
             int bright_green = ContextCompat.getColor(this, R.color.nav_color_2_bright);
-            if (colorScheme.equals(ColorScheme.SCHEME_DARK)) {
-                myToolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
+            setToolbarColorScheme(navIcon, bright_green);
+        }
+    }
 
-                assert navIcon != null;
-                navIcon.setTint(bright_green);
-                myToolbar.setTitleTextColor(bright_green);
-            } else {
-                myToolbar.setBackgroundColor(bright_green);
+    private void setToolbarColorScheme(Drawable navIcon, int backgroundColor) {
+        int text_black = ContextCompat.getColor(this, R.color.textBlack);
+        if (colorScheme.equals(ColorScheme.SCHEME_DARK)) {
+            myToolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
 
-                assert navIcon != null;
-                navIcon.setTint(text_black);
-                myToolbar.setTitleTextColor(text_black);
-            }
+            assert navIcon != null;
+            navIcon.setTint(backgroundColor);
+
+            myToolbar.setTitleTextColor(backgroundColor);
+        } else {
+            myToolbar.setBackgroundColor(backgroundColor);
+
+            assert navIcon != null;
+            navIcon.setTint(text_black);
+
+            myToolbar.setTitleTextColor(text_black);
         }
     }
 
@@ -352,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
 
-    public void loadPanels(ArrayList<Assignment> assignments, int sortIndex) {
+    void loadPanels(ArrayList<Assignment> assignments, int sortIndex) {
         if (sharedPref.getBoolean(Settings.notifEnabled, true))
             NotificationAlarms.setNotificationTimers(this);
         currentScreenIsInProgress = assignments == FileIO.inProgressAssignments;
@@ -416,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
 
-    void addViewsByDate(ArrayList<Assignment> assignments) {
+    private void addViewsByDate(ArrayList<Assignment> assignments) {
         Calendar today = Calendar.getInstance();
         Calendar tomorrow = (Calendar) today.clone();
         tomorrow.add(Calendar.DATE, 1);
@@ -480,7 +464,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         }
     }
 
-    void addViewsByClass(ArrayList<Assignment> assignments) {
+    private void addViewsByClass(ArrayList<Assignment> assignments) {
         ArrayList<Assignment> group = new ArrayList<>();
 
         String last = null;
@@ -503,7 +487,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         }
     }
 
-    void addViewsByType(ArrayList<Assignment> assignments) {
+    private void addViewsByType(ArrayList<Assignment> assignments) {
         ArrayList<Assignment> group = new ArrayList<>();
 
         String last = null;
@@ -526,7 +510,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         }
     }
 
-    void addViewsByTitle(ArrayList<Assignment> assignments) {
+    private void addViewsByTitle(ArrayList<Assignment> assignments) {
         ArrayList<Assignment> group = new ArrayList<>();
 
         String last = null;

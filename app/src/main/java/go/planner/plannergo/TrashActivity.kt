@@ -83,11 +83,11 @@ class TrashActivity : Activity(), ColorSchemeActivity {
         coordinatorLayout.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
         if (colorScheme == ColorScheme.SCHEME_DARK) {
             toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.nav_color_3_bright))
-            toolbar.navigationIcon.setTint(ContextCompat.getColor(this, R.color.nav_color_3_bright))
+            toolbar?.navigationIcon?.setTint(ContextCompat.getColor(this, R.color.nav_color_3_bright))
             toolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
         } else {
             toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.textBlack))
-            toolbar.navigationIcon.setTint(ContextCompat.getColor(this, R.color.textBlack))
+            toolbar?.navigationIcon?.setTint(ContextCompat.getColor(this, R.color.textBlack))
             toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.nav_color_3_bright))
         }
         schemeSet = true
@@ -208,8 +208,12 @@ class TrashActivity : Activity(), ColorSchemeActivity {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        val icon = getDrawable(R.drawable.ic_trash_grey_24dp)
-        icon.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        val icon = if (colorScheme == ColorScheme.SCHEME_DARK) {
+            getDrawable(R.drawable.ic_trash_white_24dp)
+        } else {
+            getDrawable(R.drawable.ic_trash_black_24dp)
+        }
+
         menu?.getItem(0)?.icon = icon
         return super.onPrepareOptionsMenu(menu)
     }
