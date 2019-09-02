@@ -6,16 +6,9 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.MultiSelectListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceGroup;
-import android.preference.RingtonePreference;
-import android.support.annotation.Nullable;
+import android.preference.*;
 import android.util.Log;
+import androidx.annotation.Nullable;
 
 import java.util.Set;
 

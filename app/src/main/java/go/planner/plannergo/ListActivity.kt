@@ -8,11 +8,6 @@ import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.constraint.ConstraintLayout
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -20,6 +15,11 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_list.*
 import kotlinx.android.synthetic.main.toolbar.*
 

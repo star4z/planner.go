@@ -7,16 +7,20 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.design.widget.CoordinatorLayout
-import android.support.design.widget.NavigationView
-import android.support.v4.content.ContextCompat
-import android.support.v4.widget.DrawerLayout
 import android.util.Log
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_trash.*
 
 /**
@@ -226,7 +230,7 @@ class TrashActivity : Activity(), ColorSchemeActivity {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
             android.R.id.home -> {
-                mDrawerLayout.openDrawer(Gravity.START)
+                mDrawerLayout.openDrawer(GravityCompat.START)
                 return true
             }
             R.id.empty_trash -> {

@@ -2,7 +2,6 @@ package go.planner.plannergo
 
 import android.app.AlertDialog
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.text.SpannableStringBuilder
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +12,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_list.*
 
 

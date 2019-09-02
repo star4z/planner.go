@@ -3,8 +3,8 @@ package go.planner.plannergo;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 

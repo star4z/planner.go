@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/card_view"
     style="@style/CardViewStyle"
     android:layout_height="@dimen/sku_details_row_header_height"
@@ -28,4 +28,4 @@
         android:textColor="@color/textGrey"
         android:textSize="@dimen/sku_details_row_text_size"/>
 
-</android.support.v7.widget.CardView>
+</androidx.cardview.widget.CardView>

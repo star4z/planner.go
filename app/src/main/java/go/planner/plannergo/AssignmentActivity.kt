@@ -9,14 +9,14 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v4.content.ContextCompat
-import android.support.v4.graphics.ColorUtils
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import kotlinx.android.synthetic.main.activity_assignment.*
 import java.text.SimpleDateFormat
 import java.util.*

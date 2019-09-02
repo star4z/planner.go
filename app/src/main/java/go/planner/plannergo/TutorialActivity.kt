@@ -6,20 +6,20 @@ import android.content.Intent
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
-import android.support.design.widget.NavigationView
-import android.support.v4.content.ContextCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.Log
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_tutorial2.*
 import java.io.File
 
@@ -140,7 +140,7 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (stage == 2) {
-            drawer_layout.openDrawer(Gravity.START)
+            drawer_layout.openDrawer(GravityCompat.START)
             return true
         }
         if (stage == 4 && item?.itemId == R.id.action_open_types) {

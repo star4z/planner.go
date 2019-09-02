@@ -1,10 +1,10 @@
 package go.planner.plannergo
 
 import android.os.Bundle
-import android.support.v4.app.NavUtils.navigateUpFromSameTask
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NavUtils.navigateUpFromSameTask
+import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_about.*
 
 class AboutActivity : AppCompatActivity() {
