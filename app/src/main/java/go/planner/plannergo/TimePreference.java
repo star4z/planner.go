@@ -20,14 +20,6 @@ public class TimePreference extends DialogPreference {
     private Calendar calendar;
     private TimePicker picker = null;
 
-    public TimePreference(Context context) {
-        this(context, null);
-    }
-
-    public TimePreference(Context context, AttributeSet attrs) {
-        this(context, attrs, android.R.attr.dialogPreferenceStyle);
-    }
-
     public TimePreference(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
@@ -43,6 +35,7 @@ public class TimePreference extends DialogPreference {
         return (picker);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void onBindDialogView(View v) {
         super.onBindDialogView(v);
@@ -51,6 +44,7 @@ public class TimePreference extends DialogPreference {
         picker.setCurrentMinute(calendar.get(Calendar.MINUTE));
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);

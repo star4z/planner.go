@@ -42,17 +42,15 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     private static final String TAG = "MainActivity";
 
     //Settings data
-    SharedPreferences sharedPref;
-    int currentSortIndex = 0;
-    FloatingActionButton fab;
+    private SharedPreferences sharedPref;
+    private int currentSortIndex = 0;
+    private FloatingActionButton fab;
     private boolean currentScreenIsInProgress = true;
     private ColorScheme colorScheme;
 
     //Quick references
-    LinearLayout parent;
-    RecyclerView.LayoutManager layoutManager;
-    RecyclerView.Adapter adapter;
-    Toolbar myToolbar;
+    private LinearLayout parent;
+    private Toolbar myToolbar;
     private boolean schemeSet = false;
 
     private DrawerLayout mDrawerLayout;
@@ -302,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
 
-    void initToolbar(boolean forInProgressAssignments) {
+    private void initToolbar(boolean forInProgressAssignments) {
         Drawable navIcon = myToolbar.getNavigationIcon();
         if (forInProgressAssignments) {
             setTitle(getResources().getString(R.string.header_in_progress));
@@ -542,22 +540,23 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         }
     }
 
-    RecyclerView createRecyclerViewForList(ArrayList<Assignment> assignments, final TextView heading) {
+    private RecyclerView createRecyclerViewForList(ArrayList<Assignment> assignments, final TextView heading) {
         final RecyclerView recyclerView = new RecyclerView(this);
 
-        layoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT, 0);
         recyclerView.setLayoutParams(params);
 
-        adapter = new AssignmentItemAdapter(assignments, currentSortIndex, this);
+        RecyclerView.Adapter adapter = new AssignmentItemAdapter(assignments, currentSortIndex, this);
         recyclerView.setAdapter(adapter);
 
         recyclerView.setNestedScrollingEnabled(false);
 
         SwipeCallback swipeCallback = new SwipeCallback(this) {
+            @SuppressWarnings("NullableProblems")
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 return makeMovementFlags(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
@@ -568,8 +567,10 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 AssignmentItemAdapter adapter = (AssignmentItemAdapter) recyclerView.getAdapter();
                 assert viewHolder != null;
                 if (direction == ItemTouchHelper.LEFT) {
+                    assert adapter != null;
                     adapter.removeAt(viewHolder.getAdapterPosition());
                 } else if (direction == ItemTouchHelper.RIGHT) {
+                    assert adapter != null;
                     adapter.toggleDone(viewHolder.getAdapterPosition());
                 }
             }
@@ -579,12 +580,14 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
         recyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+            @SuppressWarnings("NullableProblems")
             @Override
             public void onChildViewAttachedToWindow(View view) {
                 if (heading.getVisibility() != View.VISIBLE)
                     heading.setVisibility(View.VISIBLE);
             }
 
+            @SuppressWarnings("NullableProblems")
             @Override
             public void onChildViewDetachedFromWindow(View view) {
                 int count = 0;
@@ -602,11 +605,11 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         return recyclerView;
     }
 
-    TextView addHeading(int id) {
+    private TextView addHeading(int id) {
         return addHeading(getString(id));
     }
 
-    TextView addHeading(String text) {
+    private TextView addHeading(String text) {
         TextView header = (TextView) getLayoutInflater().inflate(
                 R.layout.view_sort_header,
                 (ViewGroup) findViewById(android.R.id.content),
@@ -618,7 +621,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         return header;
     }
 
-    TextView addDateHeading(SimpleDateFormat dateFormat, Calendar today, Calendar tomorrow, Calendar date) {
+    private TextView addDateHeading(SimpleDateFormat dateFormat, Calendar today, Calendar tomorrow, Calendar date) {
         int compareToToday = compareCalendars(date, today);
         int compareToTomorrow = compareCalendars(date, tomorrow);
         if (compareToToday == 0) {
@@ -630,7 +633,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         }
     }
 
-    public int compareCalendars(Calendar c1, Calendar c2) {
+    private int compareCalendars(Calendar c1, Calendar c2) {
         if (c1.get(Calendar.YEAR) != c2.get(Calendar.YEAR))
             return c1.get(Calendar.YEAR) - c2.get(Calendar.YEAR);
         if (c1.get(Calendar.MONTH) != c2.get(Calendar.MONTH))

@@ -37,11 +37,11 @@ class NewAssignmentActivity : AssignmentActivity() {
         mAssignment.dueDate[Calendar.SECOND] = 0
 
         hw_due_date.setOnClickListener {
-            Log.v("NewAssignmentActivity", "due date clicked")
+            Log.v(tag, "due date clicked")
             dueDatePickerDialog!!.show()
         }
         hw_due_time.setOnClickListener {
-            Log.v( "NewAssignmentActivity", "due time clicked")
+            Log.v(tag, "due time clicked")
             dueTimePickerDialog!!.show()
         }
     }
@@ -67,8 +67,8 @@ class NewAssignmentActivity : AssignmentActivity() {
         )
 
         FileIO.addAssignment(mAssignment)
-        Log.v("NewAssignmentActivity","type=${mAssignment.type}")
-        Log.v("NewAssignmentActivity", "$mAssignment was created.")
+        Log.v(tag, "type=${mAssignment.type}")
+        Log.v(tag, "$mAssignment was created.")
 
         FileIO.writeFiles(this)
 

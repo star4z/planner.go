@@ -19,8 +19,6 @@ import kotlinx.android.synthetic.main.activity_list.*
 class ListActivityAdapter internal constructor(private val data: ArrayList<String>, private val c: ListActivity, private val mRecyclerView: RecyclerView)
     : RecyclerView.Adapter<ListActivityAdapter.ViewHolder>() {
 
-    private val notifyEmptyTextView = TextView(c)
-
     /**
      * Provides reference points for the views in a view_list_activity_item
      */
@@ -44,7 +42,7 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
         val colorScheme = c.getColorScheme()
 
         val bg = c.getDrawable(R.drawable.bg_list_item)
-        bg.setTint(colorScheme.getColor(ColorScheme.ASSIGNMENT_VIEW_BG))
+        bg?.setTint(colorScheme.getColor(ColorScheme.ASSIGNMENT_VIEW_BG))
         view.background = bg
 
         //create ViewHolder from layout and attach OnClickListeners

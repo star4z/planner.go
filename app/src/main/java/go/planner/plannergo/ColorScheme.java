@@ -20,7 +20,7 @@ public class ColorScheme {
     @SuppressLint("StaticFieldLeak")
     public static final ColorScheme SCHEME_DARK = new ColorScheme(true);
     @SuppressLint("StaticFieldLeak")
-    public static final ColorScheme SCHEME_LIGHT = new ColorScheme(false);
+    static final ColorScheme SCHEME_LIGHT = new ColorScheme(false);
 
     private ArrayList<Integer> colors;
     private int theme;

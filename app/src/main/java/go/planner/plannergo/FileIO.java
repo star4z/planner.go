@@ -163,25 +163,26 @@ public class FileIO {
      * @throws IOException            ois finishes
      * @throws ClassNotFoundException was not able to find object of the given type
      */
+    @SuppressWarnings("unused")
     private static Assignment readAssignment(ObjectInputStream ois, double fileVersion) throws IOException, ClassNotFoundException {
 
-        String mTitl = (String) ois.readObject(); //title
+        String mTitle = (String) ois.readObject(); //title
         String mClass = (String) ois.readObject();//className
         Calendar mDate = (Calendar) ois.readObject();//dueDate
         String mDesc = (String) ois.readObject();
-        boolean mCompl = ois.readBoolean();
+        boolean mCompleted = ois.readBoolean();
         String mType = (String) ois.readObject();
-        int mPrio = ois.readInt();
-        long mNoti = ois.readLong();
+        int mPriority = ois.readInt();
+        long mNotificationTime = ois.readLong();
         Calendar notification1 = Calendar.getInstance();
-        notification1.setTimeInMillis(mNoti);
+        notification1.setTimeInMillis(mNotificationTime);
         long mNot2 = ois.readLong();
         Calendar notification2 = Calendar.getInstance();
         notification2.setTimeInMillis(mNot2);
         long mID = ois.readLong();
 
         return new Assignment(
-                mTitl, mClass, mDate, mDesc, mCompl, mType, mPrio, notification1, notification2, mID
+                mTitle, mClass, mDate, mDesc, mCompleted, mType, mPriority, notification1, notification2, mID
         );
     }
 
@@ -239,7 +240,7 @@ public class FileIO {
      * @param context    Used to create SnackBar pop-up.
      * @param assignment Assignment to delete.
      */
-    public static void deleteAssignment(final Activity context, final Assignment assignment) {
+    static void deleteAssignment(final Activity context, final Assignment assignment) {
         if (assignment.completed) {
             FileIO.completedAssignments.remove(assignment);
         } else {
@@ -283,7 +284,7 @@ public class FileIO {
      * @param assignments List of assignments to delete.
      * @param c           Context, used to create SnackBar pop-up;
      */
-    public static void deleteAll(ArrayList<Assignment> assignments, final Activity c) {
+    static void deleteAll(ArrayList<Assignment> assignments, final Activity c) {
         Log.v(TAG, "IPA=" + inProgressAssignments);
         if (assignments.isEmpty()) return;
         long id = System.currentTimeMillis();

@@ -18,7 +18,9 @@ import java.util.Set;
  * Created by bdphi on 3/12/2018.
  */
 
+@SuppressWarnings("deprecation")
 public class SettingsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener, Preference.OnPreferenceClickListener {
+    @SuppressWarnings("FieldCanBeLocal")
     private static String TAG = "SettingsFragment";
     private Callback callback;
 
@@ -108,8 +110,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
      * @param sharedPreferences settings file
      * @param pref              preference to update the summary of
      */
-    protected void updatePrefsSummary(SharedPreferences sharedPreferences,
-                                      Preference pref) {
+    private void updatePrefsSummary(SharedPreferences sharedPreferences,
+                                    Preference pref) {
 
         if (pref == null)
             return;
@@ -117,10 +119,10 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
         if (pref instanceof ListPreference) {
             // List Preference
             ListPreference listPref = (ListPreference) pref;
-            Log.v("SettingsFragment", "listPrefEntry=" + listPref.getEntry());
+            Log.v(TAG, "listPrefEntry=" + listPref.getEntry());
             if (listPref.getEntry() == null) {
                 listPref.setValueIndex(0);
-                Log.v("SettingsFragment", "after change, listPrefEntry=" + listPref.getEntry());
+                Log.v(TAG, "after change, listPrefEntry=" + listPref.getEntry());
             }
             listPref.setSummary(listPref.getEntry());
 
@@ -131,18 +133,18 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
 
         } else if (pref instanceof MultiSelectListPreference) {
             // MultiSelectList Preference
-            MultiSelectListPreference mlistPref = (MultiSelectListPreference) pref;
+            MultiSelectListPreference mListPref = (MultiSelectListPreference) pref;
             StringBuilder summaryMListPref = new StringBuilder();
             String and = "";
 
             // Retrieve values
-            Set<String> values = mlistPref.getValues();
+            Set<String> values = mListPref.getValues();
             for (String value : values) {
                 // For each value retrieve index
-                int index = mlistPref.findIndexOfValue(value);
+                int index = mListPref.findIndexOfValue(value);
                 // Retrieve entry from index
                 CharSequence mEntry = index >= 0
-                        && mlistPref.getEntries() != null ? mlistPref
+                        && mListPref.getEntries() != null ? mListPref
                         .getEntries()[index] : null;
                 if (mEntry != null) {
                     // add summary
@@ -151,7 +153,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
                 }
             }
             // set summary
-            mlistPref.setSummary(summaryMListPref.toString());
+            mListPref.setSummary(summaryMListPref.toString());
 
         } else if (pref instanceof RingtonePreference) {
             // RingtonePreference
@@ -172,7 +174,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     }
 
 
-    protected void initSummary() {
+    private void initSummary() {
         for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); i++) {
             initPrefsSummary(getPreferenceManager().getSharedPreferences(),
                     getPreferenceScreen().getPreference(i));
@@ -182,8 +184,8 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     /*
      * Init single Preference
      */
-    protected void initPrefsSummary(SharedPreferences sharedPreferences,
-                                    Preference p) {
+    private void initPrefsSummary(SharedPreferences sharedPreferences,
+                                  Preference p) {
         if (p instanceof PreferenceCategory) {
             PreferenceCategory pCat = (PreferenceCategory) p;
             for (int i = 0; i < pCat.getPreferenceCount(); i++) {

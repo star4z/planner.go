@@ -18,15 +18,13 @@ package go.planner.plannergo;
 
 import android.content.SharedPreferences;
 import android.util.Log;
-
 import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.android.billingclient.api.Purchase;
-
-import java.util.List;
-
 import go.planner.plannergo.billing.BillingManager;
 import go.planner.plannergo.skulist.row.FiveDollarDelegate;
 import go.planner.plannergo.skulist.row.OneDollarDelegate;
+
+import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -115,13 +113,13 @@ public class MainViewController {
         spe.putBoolean("isOneDollarDonor", isOneDollarDonor);
         spe.putBoolean("isFiveDollarDonor", isFiveDollarDonor);
         spe.apply();
-        Log.d(TAG, "Saved data: isOneDollarDonor = " + String.valueOf(isOneDollarDonor));
+        Log.d(TAG, "Saved data: isOneDollarDonor = " + isOneDollarDonor);
     }
 
     private void loadData() {
         SharedPreferences sp = mActivity.getPreferences(MODE_PRIVATE);
         isOneDollarDonor = sp.getBoolean("isOneDollarDonor", false);
         isFiveDollarDonor = sp.getBoolean("isFiveDollarDonor", false);
-        Log.d(TAG, "Loaded data: isOneDollarDonor = " + String.valueOf(isOneDollarDonor));
+        Log.d(TAG, "Loaded data: isOneDollarDonor = " + isOneDollarDonor);
     }
 }

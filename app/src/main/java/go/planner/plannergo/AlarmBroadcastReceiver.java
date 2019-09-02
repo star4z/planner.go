@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.Objects;
 
 import static android.os.Build.VERSION_CODES.O;
 
@@ -37,10 +38,9 @@ import static android.os.Build.VERSION_CODES.O;
  */
 
 public class AlarmBroadcastReceiver extends BroadcastReceiver {
-    private static final String TAG = "AlarmBrodcastReceiver";
-
-    public static final String ACTION_ALARM = "planner.app.Alarm1";
-    public static final String MARK_DONE = "planner.app.MarkDone";
+    static final String ACTION_ALARM = "planner.app.Alarm1";
+    private static final String TAG = "AlarmBroadcastReceiver";
+    private static final String MARK_DONE = "planner.app.MarkDone";
     static final String TITLE = "assignment.title";
     static final String TEXT = "assignment.classname";
     static final String ID = "assignment.id";
@@ -63,7 +63,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
             boolean timeEnabled = preferences.getBoolean(Settings.timeEnabled, true);
 
-            createNotification(intent.getExtras(), timeEnabled, context);
+            createNotification(Objects.requireNonNull(intent.getExtras()), timeEnabled, context);
 
         } else if (MARK_DONE.equals(intent.getAction())) {
             long id = intent.getLongExtra(ID, -1L);
@@ -84,7 +84,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     }
 
 
-    void createNotification(Bundle bundle, boolean timeEnabled, Context context) {
+    private void createNotification(Bundle bundle, boolean timeEnabled, Context context) {
         SimpleDateFormat dateFormat = timeEnabled ?
                 new SimpleDateFormat(" - MMM dd hh:mm", Locale.US) :
                 new SimpleDateFormat(" - MMM dd", Locale.US);

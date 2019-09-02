@@ -12,7 +12,7 @@ import android.util.Log;
 
 public class BootBroadcastReceiver extends BroadcastReceiver {
 
-    final static String ON_START = "planner.app.startedUp";
+    private final static String ON_START = "planner.app.startedUp";
 
     @Override
     public void onReceive(Context context, Intent intent) {

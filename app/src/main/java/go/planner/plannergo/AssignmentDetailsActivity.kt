@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.activity_assignment.*
  * Version of AssignmentActivity where old data is imported and the Assignment ID is conserved.
  */
 class AssignmentDetailsActivity : AssignmentActivity() {
-    private val tag = "AssignmentDetailsActivity"
+    private val tag = "AssignmentDetails"
 
     override fun manageVisibility() {
         hw_due_time.visibility =
@@ -30,7 +30,7 @@ class AssignmentDetailsActivity : AssignmentActivity() {
         hw_type.setSelection(mAssignment.spinnerPosition())
         hw_description.text = SpannableStringBuilder(mAssignment.description)
         is_priority.isChecked = mAssignment.priority == 1
-        Log.v("AssignmentDetails", "notificationDate1=" + mAssignment.notificationDate1)
+        Log.v(tag, "notificationDate1=" + mAssignment.notificationDate1)
     }
 
     override fun setUpListeners() {
@@ -38,11 +38,11 @@ class AssignmentDetailsActivity : AssignmentActivity() {
         dueDatePickerDialog = createDatePicker(mAssignment.dueDate, hw_due_date)
 
         hw_due_date.setOnClickListener {
-            Log.v("NewAssignmentActivity", "due date clicked")
+            Log.v(tag, "due date clicked")
             dueDatePickerDialog!!.show()
         }
         hw_due_time.setOnClickListener {
-            Log.v("NewAssignmentActivity", "due time clicked")
+            Log.v(tag, "due time clicked")
             dueTimePickerDialog!!.show()
         }
     }

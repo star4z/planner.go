@@ -3,6 +3,7 @@ package go.planner.plannergo;
 /**
  * Stores preferences keys as constants
  */
+@SuppressWarnings("WeakerAccess")
 public class Settings {
     public static final String timeEnabled = "pref_time_enabled";
     public static final String overdueLast = "pref_overdue_last";
@@ -10,6 +11,7 @@ public class Settings {
     public static final String colorScheme = "pref_color_scheme";
     public static final String darkMode = "pref_dark_mode";
     public static final String classColorsEnabled = "pref_class_colors_enabled";
+    @SuppressWarnings("unused")
     public static final String priorityFirst = "pref_priority_first";
     public static final String notifEnabled = "pref_notif_enabled";
     public static final String notif1Time = "pref_notif_time";

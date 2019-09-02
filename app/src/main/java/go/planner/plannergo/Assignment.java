@@ -86,6 +86,7 @@ public class Assignment implements Serializable {
      *
      * @return ID number; ID numbers should only be the same if they reference the same object
      */
+    @SuppressWarnings("NullableProblems")
     @Override
     public String toString() {
         return "#" + uniqueID + ", " + title;
@@ -95,7 +96,7 @@ public class Assignment implements Serializable {
     public int spinnerPosition() {
         int pos = FileIO.types.indexOf(type);
         Log.v(TAG, "spinnerPosition=" + pos);
-        return (pos >= 0) ? pos : 0;
+        return Math.max(pos, 0);
     }
 
     /**

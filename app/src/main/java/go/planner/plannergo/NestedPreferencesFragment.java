@@ -10,13 +10,14 @@ import android.preference.PreferenceGroup;
  * Created by bdphi on 3/15/2018.
  */
 
+@SuppressWarnings("deprecation")
 public class NestedPreferencesFragment extends PreferenceFragment {
 
-    public static final int KEY_NOTIFY = 1;
+    static final int KEY_NOTIFY = 1;
 
     private static final String TAG_KEY = "NESTED_KEY";
 
-    public static NestedPreferencesFragment newInstance(int key) {
+    static NestedPreferencesFragment newInstance(int key) {
         NestedPreferencesFragment fragment = new NestedPreferencesFragment();
         // supply arguments to bundle.
         Bundle args = new Bundle();
@@ -38,13 +39,8 @@ public class NestedPreferencesFragment extends PreferenceFragment {
     private void checkPreferenceResource() {
         int key = getArguments().getInt(TAG_KEY);
         // Load the preferences from an XML resource
-        switch (key) {
-            case KEY_NOTIFY:
-                addPreferencesFromResource(R.xml.notification_preferences);
-                break;
-
-            default:
-                break;
+        if (key == KEY_NOTIFY) {
+            addPreferencesFromResource(R.xml.notification_preferences);
         }
     }
 

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
+@SuppressWarnings("deprecation")
 public class SettingsActivity extends AppCompatActivity implements SettingsFragment.Callback, ColorSchemeActivity {
     private static final String TAG = "SettingsActivity";
 
@@ -63,11 +64,10 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                goBack();
-                return true;
+        // Respond to the action bar's Up/Home button
+        if (item.getItemId() == android.R.id.home) {
+            goBack();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

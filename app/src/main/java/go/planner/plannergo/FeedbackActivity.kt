@@ -18,7 +18,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
 import com.android.billingclient.api.BillingClient
 import go.planner.plannergo.billing.BillingManager
 import go.planner.plannergo.billing.BillingManager.BILLING_MANAGER_NOT_INITIALIZED
@@ -121,7 +120,7 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
     }
 
     fun openEmailForFeedback(@Suppress("UNUSED_PARAMETER") view: View) {
-        val intent = Intent(android.content.Intent.ACTION_SENDTO)
+        val intent = Intent(Intent.ACTION_SENDTO)
         intent.type = "text/plain"
         intent.putExtra(Intent.EXTRA_SUBJECT, "Planner Agenda Feedback")//English, since it's for me to read
         intent.data = Uri.parse("mailto:benjaminphillipsdeveloper@gmail.com")
@@ -136,8 +135,7 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
     fun gotoAppRating(@Suppress("UNUSED_PARAMETER") view: View) {
         val uri = Uri.parse("market://details?id=$packageName")
         val goToMarket = Intent(Intent.ACTION_VIEW, uri)
-        // To count with Play market backstack, After pressing back button,
-        // to taken back to our application, we need to add following flags to intent.
+
         goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or
                 Intent.FLAG_ACTIVITY_NEW_DOCUMENT or
                 Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
@@ -179,10 +177,6 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
 
     private fun isAcquireFragmentShown(): Boolean {
         return !::mAcquireFragment.isInitialized && mAcquireFragment.isVisible
-    }
-
-    fun getDialogFragment(): DialogFragment {
-        return mAcquireFragment
     }
 
     override fun isOneDollarDonor(): Boolean {

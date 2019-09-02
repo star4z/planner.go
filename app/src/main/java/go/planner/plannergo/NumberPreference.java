@@ -26,10 +26,6 @@ public class NumberPreference extends DialogPreference {
     private NumberPicker picker;
     private int value;
 
-    public NumberPreference(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
     public NumberPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
@@ -85,13 +81,13 @@ public class NumberPreference extends DialogPreference {
         return "" + value;
     }
 
-    public void setValue(int value) {
-        this.value = value;
-        persistInt(this.value);
+    int getValue() {
+        return this.value;
     }
 
-    public int getValue() {
-        return this.value;
+    private void setValue(int value) {
+        this.value = value;
+        persistInt(this.value);
     }
 
 

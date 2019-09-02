@@ -126,7 +126,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
         val icon1 = getDrawable(R.drawable.ic_save_black_24dp)
-        icon1.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        icon1?.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
         menu?.getItem(0)?.icon = icon1
         return super.onPrepareOptionsMenu(menu)
     }
@@ -176,22 +176,22 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
         when (dateToModify) {
             0 -> calendar =
                     if (mAssignment.dueDate == null)
-                        Calendar.getInstance()
+                        getInstance()
                     else
                         mAssignment.dueDate
             1 -> calendar =
                     if (mAssignment.notificationDate1 == null)
-                        Calendar.getInstance()
+                        getInstance()
                     else
                         mAssignment.notificationDate1
             2 -> calendar =
                     if (mAssignment.notificationDate2 == null)
-                        Calendar.getInstance()
+                        getInstance()
                     else
                         mAssignment.notificationDate2
             else -> calendar =
                     if (mAssignment.dueDate == null)
-                        Calendar.getInstance()
+                        getInstance()
                     else
                         mAssignment.dueDate
         }
@@ -234,16 +234,16 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
     }
 
     internal fun getAssignment(): Assignment {
-        val mTitl = hw_title.text.toString()
-        val mClas = hw_class.text.toString()
+        val mTitle = hw_title.text.toString()
+        val mClass = hw_class.text.toString()
         val mDate = mAssignment.dueDate
         val mDesc = hw_description.text.toString()
         val mComp = mAssignment.completed
         val mType = if (hw_type.selectedItem != null) hw_type.selectedItem.toString() else ""
-        val mPrio = if (is_priority.isChecked) 1 else 0
+        val priority = if (is_priority.isChecked) 1 else 0
         val mUID = mAssignment.uniqueID
 
-        return Assignment(mTitl, mClas, mDate, mDesc, mComp, mType, mPrio, null, null, mUID)
+        return Assignment(mTitle, mClass, mDate, mDesc, mComp, mType, priority, null, null, mUID)
     }
 
     internal abstract fun saveAssignment()

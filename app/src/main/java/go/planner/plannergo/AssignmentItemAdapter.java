@@ -25,7 +25,7 @@ import java.util.Random;
 public class AssignmentItemAdapter extends RecyclerView.Adapter {
     private static String TAG = "AssignmentItemAdapter";
 
-    Activity activity;
+    private Activity activity;
     ArrayList<Assignment> dataSet;
     private SharedPreferences prefs;
     private int sortIndex;
@@ -68,14 +68,17 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
             }
         }
 
-        if (!classColors.containsKey(className)) {
+        if (classColors.containsKey(className)) {
+            //noinspection ConstantConditions
+            return classColors.get(className);
+        } else {
             Random random = new Random(System.currentTimeMillis());
 
             int color = generateClassColor(random);
             classColors.put(className, color);
-        }
 
-        return classColors.get(className);
+            return color;
+        }
     }
 
     /**

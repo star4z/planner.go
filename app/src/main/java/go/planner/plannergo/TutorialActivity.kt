@@ -23,7 +23,7 @@ import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_tutorial2.*
 import java.io.File
 
-const val TAG = "TutorialActivity2"
+const val TAG = "TutorialActivity"
 
 class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
 
@@ -85,10 +85,10 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 if (direction == ItemTouchHelper.RIGHT) {
-                    adapter.notifyItemChanged(viewHolder!!.adapterPosition)
+                    adapter.notifyItemChanged(viewHolder.adapterPosition)
                     initStage2()
                 } else {
-                    adapter.notifyItemRemoved(viewHolder!!.adapterPosition)
+                    adapter.notifyItemRemoved(viewHolder.adapterPosition)
                     initStage4()
                 }
             }
