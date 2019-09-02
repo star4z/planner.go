@@ -25,7 +25,7 @@ class NotificationAlarms {
 
     static void setNotificationTimers(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Boolean notifEnabled = prefs.getBoolean(Settings.notifEnabled, true);
+        boolean notifEnabled = prefs.getBoolean(Settings.notifEnabled, true);
         Log.d(TAG, "notifEnabled = " + notifEnabled);
         if (!notifEnabled) {
             return;
