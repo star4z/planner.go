@@ -9,6 +9,20 @@
     android:fitsSystemWindows="true"
     tools:context="go.planner.plannergo.AssignmentActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/textGrey"
+        android:elevation="4dp"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:navigationContentDescription="@string/back"
+        app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:title="@string/new_a"
+        app:titleTextColor="#FFFFFFFF" />
+
 
     <ScrollView
         android:layout_width="match_parent"
@@ -166,18 +180,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/textGrey"
-        android:elevation="4dp"
-        android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:navigationContentDescription="@string/back"
-        app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:title="@string/new_a"
-        app:titleTextColor="#FFFFFFFF" />
 
 </LinearLayout>
