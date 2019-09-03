@@ -45,7 +45,6 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
     private lateinit var typeSpinner: Spinner
     private var layoutID = 0
 
-
     /**
      * implementation should include super.onCreate(savedInstanceState;
      * and setContentView(R.layout.activity_assignment);
@@ -140,27 +139,35 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
                 true
             }
             android.R.id.home -> {
-                Log.d(tag, "oldAssignment == assignment?${oldAssignment.compareFields(getAssignment())}")
-                if (oldAssignment.compareFields(getAssignment()))
-                    navigateUpTo(Intent(this, MainActivity::class.java))
-                else {
-                    //TODO: add don't ask me again option
-                    val style = if (colorScheme == ColorScheme.SCHEME_DARK)
-                        R.style.DarkDialogTheme
-                    else
-                        R.style.LightDialogTheme
-                    AlertDialog.Builder(this, style)
-                            .setTitle(R.string.do_not_save)
-                            .setMessage(R.string.changes_wont_be_saved)
-                            .setPositiveButton(R.string.leave) { _, _ ->
-                                navigateUpTo(Intent(this, MainActivity::class.java))
-                            }
-                            .setNegativeButton(R.string.stay, null)
-                            .create().show()
-                }
+                saveCheckAndNavigateUp()
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onBackPressed() {
+        saveCheckAndNavigateUp()
+    }
+
+    private fun saveCheckAndNavigateUp() {
+        Log.d(tag, "oldAssignment == assignment?${oldAssignment.compareFields(getAssignment())}")
+        if (oldAssignment.compareFields(getAssignment()))
+            navigateUpTo(Intent(this, MainActivity::class.java))
+        else {
+            //TODO: add don't ask me again option
+            val style = if (colorScheme == ColorScheme.SCHEME_DARK)
+                R.style.DarkDialogTheme
+            else
+                R.style.LightDialogTheme
+            AlertDialog.Builder(this, style)
+                    .setTitle(R.string.do_not_save)
+                    .setMessage(R.string.changes_wont_be_saved)
+                    .setPositiveButton(R.string.leave) { _, _ ->
+                        navigateUpTo(Intent(this, MainActivity::class.java))
+                    }
+                    .setNegativeButton(R.string.stay, null)
+                    .create().show()
         }
     }
 
@@ -252,7 +259,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
         val scheme = prefs.getBoolean(Settings.darkMode, true)
         colorScheme = ColorScheme(scheme, this)
         setTheme(colorScheme.theme)
-        Log.d(TAG, "scheme=$scheme")
+        Log.d(tag, "scheme=$scheme")
     }
 
     override fun getColorScheme(): ColorScheme {
