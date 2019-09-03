@@ -163,10 +163,14 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
             AlertDialog.Builder(this, style)
                     .setTitle(R.string.do_not_save)
                     .setMessage(R.string.changes_wont_be_saved)
-                    .setPositiveButton(R.string.leave) { _, _ ->
+                    .setNegativeButton(R.string.leave) { _, _ ->
                         navigateUpTo(Intent(this, MainActivity::class.java))
                     }
-                    .setNegativeButton(R.string.stay, null)
+                    .setNeutralButton(R.string.leave_and_save) { _, _ ->
+                        saveAssignment()
+                        navigateUpTo(Intent(this, MainActivity::class.java))
+                    }
+                    .setPositiveButton(R.string.stay, null)
                     .create().show()
         }
     }
