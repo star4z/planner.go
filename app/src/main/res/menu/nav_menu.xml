@@ -19,7 +19,7 @@
             android:title="@string/settings" />
         <item
             android:id="@+id/help_and_feedback"
-            android:icon="@drawable/ic_feedback_black_24dp"
+            android:icon="@drawable/ic_feedback_white_24dp"
             android:title="@string/help_and_feedback" />
     </group>
 </menu>
