@@ -299,6 +299,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                         currentScreenIsInProgress = false;
                         break;
                     case iTrash:
+                        mDrawerAdapter.setSelectedPos(3);
+                        mDrawerList.setAdapter(mDrawerAdapter);
                         startActivity(new Intent(MainActivity.this, TrashActivity.class));
                         overridePendingTransition(0, 0);
                         break;

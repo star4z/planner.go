@@ -108,12 +108,15 @@ class TrashActivity : Activity(), ColorSchemeActivity {
         mDrawerLayout = findViewById(R.id.drawer_layout)
         val mDrawerList = findViewById<ListView>(R.id.drawer_list)
 
-        mDrawerList.adapter = DrawerAdapter(this, drawerOptions, drawerIcons, 3)
+        val mDrawerAdapter = DrawerAdapter(this, drawerOptions, drawerIcons, 3)
+        mDrawerList.adapter = mDrawerAdapter
 
 
         mDrawerList.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             when (position) {
                 1 -> {
+                    mDrawerAdapter.setSelectedPos(1)
+                    mDrawerList.adapter = mDrawerAdapter
                     val intent = Intent(this, MainActivity::class.java).apply {
                         putExtra("mode_InProgress", true)
                         addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -123,6 +126,8 @@ class TrashActivity : Activity(), ColorSchemeActivity {
                     overridePendingTransition(0, 0)
                 }
                 2 -> {
+                    mDrawerAdapter.setSelectedPos(2)
+                    mDrawerList.adapter = mDrawerAdapter
                     val intent = Intent(this, MainActivity::class.java).apply {
                         putExtra("mode_InProgress", false)
                         addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
