@@ -48,6 +48,10 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
     private fun initStage1() {
         resetViews()
 
+        toolbar.setBackgroundColor(colorScheme.getColor(this, Field.IP_APP_BAR_BG))
+        toolbar.setTitleTextColor(colorScheme.getColor(this, Field.IP_APP_BAR_TEXT))
+        toolbar.navigationIcon = colorScheme.getDrawable(this, Field.IP_APP_BAR_HAM)
+
         fab.setOnClickListener(null)
 
         setSupportActionBar(toolbar)
@@ -161,8 +165,9 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
         drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
         toolbar.setTitle(R.string.header_completed)
-        toolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
-        toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.nav_color_2_bright))
+        toolbar.setBackgroundColor(colorScheme.getColor(this, Field.CP_APP_BAR_BG))
+        toolbar.setTitleTextColor(colorScheme.getColor(this, Field.CP_APP_BAR_TEXT))
+        toolbar.navigationIcon = colorScheme.getDrawable(this, Field.CP_APP_BAR_HAM)
 
         touchHelper.attachToRecyclerView(null)
         touchHelper = feedRecyclerView(recycler_view, makeArray(), ItemTouchHelper.LEFT)
@@ -224,11 +229,10 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
         invalidateOptionsMenu()
 
         toolbar.setTitle(R.string.categories)
-        toolbar.setTitleTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR))
-        toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
-        toolbar.navigationIcon?.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        toolbar.setTitleTextColor(colorScheme.getColor(this, Field.LS_APP_BAR_TEXT))
+        toolbar.navigationIcon = colorScheme.getDrawable(this, Field.LS_APP_BAR_BACK)
 
-        fab.setOnClickListener { _ ->
+        fab.setOnClickListener {
 
             val body = layoutInflater.inflate(
                     R.layout.dialog_tutorial_list_add,
@@ -297,8 +301,11 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
         ) as LinearLayout
         val tV = v.findViewById<TextView>(R.id.title)
         tV.text = newCategory
-        v.findViewById<ImageView>(R.id.edit).drawable.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
-        v.findViewById<ImageView>(R.id.remove).drawable.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+
+        //TODO: remove tints
+        val color = colorScheme.getColor(this, Field.MAIN_CARD_TEXT)
+        v.findViewById<ImageView>(R.id.edit).drawable.setTint(color)
+        v.findViewById<ImageView>(R.id.remove).drawable.setTint(color)
 
 
         linear_layout.addView(v)
@@ -365,8 +372,9 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
     }
 
     override fun setColorScheme() {
-        colorScheme = ColorScheme(true, this)
-        setTheme(colorScheme.theme)
+        //TODO: Add support for light scheme tutorial
+        colorScheme = ColorScheme.SCHEME_DARK
+//        setTheme(colorScheme.theme)
     }
 
     override fun checkForColorSchemeUpdate() {
@@ -375,7 +383,7 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
 
     override fun applyColors() {
         val navView = findViewById<NavigationView>(R.id.navigation)
-        navView.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
-        coordinator.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
+        navView.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
+        coordinator.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
     }
 }

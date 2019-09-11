@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
@@ -17,7 +18,6 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
@@ -62,10 +62,10 @@ class TrashActivity : Activity(), ColorSchemeActivity {
     }
 
     override fun setColorScheme() {
-        val scheme = prefs.getBoolean(Settings.darkMode, true)
-        colorScheme = ColorScheme(scheme, this)
-        setTheme(colorScheme.theme)
-        Log.d(TAG, "scheme=$scheme")
+        val darkmode = prefs.getBoolean(Settings.darkMode, true)
+        colorScheme = if (darkmode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
+//        setTheme(colorScheme.theme)
+        Log.d(TAG, "scheme=$darkmode")
     }
 
     override fun getColorScheme(): ColorScheme {
@@ -73,7 +73,8 @@ class TrashActivity : Activity(), ColorSchemeActivity {
     }
 
     override fun checkForColorSchemeUpdate() {
-        val newScheme = ColorScheme(prefs.getBoolean(Settings.darkMode, true), this)
+        val darkmode = prefs.getBoolean(Settings.darkMode, true)
+        val newScheme = if (darkmode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
         if (newScheme != colorScheme)
             recreate()
         else if (!schemeSet)
@@ -82,17 +83,14 @@ class TrashActivity : Activity(), ColorSchemeActivity {
 
     override fun applyColors() {
         val navView = findViewById<NavigationView>(R.id.navigation)
-        navView.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
+        navView.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
         val coordinatorLayout = findViewById<CoordinatorLayout>(R.id.coordinator)
-        coordinatorLayout.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
-        if (colorScheme == ColorScheme.SCHEME_DARK) {
-            toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.nav_color_3_bright))
-            toolbar?.navigationIcon?.setTint(ContextCompat.getColor(this, R.color.nav_color_3_bright))
-            toolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
-        } else {
-            toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.textBlack))
-            toolbar?.navigationIcon?.setTint(ContextCompat.getColor(this, R.color.textBlack))
-            toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.nav_color_3_bright))
+        coordinatorLayout.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
+        toolbar.setTitleTextColor(colorScheme.getColor(this, Field.TR_APP_BAR_TEXT))
+        toolbar.navigationIcon = colorScheme.getDrawable(this, Field.TR_APP_BAR_HAM)
+        toolbar.setBackgroundColor(colorScheme.getColor(this, Field.TR_APP_BAR_BG))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            toolbar.overflowIcon = colorScheme.getDrawable(this, Field.TR_APP_BAR_OPT)
         }
         schemeSet = true
     }
@@ -156,9 +154,9 @@ class TrashActivity : Activity(), ColorSchemeActivity {
                         false
                 )
 
-                nextView.setBackgroundColor(colorScheme.getColor(ColorScheme.ASSIGNMENT_VIEW_BG))
+                nextView.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_CARD_BG))
 
-                val textColor = colorScheme.getColor(ColorScheme.TEXT_COLOR)
+                val textColor = colorScheme.getColor(this, Field.MAIN_CARD_TEXT)
 
                 val titleView = nextView.findViewById<TextView>(R.id.title)
                 titleView.text = assignment.title
@@ -166,6 +164,7 @@ class TrashActivity : Activity(), ColorSchemeActivity {
                 val className = nextView.findViewById<TextView>(R.id.className)
                 className.text = assignment.className
                 className.setTextColor(textColor)
+                //TODO: replace icon tinting
                 nextView.findViewById<ImageView>(R.id.restore).drawable.setTint(textColor)
                 nextView.findViewById<ImageView>(R.id.delete).drawable.setTint(textColor)
 
@@ -207,7 +206,7 @@ class TrashActivity : Activity(), ColorSchemeActivity {
                 false
         ) as TextView
         header.setText(inText)
-        header.setTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        header.setTextColor(colorScheme.getColor(this, Field.MAIN_HEADER))
         body.addView(header)
     }
 

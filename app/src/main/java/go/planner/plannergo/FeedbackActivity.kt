@@ -194,10 +194,10 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
     }
 
     override fun setColorScheme() {
-        val scheme = prefs.getBoolean(Settings.darkMode, true)
-        colorScheme = ColorScheme(scheme, this)
-        setTheme(colorScheme.theme)
-        Log.d(TAG, "scheme=$scheme")
+        val isDarkMode = prefs.getBoolean(Settings.darkMode, true)
+        colorScheme = if (isDarkMode) ColorScheme.SCHEME_LIGHT else ColorScheme.SCHEME_DARK
+//        setTheme(colorScheme.theme)
+        Log.d(TAG, "scheme=$isDarkMode")
     }
 
     override fun getColorScheme(): ColorScheme {
@@ -205,8 +205,8 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
     }
 
     override fun checkForColorSchemeUpdate() {
-        val scheme = prefs.getBoolean(Settings.darkMode, true)
-        val newScheme = ColorScheme(scheme, this)
+        val isDarkMode = prefs.getBoolean(Settings.darkMode, true)
+        val newScheme = if (isDarkMode) ColorScheme.SCHEME_LIGHT else ColorScheme.SCHEME_DARK
         if (newScheme != colorScheme)
             recreate()
         else if (!schemeSet)
@@ -214,14 +214,15 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
     }
 
     override fun applyColors() {
-        val textColor = colorScheme.getColor(ColorScheme.TEXT_COLOR)
-        val primaryColor = colorScheme.getColor(ColorScheme.PRIMARY)
+        val textColor = colorScheme.getColor(this, Field.HF_TEXT)
+        val primaryColor = colorScheme.getColor(this, Field.HF_BG)
         toolbar.setBackgroundColor(primaryColor)
         toolbar.setTitleTextColor(textColor)
-        toolbar.navigationIcon?.setTint(textColor)
+        toolbar.navigationIcon = colorScheme.getDrawable(this, Field.HF_APP_BAR_BACK)
         greeting.setTextColor(textColor)
         donate_plea.setTextColor(textColor)
-        donate1.setTextColor(ContextCompat.getColor(this, R.color.textBlack))
+        donate1.setTextColor(colorScheme.getColor(this, Field.HF_BUTTON_TEXT))
+        donate1.setBackgroundColor(colorScheme.getColor(this, Field.HF_BUTTON_BG))
         repeat_tutorial.setTextColor(textColor)
         rate_us.setTextColor(textColor)
         send_feedback.setTextColor(textColor)

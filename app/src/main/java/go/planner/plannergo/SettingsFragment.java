@@ -6,8 +6,16 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.*;
+import android.preference.EditTextPreference;
+import android.preference.ListPreference;
+import android.preference.MultiSelectListPreference;
+import android.preference.Preference;
+import android.preference.PreferenceCategory;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceGroup;
+import android.preference.RingtonePreference;
 import android.util.Log;
+
 import androidx.annotation.Nullable;
 
 import java.util.Set;
@@ -94,7 +102,7 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
             if (preference instanceof PreferenceGroup)
                 changeTextColors((PreferenceGroup) preference, activity);
             else {
-                if (activity.getColorScheme().equals(ColorScheme.SCHEME_LIGHT))
+                if (activity.getColorScheme().equals(ColorScheme.Companion.getSCHEME_LIGHT()))
                     preference.setLayoutResource(R.layout.preference);
                 else
                     preference.setLayoutResource(R.layout.preference_dark);

@@ -13,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.core.content.ContextCompat;
 
 /**
@@ -35,7 +36,6 @@ public class DrawerAdapter extends BaseAdapter {
      *
      * @param activity      used for context and resource calls
      * @param drawerOptions stores the text for all items
-     * @param drawerIcons   stores the icons for all items
      * @param selectedPos   stores the currently active view
      */
     DrawerAdapter(Activity activity, String[] drawerOptions, int[] drawerIcons, int selectedPos) {
@@ -58,6 +58,7 @@ public class DrawerAdapter extends BaseAdapter {
 
     /**
      * Retrieves the number of items in the adapter
+     *
      * @return length of drawerOptions array
      */
     @Override
@@ -67,6 +68,7 @@ public class DrawerAdapter extends BaseAdapter {
 
     /**
      * Returns the appropriate text corresponding to the input position
+     *
      * @param position position of item where
      * @return the item from drawerOptions at the designated position
      */
@@ -94,28 +96,18 @@ public class DrawerAdapter extends BaseAdapter {
         ImageView icon = view.findViewById(R.id.nBar_item_icon);
 
 
-        if (c instanceof ColorSchemeActivity) {
-            ColorScheme scheme = ((ColorSchemeActivity) c).getColorScheme();
-            if (position == 0) {
-                //Set background color of the title card based on color scheme
-                if (scheme.equals(ColorScheme.SCHEME_DARK))
-                    view.setBackgroundColor(scheme.getColor(ColorScheme.PRIMARY_DARK));
-                else
-                    view.setBackgroundColor(ContextCompat.getColor(c, R.color.colorPrimary));
-            } else {
-                view.setBackgroundColor(scheme.getColor(ColorScheme.PRIMARY));
-                text.setTextColor(scheme.getColor(ColorScheme.TEXT_COLOR));
-            }
-            if (position == selectedPos) {
-                LinearLayout l = view.findViewById(R.id.nBar_item);
-                Drawable d = l.getBackground();
-                d.setTint(scheme.getColor(ColorScheme.ASSIGNMENT_VIEW_BG));
-            }
+        ColorScheme scheme = ((ColorSchemeActivity) c).getColorScheme();
+
+        if (position == selectedPos) {
+            LinearLayout l = view.findViewById(R.id.nBar_item);
+            Drawable d = l.getBackground();
+            d.setTint(scheme.getColor(c, Field.DW_SELECT_BG));
         }
 
 
         switch (position) {
-            case 0:
+            case MainActivity.iHeader:
+                view.setBackgroundColor(scheme.getColor(c, Field.DW_HEAD_BG));
                 text.setTextColor(ContextCompat.getColor(c, R.color.textWhite));
                 text.setTextSize(20);
                 text.setTypeface(text.getTypeface(), Typeface.BOLD);
@@ -128,14 +120,21 @@ public class DrawerAdapter extends BaseAdapter {
                 view.setPadding(view.getPaddingLeft(), statusBarHeight + pixels - 3, view.getPaddingRight(),
                         view.getPaddingBottom());
                 break;
-            case 1:
-                text.setTextColor(res.getColor(R.color.nav_color_1));
+            case MainActivity.iInProgress:
+                view.setBackgroundColor(scheme.getColor(c, Field.MAIN_BG));
+                text.setTextColor(scheme.getColor(c, Field.DW_IP_TEXT));
                 break;
-            case 2:
-                text.setTextColor(res.getColor(R.color.nav_color_2));
+            case MainActivity.iCompleted:
+                view.setBackgroundColor(scheme.getColor(c, Field.MAIN_BG));
+                text.setTextColor(scheme.getColor(c, Field.DW_CP_TEXT));
                 break;
-            case 3:
-                text.setTextColor(res.getColor(R.color.nav_color_3));
+            case MainActivity.iTrash:
+                view.setBackgroundColor(scheme.getColor(c, Field.MAIN_BG));
+                text.setTextColor(scheme.getColor(c, Field.DW_TR_TEXT));
+                break;
+            default:
+                view.setBackgroundColor(scheme.getColor(c, Field.MAIN_BG));
+                text.setTextColor(scheme.getColor(c, Field.DW_OT_TEXT));
                 break;
         }
 

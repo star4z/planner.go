@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -17,25 +16,31 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements ColorSchemeActivity {
 
@@ -56,6 +61,14 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private DrawerAdapter mDrawerAdapter;
+
+    // drawer indices
+    static final int iHeader = 0;
+    static final int iInProgress = 1;
+    static final int iCompleted = 2;
+    static final int iTrash = 3;
+    static final int iSettings = 4;
+    static final int iFeedback = 5;
 
     /**
      * Runs the first time this instance of the activity becomes active
@@ -178,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
             case R.id.action_delete_all:
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this,
-                        colorScheme.equals(ColorScheme.SCHEME_DARK) ?
+                        colorScheme.equals(ColorScheme.Companion.getSCHEME_DARK()) ?
                                 R.style.DarkDialogTheme :
                                 R.style.LightDialogTheme);
                 alertDialog.setTitle(R.string.delete_all);
@@ -212,17 +225,17 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
     @Override
     public void setColorScheme() {
-        boolean scheme = sharedPref.getBoolean(Settings.darkMode, true);
-        colorScheme = new ColorScheme(scheme, this);
-        setTheme(colorScheme.getTheme());
-        Log.d(TAG, "scheme=" + scheme);
+        boolean useDarkMode = sharedPref.getBoolean(Settings.darkMode, true);
+        colorScheme = useDarkMode ? ColorScheme.Companion.getSCHEME_DARK() : ColorScheme.Companion.getSCHEME_LIGHT();
+//        setTheme(colorScheme.getTheme());
+        Log.d(TAG, "darkmode=" + useDarkMode);
     }
 
     @Override
     public void checkForColorSchemeUpdate() {
-        boolean scheme = sharedPref.getBoolean(Settings.darkMode, true);
-        ColorScheme newScheme = new ColorScheme(scheme, this);
-        if (!newScheme.equals(colorScheme)) {
+        boolean useDarkMode = sharedPref.getBoolean(Settings.darkMode, true);
+        ColorScheme newScheme = useDarkMode ? ColorScheme.Companion.getSCHEME_DARK() : ColorScheme.Companion.getSCHEME_LIGHT();
+        if (newScheme != colorScheme) {
             recreate();
         } else if (!schemeSet) {
             applyColors();
@@ -231,11 +244,11 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
     @Override
     public void applyColors() {
-        fab.setBackgroundTintList(ColorStateList.valueOf(colorScheme.getColor(ColorScheme.ACCENT)));
+        fab.setBackgroundTintList(ColorStateList.valueOf(colorScheme.getColor(this, Field.MAIN_BUTTON_BG)));
         NavigationView navView = findViewById(R.id.navigation);
-        navView.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
+        navView.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG));
         CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
-        coordinatorLayout.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
+        coordinatorLayout.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG));
         schemeSet = true;
     }
 
@@ -275,23 +288,24 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 switch (position) {
-                    case 1:
+                    case iInProgress:
                         loadPanels(FileIO.inProgressAssignments);
                         currentScreenIsInProgress = true;
                         break;
-                    case 2:
+                    case iCompleted:
                         loadPanels(FileIO.completedAssignments);
                         currentScreenIsInProgress = false;
                         break;
-                    case 3:
+                    case iTrash:
                         startActivity(new Intent(MainActivity.this, TrashActivity.class));
                         overridePendingTransition(0, 0);
                         break;
-                    case 4:
+                    case iSettings:
                         startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                         break;
-                    case 5:
+                    case iFeedback:
                         startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
                 }
                 mDrawerLayout.closeDrawers();
@@ -301,34 +315,16 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
 
     private void initToolbar(boolean forInProgressAssignments) {
-        Drawable navIcon = myToolbar.getNavigationIcon();
         if (forInProgressAssignments) {
             setTitle(getResources().getString(R.string.header_in_progress));
-            int bright_gold = ContextCompat.getColor(this, R.color.nav_color_1_bright);
-            setToolbarColorScheme(navIcon, bright_gold);
+            myToolbar.setBackgroundColor(colorScheme.getColor(this, Field.IP_APP_BAR_BG));
+            myToolbar.setNavigationIcon(colorScheme.getDrawable(this, Field.IP_APP_BAR_HAM));
+            myToolbar.setTitleTextColor(colorScheme.getColor(this, Field.IP_APP_BAR_TEXT));
         } else {
             setTitle(getResources().getString(R.string.header_completed));
-            int bright_green = ContextCompat.getColor(this, R.color.nav_color_2_bright);
-            setToolbarColorScheme(navIcon, bright_green);
-        }
-    }
-
-    private void setToolbarColorScheme(Drawable navIcon, int backgroundColor) {
-        int text_black = ContextCompat.getColor(this, R.color.textBlack);
-        if (colorScheme.equals(ColorScheme.SCHEME_DARK)) {
-            myToolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
-
-            assert navIcon != null;
-            navIcon.setTint(backgroundColor);
-
-            myToolbar.setTitleTextColor(backgroundColor);
-        } else {
-            myToolbar.setBackgroundColor(backgroundColor);
-
-            assert navIcon != null;
-            navIcon.setTint(text_black);
-
-            myToolbar.setTitleTextColor(text_black);
+            myToolbar.setBackgroundColor(colorScheme.getColor(this, Field.CP_APP_BAR_BG));
+            myToolbar.setNavigationIcon(colorScheme.getDrawable(this, Field.CP_APP_BAR_HAM));
+            myToolbar.setTitleTextColor(colorScheme.getColor(this, Field.CP_APP_BAR_TEXT));
         }
     }
 
@@ -616,7 +612,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 false
         );
         header.setText((text.equals("") ? getString(R.string.untitled) : text));
-        header.setTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR));
+        header.setTextColor(colorScheme.getColor(this, Field.MAIN_HEADER));
         parent.addView(header);
         return header;
     }

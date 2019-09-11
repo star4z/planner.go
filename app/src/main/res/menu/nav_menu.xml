@@ -3,11 +3,11 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/in_progress"
-            android:icon="@drawable/ic_assignment_golden_24dp"
+            android:icon="@drawable/ic_assignment_blue_24dp"
             android:title="@string/header_in_progress" />
         <item
             android:id="@+id/complete"
-            android:icon="@drawable/ic_assignment_turned_in_green_24dp"
+            android:icon="@drawable/ic_assignment_turned_in_purple_24dp"
             android:title="@string/header_completed" />
         <item
             android:id="@+id/trash"

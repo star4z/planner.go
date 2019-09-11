@@ -11,9 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
@@ -40,8 +42,8 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         if (activity instanceof MainActivity)
             colorScheme = ((MainActivity) activity).getColorScheme();
         else {
-            Log.d(TAG, "Could not get colorScheme.");
-            colorScheme = new ColorScheme(true, activity);
+            Log.d(TAG, "Could not getColor colorScheme.");
+            colorScheme = ColorScheme.Companion.getSCHEME_DARK();
         }
 
         prefs = PreferenceManager.getDefaultSharedPreferences(activity);
@@ -199,13 +201,13 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
             date = this.itemView.findViewById(R.id.date);
             category = this.itemView.findViewById(R.id.category);
 
-            int textColor = colorScheme.getColor(ColorScheme.TEXT_COLOR);
+            int textColor = colorScheme.getColor(activity, Field.MAIN_CARD_TEXT);
             title.setTextColor(textColor);
             className.setTextColor(textColor);
             date.setTextColor(textColor);
             category.setTextColor(textColor);
 
-            this.itemView.setBackgroundColor(colorScheme.getColor(ColorScheme.ASSIGNMENT_VIEW_BG));
+            this.itemView.setBackgroundColor(colorScheme.getColor(activity, Field.MAIN_CARD_BG));
         }
     }
 

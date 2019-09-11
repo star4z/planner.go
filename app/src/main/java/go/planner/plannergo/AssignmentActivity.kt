@@ -15,7 +15,6 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import kotlinx.android.synthetic.main.activity_assignment.*
 import java.text.SimpleDateFormat
@@ -40,7 +39,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
     internal var dueDatePickerDialog: DatePickerDialog? = null
 
     internal var dateFormat = SimpleDateFormat("EEE, MMM dd, yyyy", Locale.US)
-    internal var timeFormat = SimpleDateFormat("h:mm a".toLowerCase(), Locale.US)
+    internal var timeFormat = SimpleDateFormat("h:mm a".toLowerCase(Locale.US), Locale.US)
 
     private lateinit var typeSpinner: Spinner
     private var layoutID = 0
@@ -124,9 +123,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        val icon1 = getDrawable(R.drawable.ic_save_black_24dp)
-        icon1?.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
-        menu?.getItem(0)?.icon = icon1
+        menu?.getItem(0)?.icon = colorScheme.getDrawable(this, Field.AS_APP_BAR_OPT)
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -260,10 +257,10 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
     internal abstract fun saveAssignment()
 
     override fun setColorScheme() {
-        val scheme = prefs.getBoolean(Settings.darkMode, true)
-        colorScheme = ColorScheme(scheme, this)
-        setTheme(colorScheme.theme)
-        Log.d(tag, "scheme=$scheme")
+        val darkmode = prefs.getBoolean(Settings.darkMode, true)
+        colorScheme = if (darkmode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
+//        setTheme(colorScheme.theme)
+        Log.d(tag, "darkmode=$darkmode")
     }
 
     override fun getColorScheme(): ColorScheme {
@@ -271,8 +268,8 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
     }
 
     override fun checkForColorSchemeUpdate() {
-        val scheme = prefs.getBoolean(Settings.darkMode, true)
-        val newScheme = ColorScheme(scheme, this)
+        val darkmode = prefs.getBoolean(Settings.darkMode, true)
+        val newScheme = if (darkmode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
         if (newScheme != colorScheme) {
             recreate()
         } else if (!schemeSet) {
@@ -281,14 +278,14 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
     }
 
     override fun applyColors() {
-        val primaryColor = colorScheme.getColor(ColorScheme.PRIMARY)
-        val textColor = colorScheme.getColor(ColorScheme.TEXT_COLOR)
 
-        parentView.setBackgroundColor(primaryColor)
+        val textColor = colorScheme.getColor(this, Field.AS_TEXT)
 
-        toolbar.setBackgroundColor(primaryColor)
-        toolbar.setTitleTextColor(textColor)
-        toolbar.navigationIcon?.setTint(textColor)
+        parentView.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
+
+        toolbar.setBackgroundColor(colorScheme.getColor(this, Field.AS_APP_BAR_BG))
+        toolbar.setTitleTextColor(colorScheme.getColor(this, Field.AS_APP_BAR_TEXT))
+        toolbar.navigationIcon = colorScheme.getDrawable(this, Field.AS_APP_BAR_BACK)
 
         var view: View
         for (i in 0 until constraint_layout.childCount) {
@@ -312,8 +309,8 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
             val csl = ColorStateList(
                     states,
                     intArrayOf(
-                            ContextCompat.getColor(this, R.color.colorAccent),
-                            colorScheme.getColor(ColorScheme.TEXT_COLOR)
+                            colorScheme.getColor(this, Field.AS_CHECK_ON),
+                            colorScheme.getColor(this, Field.AS_CHECK_OFF)
                     )
             )
             (view as? CheckBox)?.buttonTintList = csl

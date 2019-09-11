@@ -42,14 +42,15 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
         val colorScheme = c.getColorScheme()
 
         val bg = c.getDrawable(R.drawable.bg_list_item)
-        bg?.setTint(colorScheme.getColor(ColorScheme.ASSIGNMENT_VIEW_BG))
+        bg?.setTint(colorScheme.getColor(parent.context, Field.MAIN_CARD_BG))
         view.background = bg
 
         //create ViewHolder from layout and attach OnClickListeners
         val holder = ViewHolder(view)
-        holder.textView.setTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR))
-        holder.edit.drawable.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
-        holder.remove.drawable.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        holder.textView.setTextColor(colorScheme.getColor(parent.context, Field.MAIN_CARD_TEXT))
+        // TODO: replace tints
+        holder.edit.drawable.setTint(colorScheme.getColor(parent.context, Field.MAIN_CARD_TEXT))
+        holder.remove.drawable.setTint(colorScheme.getColor(parent.context, Field.MAIN_CARD_TEXT))
 
         holder.edit.setOnClickListener {
             val editText = c.layoutInflater.inflate(
@@ -57,8 +58,8 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
                     c.findViewById(android.R.id.content) as ViewGroup,
                     false) as EditText
             editText.text = SpannableStringBuilder(data[holder.adapterPosition])
-            editText.setTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR))
-            editText.setHintTextColor(colorScheme.getColor(ColorScheme.SUB_TEXT_COLOR))
+            editText.setTextColor(colorScheme.getColor(parent.context, Field.DG_HEAD_TEXT))
+            editText.setHintTextColor(colorScheme.getColor(parent.context, Field.DG_TEXT))
 
 
             val imm = c.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

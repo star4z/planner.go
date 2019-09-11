@@ -57,7 +57,7 @@ public class NestedPreferencesFragment extends PreferenceFragment {
             if (preference instanceof PreferenceGroup)
                 changeTextColors((PreferenceGroup) preference, activity);
             else {
-                if (activity.getColorScheme().equals(ColorScheme.SCHEME_LIGHT))
+                if (activity.getColorScheme().equals(ColorScheme.Companion.getSCHEME_LIGHT()))
                     preference.setLayoutResource(R.layout.preference);
 
                 else

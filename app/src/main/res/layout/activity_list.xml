@@ -45,7 +45,7 @@
         android:layout_margin="16dp"
         android:onClick="addNew"
         android:contentDescription="@string/add_new_item"
-        android:src="@drawable/ic_add_dark_grey_24dp"
+        android:src="@drawable/ic_add_black_24dp"
         app:fabSize="normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

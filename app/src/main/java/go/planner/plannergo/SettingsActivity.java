@@ -6,13 +6,12 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
-@SuppressWarnings("deprecation")
 public class SettingsActivity extends AppCompatActivity implements SettingsFragment.Callback, ColorSchemeActivity {
     private static final String TAG = "SettingsActivity";
 
@@ -98,13 +97,14 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
 
     @Override
     public void setColorScheme() {
-        boolean scheme = prefs.getBoolean(Settings.darkMode, true);
-        colorScheme = new ColorScheme(scheme, this);
-        if (colorScheme.equals(ColorScheme.SCHEME_DARK))
+        boolean darkmode = prefs.getBoolean(Settings.darkMode, true);
+        colorScheme = darkmode ?
+                ColorScheme.Companion.getSCHEME_DARK() : ColorScheme.Companion.getSCHEME_LIGHT();
+        if (colorScheme.equals(ColorScheme.Companion.getSCHEME_DARK()))
             setTheme(R.style.DarkTheme_Fade);
         else
             setTheme(R.style.LightTheme_Fade);
-        Log.d(TAG, "scheme=" + scheme);
+        Log.d(TAG, "darkmode=" + darkmode);
     }
 
     @NotNull
@@ -116,7 +116,8 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
     @Override
     public void checkForColorSchemeUpdate() {
         boolean isDarkMode = prefs.getBoolean(Settings.darkMode, true);
-        ColorScheme newScheme = new ColorScheme(isDarkMode, this);
+        ColorScheme newScheme = isDarkMode ?
+                ColorScheme.Companion.getSCHEME_DARK() : ColorScheme.Companion.getSCHEME_LIGHT();
         if (!newScheme.equals(colorScheme))
             recreate();
         else if (!schemeSet)
@@ -125,11 +126,10 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
 
     @Override
     public void applyColors() {
-        toolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
-        toolbar.setTitleTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR));
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
-        Objects.requireNonNull(toolbar.getNavigationIcon()).setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR));
-        parent.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY));
+        toolbar.setBackgroundColor(colorScheme.getColor(this, Field.ST_MAIN_BG));
+        toolbar.setTitleTextColor(colorScheme.getColor(this, Field.ST_APP_BAR_TEXT));
+        toolbar.setNavigationIcon(colorScheme.getDrawable(this, Field.ST_APP_BAR_BACK));
+        parent.setBackgroundColor(colorScheme.getColor(this, Field.ST_MAIN_BG));
         schemeSet = true;
     }
 }

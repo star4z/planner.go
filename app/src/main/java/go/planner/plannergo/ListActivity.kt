@@ -17,7 +17,6 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_list.*
@@ -123,8 +122,8 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
                 R.layout.dialog_edit_text,
                 findViewById(android.R.id.content),
                 false) as EditText
-        editText.setTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR))
-        editText.setHintTextColor(colorScheme.getColor(ColorScheme.SUB_TEXT_COLOR))
+        editText.setTextColor(colorScheme.getColor(this, Field.DG_HEAD_TEXT))
+        editText.setHintTextColor(colorScheme.getColor(this, Field.DG_TEXT))
 
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         AlertDialog.Builder(this, if (colorScheme == ColorScheme.SCHEME_DARK)
@@ -156,10 +155,10 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
     }
 
     override fun setColorScheme() {
-        val scheme = prefs.getBoolean(Settings.darkMode, true)
-        colorScheme = ColorScheme(scheme, this)
-        setTheme(colorScheme.theme)
-        Log.d(TAG, "scheme=$scheme")
+        val isDarkMode = prefs.getBoolean(Settings.darkMode, true)
+        colorScheme = if (isDarkMode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
+//        setTheme(colorScheme.theme)
+        Log.d(TAG, "scheme=$isDarkMode")
     }
 
     override fun getColorScheme(): ColorScheme {
@@ -167,8 +166,8 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
     }
 
     override fun checkForColorSchemeUpdate() {
-        val scheme = prefs.getBoolean(Settings.darkMode, true)
-        val newScheme = ColorScheme(scheme, this)
+        val isDarkMode = prefs.getBoolean(Settings.darkMode, true)
+        val newScheme = if (isDarkMode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
         if (newScheme != colorScheme) {
             recreate()
         } else if (!schemeSet) {
@@ -177,13 +176,12 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
     }
 
     override fun applyColors() {
-        fab.backgroundTintList = ColorStateList.valueOf(colorScheme.getColor(ColorScheme.ACCENT))
-        findViewById<ConstraintLayout>(R.id.parent).setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
-        recyclerView.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
-        toolbar.setBackgroundColor(colorScheme.getColor(ColorScheme.PRIMARY))
-        toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
-        toolbar.navigationIcon?.setTint(colorScheme.getColor(ColorScheme.TEXT_COLOR))
-        toolbar.setTitleTextColor(colorScheme.getColor(ColorScheme.TEXT_COLOR))
+        fab.backgroundTintList = ColorStateList.valueOf(colorScheme.getColor(this, Field.MAIN_BUTTON_BG))
+        findViewById<ConstraintLayout>(R.id.parent).setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
+        recyclerView.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
+        toolbar.setBackgroundColor(colorScheme.getColor(this, Field.LS_APP_BAR_BG))
+        toolbar.navigationIcon = colorScheme.getDrawable(this, Field.LS_APP_BAR_BACK)
+        toolbar.setTitleTextColor(colorScheme.getColor(this, Field.LS_APP_BAR_TEXT))
         schemeSet = true
     }
 
