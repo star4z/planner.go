@@ -126,7 +126,7 @@ public class SettingsActivity extends AppCompatActivity implements SettingsFragm
 
     @Override
     public void applyColors() {
-        toolbar.setBackgroundColor(colorScheme.getColor(this, Field.ST_MAIN_BG));
+        toolbar.setBackgroundColor(colorScheme.getColor(this, Field.ST_APP_BAR_BG));
         toolbar.setTitleTextColor(colorScheme.getColor(this, Field.ST_APP_BAR_TEXT));
         toolbar.setNavigationIcon(colorScheme.getDrawable(this, Field.ST_APP_BAR_BACK));
         parent.setBackgroundColor(colorScheme.getColor(this, Field.ST_MAIN_BG));
