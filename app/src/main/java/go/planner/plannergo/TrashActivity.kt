@@ -83,7 +83,7 @@ class TrashActivity : Activity(), ColorSchemeActivity {
 
     override fun applyColors() {
         val navView = findViewById<NavigationView>(R.id.navigation)
-        navView.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
+        navView.setBackgroundColor(colorScheme.getColor(this, Field.DW_BG))
         val coordinatorLayout = findViewById<CoordinatorLayout>(R.id.coordinator)
         coordinatorLayout.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
         toolbar.setTitleTextColor(colorScheme.getColor(this, Field.TR_APP_BAR_TEXT))

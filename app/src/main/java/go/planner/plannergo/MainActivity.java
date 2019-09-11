@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     public void applyColors() {
         fab.setBackgroundTintList(ColorStateList.valueOf(colorScheme.getColor(this, Field.MAIN_BUTTON_BG)));
         NavigationView navView = findViewById(R.id.navigation);
-        navView.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG));
+        navView.setBackgroundColor(colorScheme.getColor(this, Field.DW_BG));
         CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
         coordinatorLayout.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG));
         schemeSet = true;

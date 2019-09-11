@@ -121,19 +121,19 @@ public class DrawerAdapter extends BaseAdapter {
                         view.getPaddingBottom());
                 break;
             case MainActivity.iInProgress:
-                view.setBackgroundColor(scheme.getColor(c, Field.MAIN_BG));
+                view.setBackgroundColor(scheme.getColor(c, Field.DW_BG));
                 text.setTextColor(scheme.getColor(c, Field.DW_IP_TEXT));
                 break;
             case MainActivity.iCompleted:
-                view.setBackgroundColor(scheme.getColor(c, Field.MAIN_BG));
+                view.setBackgroundColor(scheme.getColor(c, Field.DW_BG));
                 text.setTextColor(scheme.getColor(c, Field.DW_CP_TEXT));
                 break;
             case MainActivity.iTrash:
-                view.setBackgroundColor(scheme.getColor(c, Field.MAIN_BG));
+                view.setBackgroundColor(scheme.getColor(c, Field.DW_BG));
                 text.setTextColor(scheme.getColor(c, Field.DW_TR_TEXT));
                 break;
             default:
-                view.setBackgroundColor(scheme.getColor(c, Field.MAIN_BG));
+                view.setBackgroundColor(scheme.getColor(c, Field.DW_BG));
                 text.setTextColor(scheme.getColor(c, Field.DW_OT_TEXT));
                 break;
         }
