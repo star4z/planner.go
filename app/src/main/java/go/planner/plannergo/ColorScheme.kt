@@ -149,7 +149,7 @@ class ColorScheme internal constructor(private val colors: HashMap<Field, Int>) 
                     put(Field.DW_OT_TEXT, R.color.textGrey)
                     put(Field.DW_ST_IC, R.drawable.ic_settings_grey_24dp) // not implemented
                     put(Field.DW_HF_IC, R.drawable.ic_feedback_grey_24dp) // not implemented
-                    put(Field.DW_SELECT_BG, R.color.colorPrimary)
+                    put(Field.DW_SELECT_BG, R.color.textWhite)
                     put(Field.DG_BG, R.color.lightPrimaryDark)
                     put(Field.DG_HEAD_TEXT, R.color.textBlack)
                     put(Field.DG_TEXT, R.color.textGrey)
