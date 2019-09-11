@@ -50,6 +50,7 @@ enum class Field {
     LS_APP_BAR_BACK,
     DW_HEAD_BG, //drawer_header_background";
     DW_HEAD_TEXT, //drawer_header_text";
+    DW_BG,
     DW_IP_TEXT, //drawer_in_progress";
     DW_IP_IC, //drawer_in_progress_icon";
     DW_CP_TEXT, //drawer_completed";
@@ -138,6 +139,7 @@ class ColorScheme internal constructor(private val colors: HashMap<Field, Int>) 
                     put(Field.LS_APP_BAR_BACK, R.drawable.ic_arrow_back_black_24dp)
                     put(Field.DW_HEAD_BG, R.color.colorPrimary)
                     put(Field.DW_HEAD_TEXT, R.color.textWhite)
+                    put(Field.DW_BG, R.color.lightPrimary)
                     put(Field.DW_IP_TEXT, R.color.nav_color_1)
                     put(Field.DW_IP_IC, R.drawable.ic_assignment_blue_24dp) // not implemented
                     put(Field.DW_CP_TEXT, R.color.nav_color_2)
@@ -204,6 +206,7 @@ class ColorScheme internal constructor(private val colors: HashMap<Field, Int>) 
                     put(Field.LS_APP_BAR_BACK, R.drawable.ic_arrow_back_black_24dp)
                     put(Field.DW_HEAD_BG, R.color.colorPrimary)
                     put(Field.DW_HEAD_TEXT, R.color.textWhite)
+                    put(Field.DW_BG, R.color.lightPrimary)
                     put(Field.DW_IP_TEXT, R.color.nav_color_1)
                     put(Field.DW_IP_IC, R.drawable.ic_assignment_blue_24dp) // not implemented
                     put(Field.DW_CP_TEXT, R.color.nav_color_2)
