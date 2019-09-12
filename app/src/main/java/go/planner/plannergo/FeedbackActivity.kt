@@ -195,7 +195,7 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
 
     override fun setColorScheme() {
         val isDarkMode = prefs.getBoolean(Settings.darkMode, true)
-        colorScheme = if (isDarkMode) ColorScheme.SCHEME_LIGHT else ColorScheme.SCHEME_DARK
+        colorScheme = if (isDarkMode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
 //        setTheme(colorScheme.theme)
         Log.d(TAG, "scheme=$isDarkMode")
     }
@@ -206,7 +206,7 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
 
     override fun checkForColorSchemeUpdate() {
         val isDarkMode = prefs.getBoolean(Settings.darkMode, true)
-        val newScheme = if (isDarkMode) ColorScheme.SCHEME_LIGHT else ColorScheme.SCHEME_DARK
+        val newScheme = if (isDarkMode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
         if (newScheme != colorScheme)
             recreate()
         else if (!schemeSet)
