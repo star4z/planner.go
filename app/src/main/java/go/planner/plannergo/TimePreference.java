@@ -16,18 +16,26 @@ import java.util.GregorianCalendar;
  * By David Vávra and CommonsWare via stack overflow
  * @see <a href="https://stackoverflow.com/a/10608622/7222176">TimePicker in PreferenceScreen topic</a>
  */
+@SuppressWarnings("WeakerAccess")
 public class TimePreference extends DialogPreference {
     private Calendar calendar;
     private TimePicker picker = null;
 
-    public TimePreference(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    public TimePreference(Context ctxt) {
+        this(ctxt, null);
+    }
+
+    public TimePreference(Context ctxt, AttributeSet attrs) {
+        this(ctxt, attrs, android.R.attr.dialogPreferenceStyle);
+    }
+
+    public TimePreference(Context ctxt, AttributeSet attrs, int defStyle) {
+        super(ctxt, attrs, defStyle);
 
         setPositiveButtonText(R.string.set);
         setNegativeButtonText(R.string.cancel);
         calendar = new GregorianCalendar();
     }
-
 
     @Override
     protected View onCreateDialogView() {
@@ -35,16 +43,13 @@ public class TimePreference extends DialogPreference {
         return (picker);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void onBindDialogView(View v) {
         super.onBindDialogView(v);
-
         picker.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
         picker.setCurrentMinute(calendar.get(Calendar.MINUTE));
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
@@ -82,6 +87,7 @@ public class TimePreference extends DialogPreference {
                 calendar.setTimeInMillis(Long.parseLong((String) defaultValue));
             }
         }
+        setSummary(getSummary());
     }
 
     @Override

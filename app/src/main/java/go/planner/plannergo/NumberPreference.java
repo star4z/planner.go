@@ -15,6 +15,7 @@ import android.widget.NumberPicker;
  * @see <a href="https://stackoverflow.com/a/27046784/7222176">Android PreferenceActivity dialog with number picker</a>
  * A {@link android.preference.Preference} that displays a number picker as a dialog.
  */
+@SuppressWarnings("WeakerAccess")
 public class NumberPreference extends DialogPreference {
 
     // allowed range
@@ -25,6 +26,10 @@ public class NumberPreference extends DialogPreference {
 
     private NumberPicker picker;
     private int value;
+
+    public NumberPreference(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
     public NumberPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
@@ -81,11 +86,11 @@ public class NumberPreference extends DialogPreference {
         return "" + value;
     }
 
-    int getValue() {
+    public int getValue() {
         return this.value;
     }
 
-    private void setValue(int value) {
+    public void setValue(int value) {
         this.value = value;
         persistInt(this.value);
     }
