@@ -322,11 +322,13 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             myToolbar.setBackgroundColor(colorScheme.getColor(this, Field.IP_APP_BAR_BG));
             myToolbar.setNavigationIcon(colorScheme.getDrawable(this, Field.IP_APP_BAR_HAM));
             myToolbar.setTitleTextColor(colorScheme.getColor(this, Field.IP_APP_BAR_TEXT));
+            myToolbar.setOverflowIcon(colorScheme.getDrawable(this, Field.IP_APP_BAR_OPT));
         } else {
             setTitle(getResources().getString(R.string.header_completed));
             myToolbar.setBackgroundColor(colorScheme.getColor(this, Field.CP_APP_BAR_BG));
             myToolbar.setNavigationIcon(colorScheme.getDrawable(this, Field.CP_APP_BAR_HAM));
             myToolbar.setTitleTextColor(colorScheme.getColor(this, Field.CP_APP_BAR_TEXT));
+            myToolbar.setOverflowIcon(colorScheme.getDrawable(this, Field.CP_APP_BAR_OPT));
         }
     }
 

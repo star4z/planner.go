@@ -1,11 +1,9 @@
 package go.planner.plannergo
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
-import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
@@ -17,6 +15,7 @@ import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -27,7 +26,7 @@ import kotlinx.android.synthetic.main.activity_trash.*
  * Displays deleted assignments. Does not do any sorting in order to handle larger quantities of
  * assignments than would be expected in MainActivity, for example.
  */
-class TrashActivity : Activity(), ColorSchemeActivity {
+class TrashActivity : AppCompatActivity(), ColorSchemeActivity {
     private lateinit var prefs: SharedPreferences
     private lateinit var colorScheme: ColorScheme
     private var schemeSet = false
@@ -41,7 +40,7 @@ class TrashActivity : Activity(), ColorSchemeActivity {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trash)
 
-        setActionBar(toolbar)
+        setSupportActionBar(toolbar)
         toolbar.title = "Trash"
 
         FileIO.readFiles(this)
@@ -73,8 +72,8 @@ class TrashActivity : Activity(), ColorSchemeActivity {
     }
 
     override fun checkForColorSchemeUpdate() {
-        val darkmode = prefs.getBoolean(Settings.darkMode, true)
-        val newScheme = if (darkmode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
+        val darkMode = prefs.getBoolean(Settings.darkMode, true)
+        val newScheme = if (darkMode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
         if (newScheme != colorScheme)
             recreate()
         else if (!schemeSet)
@@ -89,9 +88,7 @@ class TrashActivity : Activity(), ColorSchemeActivity {
         toolbar.setTitleTextColor(colorScheme.getColor(this, Field.TR_APP_BAR_TEXT))
         toolbar.navigationIcon = colorScheme.getDrawable(this, Field.TR_APP_BAR_HAM)
         toolbar.setBackgroundColor(colorScheme.getColor(this, Field.TR_APP_BAR_BG))
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            toolbar.overflowIcon = colorScheme.getDrawable(this, Field.TR_APP_BAR_OPT)
-        }
+        toolbar.overflowIcon = colorScheme.getDrawable(this, Field.TR_APP_BAR_OPT)
         schemeSet = true
     }
 
