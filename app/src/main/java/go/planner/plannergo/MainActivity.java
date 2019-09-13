@@ -1,5 +1,6 @@
 package go.planner.plannergo;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,12 +8,17 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -144,9 +150,27 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem item = menu.getItem(i);
+            SpannableString s = new SpannableString(item.getTitle());
+            s.setSpan(new ForegroundColorSpan(colorScheme.getColor(this, Field.DG_HEAD_TEXT)), 0,
+                    s.length(), 0);
+            item.setTitle(s);
+        }
         return true;
     }
 
+    @Override
+    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
+        if (name.equals("androidx.appcompat.view.menu.ListMenuItemView") &&
+                parent.getParent() instanceof FrameLayout) {
+
+            View view = (View) parent.getParent();
+            // change options menu bg color
+            view.setBackgroundColor(colorScheme.getColor(this, Field.DG_BG));
+        }
+        return super.onCreateView(parent, name, context, attrs);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
