@@ -68,12 +68,15 @@ enum class Field {
     // dialog text
 }
 
+
+/**
+ * This color theming implementation is more item-specific than Android's built-in theming afaik
+ * It has been implemented in the obvious way for the most part, with the exception of some layout
+ * switches that still providing structural support in places (in some dialogues, for example).
+ *
+ */
 class ColorScheme internal constructor(private val colors: HashMap<Field, Int>) {
 
-
-//    operator fun get(type: Field): Int {
-//        return colors[type]!!
-//    }
 
     fun getColor(c: Context, type: Field): Int {
         return ContextCompat.getColor(c, colors[type]!!)
