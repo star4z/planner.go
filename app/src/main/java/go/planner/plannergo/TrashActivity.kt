@@ -2,19 +2,20 @@ package go.planner.plannergo
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.util.AttributeSet
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ImageView
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.GravityCompat
@@ -225,7 +226,28 @@ class TrashActivity : AppCompatActivity(), ColorSchemeActivity {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.trash_menu, menu)
+        for (i in 0 until menu!!.size()) {
+            val item: MenuItem = menu.getItem(i)
+            val s = SpannableString(item.title)
+            s.setSpan(ForegroundColorSpan(colorScheme.getColor(this, Field.DG_HEAD_TEXT)), 0,
+                    s.length, 0)
+            item.title = s
+        }
         return true
+    }
+
+
+    override fun onCreateView(parent: View?, name: String, context: Context,
+                              attrs: AttributeSet): View? {
+        if (name == "androidx.appcompat.view.menu.ListMenuItemView" &&
+                parent?.parent is FrameLayout) {
+            val view = parent.parent as View
+            // change options menu bg color
+
+
+            view.setBackgroundColor(colorScheme.getColor(this, Field.DG_BG))
+        }
+        return super.onCreateView(parent, name, context, attrs)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
