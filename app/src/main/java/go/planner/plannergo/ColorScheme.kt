@@ -48,6 +48,7 @@ enum class Field {
     LS_APP_BAR_BG, // list app bar background
     LS_APP_BAR_TEXT,
     LS_APP_BAR_BACK,
+    LS_APP_BAR_OPT,
     DW_HEAD_BG, //drawer_header_background";
     DW_HEAD_TEXT, //drawer_header_text";
     DW_BG,
@@ -137,6 +138,7 @@ class ColorScheme internal constructor(private val colors: HashMap<Field, Int>) 
                     put(Field.LS_APP_BAR_BG, R.color.lightPrimary)
                     put(Field.LS_APP_BAR_TEXT, R.color.textBlack)
                     put(Field.LS_APP_BAR_BACK, R.drawable.ic_arrow_back_black_24dp)
+                    put(Field.LS_APP_BAR_OPT, R.drawable.ic_more_vert_black_24dp)
                     put(Field.DW_HEAD_BG, R.color.colorPrimary)
                     put(Field.DW_HEAD_TEXT, R.color.textWhite)
                     put(Field.DW_BG, R.color.lightPrimary)
@@ -203,6 +205,7 @@ class ColorScheme internal constructor(private val colors: HashMap<Field, Int>) 
                     put(Field.LS_APP_BAR_BG, R.color.darkPrimaryDark)
                     put(Field.LS_APP_BAR_TEXT, R.color.textWhite)
                     put(Field.LS_APP_BAR_BACK, R.drawable.ic_arrow_back_white_24dp)
+                    put(Field.LS_APP_BAR_OPT, R.drawable.ic_more_vert_white_24dp)
                     put(Field.DW_HEAD_BG, R.color.darkPrimaryDark)
                     put(Field.DW_HEAD_BG, R.color.darkPrimary)
                     put(Field.DW_HEAD_TEXT, R.color.textWhite)

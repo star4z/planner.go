@@ -8,12 +8,16 @@ import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.util.AttributeSet
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -81,7 +85,28 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.list_menu_1, menu)
+        for (i in 0 until menu!!.size()) {
+            val item: MenuItem = menu.getItem(i)
+            val s = SpannableString(item.title)
+            s.setSpan(ForegroundColorSpan(colorScheme.getColor(this, Field.DG_HEAD_TEXT)), 0,
+                    s.length, 0)
+            item.title = s
+        }
         return true
+    }
+
+
+    override fun onCreateView(parent: View?, name: String, context: Context,
+                              attrs: AttributeSet): View? {
+        if (name == "androidx.appcompat.view.menu.ListMenuItemView" &&
+                parent?.parent is FrameLayout) {
+            val view = parent.parent as View
+            // change options menu bg color
+
+
+            view.setBackgroundColor(colorScheme.getColor(this, Field.DG_BG))
+        }
+        return super.onCreateView(parent, name, context, attrs)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -182,6 +207,7 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
         toolbar.setBackgroundColor(colorScheme.getColor(this, Field.LS_APP_BAR_BG))
         toolbar.navigationIcon = colorScheme.getDrawable(this, Field.LS_APP_BAR_BACK)
         toolbar.setTitleTextColor(colorScheme.getColor(this, Field.LS_APP_BAR_TEXT))
+        toolbar.overflowIcon = colorScheme.getDrawable(this, Field.LS_APP_BAR_OPT)
         schemeSet = true
     }
 
