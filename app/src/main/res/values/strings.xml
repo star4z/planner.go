@@ -49,7 +49,8 @@
 
     <!--AssignmentActivity-->
     <string name="do_not_ask_again">Don\'t ask me again</string>
-    <string name="changes_wont_be_saved">If you leave now, any changes you made will not be saved.</string>
+    <string name="changes_wont_be_saved">If you leave now, any changes you made will not be
+        saved.\n\n(You can turn this message off in Settings.)</string>
     <string name="do_not_save">Leave without saving?</string>
     <string name="leave">Don\'t save</string>
     <string name="leave_and_save">Save</string>

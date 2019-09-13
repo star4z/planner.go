@@ -19,4 +19,5 @@ public class Settings {
     public static final String notif2Enabled = "pref_extra_notif_enabled";
     public static final String notif2Time = "pref_notif_time_extra";
     public static final String notif2DaysBefore = "pref_notif_days_before_extra";
+    public static final String promptSave = "pref_save_remind";
 }

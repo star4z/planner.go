@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
+import go.planner.plannergo.FileIO.getAssignment
 import kotlinx.android.synthetic.main.activity_assignment.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -59,7 +60,7 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
 
         val thisIntent = intent
 
-        mAssignment = FileIO.getAssignment(if (thisIntent.extras != null) thisIntent.extras!!.getLong("uniqueID", -1L) else -1L)
+        mAssignment = getAssignment(if (thisIntent.extras != null) thisIntent.extras!!.getLong("uniqueID", -1L) else -1L)
         Log.v("AssignmentActivity", "mAssignment=$mAssignment")
         oldAssignment = Assignment(mAssignment)
 
@@ -149,7 +150,9 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
 
     private fun saveCheckAndNavigateUp() {
         Log.d(tag, "oldAssignment == assignment?${oldAssignment.compareFields(getAssignment())}")
-        if (oldAssignment.compareFields(getAssignment()))
+
+        val promptSave = prefs.getBoolean(Settings.promptSave, true)
+        if (!promptSave || oldAssignment.compareFields(getAssignment()))
             navigateUpTo(Intent(this, MainActivity::class.java))
         else {
             //TODO: add don't ask me again option
@@ -257,10 +260,10 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
     internal abstract fun saveAssignment()
 
     override fun setColorScheme() {
-        val darkmode = prefs.getBoolean(Settings.darkMode, true)
-        colorScheme = if (darkmode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
+        val darkMode = prefs.getBoolean(Settings.darkMode, true)
+        colorScheme = if (darkMode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
 //        setTheme(colorScheme.theme)
-        Log.d(tag, "darkmode=$darkmode")
+        Log.d(tag, "darkMode=$darkMode")
     }
 
     override fun getColorScheme(): ColorScheme {
@@ -268,8 +271,8 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
     }
 
     override fun checkForColorSchemeUpdate() {
-        val darkmode = prefs.getBoolean(Settings.darkMode, true)
-        val newScheme = if (darkmode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
+        val darkMode = prefs.getBoolean(Settings.darkMode, true)
+        val newScheme = if (darkMode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
         if (newScheme != colorScheme) {
             recreate()
         } else if (!schemeSet) {
