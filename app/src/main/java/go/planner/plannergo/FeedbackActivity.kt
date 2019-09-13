@@ -222,7 +222,7 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
         greeting.setTextColor(textColor)
         donate_plea.setTextColor(textColor)
         donate1.setTextColor(colorScheme.getColor(this, Field.HF_BUTTON_TEXT))
-        donate1.setBackgroundColor(colorScheme.getColor(this, Field.HF_BUTTON_BG))
+        donate1.background.setTint(colorScheme.getColor(this, Field.HF_BUTTON_BG))
         repeat_tutorial.setTextColor(textColor)
         rate_us.setTextColor(textColor)
         send_feedback.setTextColor(textColor)
