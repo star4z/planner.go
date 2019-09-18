@@ -8,7 +8,6 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
@@ -34,9 +33,16 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -48,7 +54,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements ColorSchemeActivity {
+public class MainActivity extends AppCompatActivity implements ColorSchemeActivity, SignInActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -68,6 +74,12 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     private ListView mDrawerList;
     private DrawerAdapter mDrawerAdapter;
 
+    GoogleSignInClient mGoogleSignInClient;
+    private GoogleSignInAccount account = null;
+
+    int RC_SIGN_IN = 13;
+
+
     // drawer indices
     static final int iHeader = 0;
     static final int iInProgress = 1;
@@ -75,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     static final int iTrash = 3;
     static final int iSettings = 4;
     static final int iFeedback = 5;
+    static final int iSignIn = 6;
 
     /**
      * Runs the first time this instance of the activity becomes active
@@ -98,8 +111,32 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         fab = findViewById(R.id.fab);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setSupportActionBar(myToolbar);
+
+
+//        ImageView imageView = findViewById(R.id.switcher);
+//        ContentResolver cR = getContentResolver();
+//        Uri uri = Uri.parse("https://lh3.googleusercontent.com/a-/AAuE7mDNFMdIanD3H6GtvdpggtQshU45yWFye-B26ALVxd");
+//        try {
+//            InputStream is = cR.openInputStream(uri);
+//            Drawable d = Drawable.createFromStream(is, uri.toString());
+//            imageView.setImageDrawable(d);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+
+        initNavDrawer();
+
+        GoogleSignInOptions gso =
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        this.account = GoogleSignIn.getLastSignedInAccount(this);
+    }
 
     /**
      * Runs every time the activity becomes active
@@ -116,10 +153,10 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         initNavDrawer();
         loadPanels((currentScreenIsInProgress) ? FileIO.inProgressAssignments : FileIO.completedAssignments, currentSortIndex);
 
+
         //Call super
         super.onResume();
     }
-
 
     /**
      * Since this is a single-top activity, when a startActivity(MainActivity) is called, this
@@ -149,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.v(TAG, "menu=" + menu);
         getMenuInflater().inflate(R.menu.main_menu, menu);
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
@@ -156,12 +194,15 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             s.setSpan(new ForegroundColorSpan(colorScheme.getColor(this, Field.DG_HEAD_TEXT)), 0,
                     s.length(), 0);
             item.setTitle(s);
+
         }
+
+        updateUI(account);
         return true;
     }
 
     @Override
-    public View onCreateView(View parent, String name, Context context, AttributeSet attrs) {
+    public View onCreateView(View parent, String name, @NotNull Context context, @NotNull AttributeSet attrs) {
         if (name.equals("androidx.appcompat.view.menu.ListMenuItemView") &&
                 parent.getParent() instanceof FrameLayout) {
 
@@ -273,7 +314,18 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         navView.setBackgroundColor(colorScheme.getColor(this, Field.DW_BG));
         CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator);
         coordinatorLayout.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG));
+
+
         schemeSet = true;
+    }
+
+    private void updateUI(GoogleSignInAccount account) {
+        Log.d(TAG, "" + account);
+        this.account = account;
+
+        mDrawerAdapter.account = account;
+
+        mDrawerList.setAdapter(mDrawerAdapter);
     }
 
     private void checkFirstRun() {
@@ -337,8 +389,41 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 mDrawerLayout.closeDrawers();
             }
         });
+
+        updateUI(account);
     }
 
+
+    @Override
+    public void signIn(View view) {
+        Log.v(TAG, "Signing in...");
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            updateUI(account);
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            updateUI(null);
+        }
+    }
 
     private void initToolbar(boolean forInProgressAssignments) {
         if (forInProgressAssignments) {

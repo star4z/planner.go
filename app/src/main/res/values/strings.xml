@@ -212,5 +212,8 @@
     <string name="studying">Studying</string>
     <string name="everything_else">Everything else</string>
     <string name="add_new_item">Add new item</string>
+    <string name="profile_pic">Profile pic</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="sign_in">Sign in</string>
 
 </resources>

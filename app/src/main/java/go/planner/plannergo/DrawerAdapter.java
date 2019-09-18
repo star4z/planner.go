@@ -2,8 +2,6 @@ package go.planner.plannergo;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +14,9 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.common.SignInButton;
+
 /**
  * Formats list to be displayed in navigation drawer.
  * Created by bdphi on 1/7/2018.
@@ -24,12 +25,12 @@ import androidx.core.content.ContextCompat;
 public class DrawerAdapter extends BaseAdapter {
     private static final String TAG = "DrawerAdapter";
 
-    private Resources res;
     private String[] drawerOptions;
     private int[] drawerIcons;
     private static LayoutInflater inflater = null;
     private int selectedPos;
     private Context c;
+    GoogleSignInAccount account = null;
 
     /**
      * Constructor
@@ -43,7 +44,6 @@ public class DrawerAdapter extends BaseAdapter {
         this.drawerIcons = drawerIcons;
         this.selectedPos = selectedPos;
         inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        res = activity.getResources();
         c = activity;
     }
 
@@ -87,60 +87,95 @@ public class DrawerAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
-        View view = (position == selectedPos) ?
-                inflater.inflate(R.layout.view_drawer_list_item_selected, parent, false) :
-                inflater.inflate(R.layout.view_drawer_list_item, parent, false);
-
-        TextView text = view.findViewById(R.id.nBar_item_text);
-        ImageView icon = view.findViewById(R.id.nBar_item_icon);
-
-
+        final View view;
         ColorScheme scheme = ((ColorSchemeActivity) c).getColorScheme();
 
-        if (position == selectedPos) {
-            LinearLayout l = view.findViewById(R.id.nBar_item);
-            Drawable d = l.getBackground();
-            d.setTint(scheme.getColor(c, Field.DW_SELECT_BG));
+
+        if (position == MainActivity.iHeader) {
+            view = inflater.inflate(R.layout.view_drawer_header, parent, false);
+        } else if (position == MainActivity.iSignIn) {
+            view = inflater.inflate(R.layout.view_drawer_sign_in_button, parent, false);
+        } else if (position == selectedPos) {
+            view = inflater.inflate(R.layout.view_drawer_list_item_selected, parent, false);
+        } else {
+            view = inflater.inflate(R.layout.view_drawer_list_item, parent, false);
         }
 
+        view.setBackgroundColor(scheme.getColor(c, Field.DW_BG));
 
-        switch (position) {
-            case MainActivity.iHeader:
-                view.setBackgroundColor(scheme.getColor(c, Field.DW_HEAD_BG));
-                text.setTextColor(ContextCompat.getColor(c, R.color.textWhite));
-                text.setTextSize(20);
-                text.setTypeface(text.getTypeface(), Typeface.BOLD);
-                int statusBarHeight = (int) Math.floor(25 * res.getDisplayMetrics().density);
-                Log.d(TAG, "StatusBarHeight=" + statusBarHeight);
+        if (position != MainActivity.iSignIn) {
 
-                final float scale = c.getResources().getDisplayMetrics().density;
-                int pixels = (int) (16 * scale + 0.5f);
+            TextView text = view.findViewById(R.id.nBar_item_text);
+            ImageView icon = view.findViewById(R.id.nBar_item_icon);
 
-                view.setPadding(view.getPaddingLeft(), statusBarHeight + pixels - 3, view.getPaddingRight(),
-                        view.getPaddingBottom());
-                break;
-            case MainActivity.iInProgress:
-                view.setBackgroundColor(scheme.getColor(c, Field.DW_BG));
-                text.setTextColor(scheme.getColor(c, Field.DW_IP_TEXT));
-                break;
-            case MainActivity.iCompleted:
-                view.setBackgroundColor(scheme.getColor(c, Field.DW_BG));
-                text.setTextColor(scheme.getColor(c, Field.DW_CP_TEXT));
-                break;
-            case MainActivity.iTrash:
-                view.setBackgroundColor(scheme.getColor(c, Field.DW_BG));
-                text.setTextColor(scheme.getColor(c, Field.DW_TR_TEXT));
-                break;
-            default:
-                view.setBackgroundColor(scheme.getColor(c, Field.DW_BG));
-                text.setTextColor(scheme.getColor(c, Field.DW_OT_TEXT));
-                break;
+            if (position == selectedPos) {
+                LinearLayout l = view.findViewById(R.id.nBar_item);
+                Drawable d = l.getBackground();
+                d.setTint(scheme.getColor(c, Field.DW_SELECT_BG));
+            }
+
+
+            switch (position) {
+                case MainActivity.iHeader:
+                    view.setBackgroundColor(scheme.getColor(c, Field.DW_HEAD_BG));
+                    text.setTextColor(ContextCompat.getColor(c, R.color.textWhite));
+                    break;
+                case MainActivity.iInProgress:
+                    text.setTextColor(scheme.getColor(c, Field.DW_IP_TEXT));
+                    break;
+                case MainActivity.iCompleted:
+                    text.setTextColor(scheme.getColor(c, Field.DW_CP_TEXT));
+                    break;
+                case MainActivity.iTrash:
+                    text.setTextColor(scheme.getColor(c, Field.DW_TR_TEXT));
+                    break;
+                default:
+                    text.setTextColor(scheme.getColor(c, Field.DW_OT_TEXT));
+                    break;
+            }
+
+            text.setText(drawerOptions[position]);
+            icon.setImageResource(drawerIcons[position]);
+        } else {
+            if (account != null) {
+                SignInButton signInButton = view.findViewById(R.id.sign_in_button);
+                signInButton.setVisibility(View.GONE);
+                TextView userName = view.findViewById(R.id.user_name);
+                userName.setText(account.getEmail());
+                userName.setVisibility(View.VISIBLE);
+                TextView signOutButton = view.findViewById(R.id.sign_out_button);
+                signOutButton.setVisibility(View.VISIBLE);
+                signOutButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        signOut(view);
+                    }
+                });
+            } else {
+                SignInButton signInButton = view.findViewById(R.id.sign_in_button);
+                signInButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.v(TAG, "Clicked sign in button.");
+                        if (c instanceof SignInActivity) {
+                            ((SignInActivity) c).signIn(v);
+                        }
+                    }
+                });
+            }
         }
-
-        text.setText(drawerOptions[position]);
-        icon.setImageResource(drawerIcons[position]);
 
         return view;
+    }
+
+
+    private void signOut(View v) {
+        Log.d(TAG, "signing out...");
+        SignInButton signInButton = v.findViewById(R.id.sign_in_button);
+        signInButton.setVisibility(View.VISIBLE);
+        TextView userName = v.findViewById(R.id.user_name);
+        userName.setVisibility(View.GONE);
+        TextView signOutButton = v.findViewById(R.id.sign_out_button);
+        signOutButton.setVisibility(View.GONE);
     }
 }

@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="drawer_options_array">
-        <item>@string/app_name</item>
-        <item>@string/header_in_progress</item>
-        <item>@string/header_completed</item>
-        <item>@string/trash</item>
-        <item>@string/settings</item>
-        <item>@string/help_and_feedback</item>
-    </string-array>
-
     <integer-array name="drawer_icons_array">
         <item>@drawable/ic_collections_bookmark_green_24dp</item>
         <item>@drawable/ic_assignment_blue_24dp</item>
@@ -16,7 +7,20 @@
         <item>@drawable/ic_delete_maroon_24dp</item>
         <item>@drawable/ic_settings_grey_24dp</item>
         <item>@drawable/ic_feedback_grey_24dp</item>
+        <item>-1</item>
     </integer-array>
 
     <string name="help_and_feedback"><![CDATA[Help & Feedback]]></string>
+
+    <string-array name="drawer_options_array">
+        <item>@string/app_name</item>
+        <item>@string/header_in_progress</item>
+        <item>@string/header_completed</item>
+        <item>@string/trash</item>
+        <item>@string/settings</item>
+        <item>@string/help_and_feedback</item>
+        <!--        empty for sign-in button-->
+        <!--suppress CheckTagEmptyBody -->
+        <item></item>
+    </string-array>
 </resources>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="111dp"
+    android:background="@color/textBlack">
+
+    <ImageView
+        android:id="@+id/nBar_item_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:contentDescription="@string/list_item_icon"
+        android:minWidth="24dp"
+        android:minHeight="24dp"
+        android:padding="16dp"
+        android:src="@drawable/ic_collections_bookmark_green_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/nBar_item_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:minHeight="24dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="4dp"
+        android:textAlignment="gravity"
+        android:textColor="@color/textGrey"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/nBar_item_icon"
+        app:layout_constraintStart_toEndOf="@+id/nBar_item_icon"
+        app:layout_constraintTop_toTopOf="@+id/nBar_item_icon"
+        tools:text="@string/app_name" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
