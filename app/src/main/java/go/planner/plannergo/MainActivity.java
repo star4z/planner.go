@@ -523,7 +523,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         ArrayList<Assignment> everythingElse = new ArrayList<>();
 
         for (Assignment assignment : assignments) {
-            if (assignment.priority > 0) {
+            if (assignment.priority > 0 && sharedPref.getBoolean(Settings.priorityFirst, true)) {
                 priorityAssignments.add(assignment);
             } else if ((sharedPref.getBoolean(Settings.overdueLast, false)
                     && compareCalendars(assignment.dueDate, today) < 0)) {
