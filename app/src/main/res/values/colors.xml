@@ -7,8 +7,8 @@
     <color name="colorAccentDark">#008c51</color>
 
     <!--Dark Theme-->
-    <color name="darkPrimary">#2e2e2e</color>
-    <color name="darkPrimaryDark">#0f0f0f</color>
+    <color name="darkPrimary">#474747</color>
+    <color name="darkPrimaryDark">#262626</color>
     <color name="darkAccent">#00e676</color>
     <color name="darkTextPrimary">#e8e8e8</color>
     <color name="darkTextSecondary">#7c7c7c</color>
