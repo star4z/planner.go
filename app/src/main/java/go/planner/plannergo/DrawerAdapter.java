@@ -118,7 +118,7 @@ public class DrawerAdapter extends BaseAdapter {
             switch (position) {
                 case MainActivity.iHeader:
                     view.setBackgroundColor(scheme.getColor(c, Field.DW_HEAD_BG));
-                    text.setTextColor(ContextCompat.getColor(c, R.color.textWhite));
+                    text.setTextColor(scheme.getColor(c,Field.DW_HEAD_TEXT));
                     break;
                 case MainActivity.iInProgress:
                     text.setTextColor(scheme.getColor(c, Field.DW_IP_TEXT));
