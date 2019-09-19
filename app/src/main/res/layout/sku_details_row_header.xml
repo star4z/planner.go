@@ -12,6 +12,7 @@
    limitations under the License.
 -->
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     style="@style/CardViewStyle"
     android:layout_height="@dimen/sku_details_row_header_height"
@@ -26,6 +27,7 @@
         android:layout_marginStart="@dimen/double_padding"
         android:gravity="start|center_vertical"
         android:textColor="@color/textGrey"
-        android:textSize="@dimen/sku_details_row_text_size"/>
+        android:textSize="@dimen/sku_details_row_text_size"
+        tools:text="CardView title"/>
 
 </androidx.cardview.widget.CardView>

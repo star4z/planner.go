@@ -50,7 +50,8 @@
                 android:layout_marginStart="@dimen/single_padding"
                 android:textColor="@color/ascent_color"
                 android:textSize="@dimen/sku_details_row_text_size"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:text="$2.99"/>
         </LinearLayout>
 
         <LinearLayout
@@ -75,7 +76,8 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/sku_details_row_description_text_size"
                 android:textColor="@color/textGrey"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                tools:text="Item description"/>
 
         </LinearLayout>
 
@@ -83,7 +85,8 @@
             android:id="@+id/state_button"
             style="@style/ButtonStyle"
             android:layout_marginTop="@dimen/single_padding"
-            android:contentDescription="@string/button_buy"/>
+            android:contentDescription="@string/button_buy"
+            tools:text="Buy"/>
 
     </LinearLayout>
 
