@@ -38,6 +38,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -111,18 +113,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         fab = findViewById(R.id.fab);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setSupportActionBar(myToolbar);
-
-
-//        ImageView imageView = findViewById(R.id.switcher);
-//        ContentResolver cR = getContentResolver();
-//        Uri uri = Uri.parse("https://lh3.googleusercontent.com/a-/AAuE7mDNFMdIanD3H6GtvdpggtQshU45yWFye-B26ALVxd");
-//        try {
-//            InputStream is = cR.openInputStream(uri);
-//            Drawable d = Drawable.createFromStream(is, uri.toString());
-//            imageView.setImageDrawable(d);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
 
         initNavDrawer();
 
@@ -423,6 +413,18 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
             updateUI(null);
         }
+    }
+
+    @Override
+    public void signOut(View view) {
+        Log.d(TAG, "Signing out");
+        mGoogleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                account = null;
+                updateUI(null);
+            }
+        });
     }
 
     private void initToolbar(boolean forInProgressAssignments) {

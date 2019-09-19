@@ -137,22 +137,31 @@ public class DrawerAdapter extends BaseAdapter {
             text.setText(drawerOptions[position]);
             icon.setImageResource(drawerIcons[position]);
         } else {
+            SignInButton signInButton = view.findViewById(R.id.sign_in_button);
+            TextView userName = view.findViewById(R.id.user_name);
+            TextView signOutButton = view.findViewById(R.id.sign_out_button);
+
+            userName.setTextColor(scheme.getColor(c, Field.DW_OT_TEXT));
+            signOutButton.setTextColor(scheme.getColor(c, Field.DW_OT_TEXT));
+
             if (account != null) {
-                SignInButton signInButton = view.findViewById(R.id.sign_in_button);
                 signInButton.setVisibility(View.GONE);
-                TextView userName = view.findViewById(R.id.user_name);
                 userName.setText(account.getEmail());
                 userName.setVisibility(View.VISIBLE);
-                TextView signOutButton = view.findViewById(R.id.sign_out_button);
                 signOutButton.setVisibility(View.VISIBLE);
                 signOutButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        signOut(view);
+                        Log.v(TAG, "Clicked sign out button.");
+                        if (c instanceof SignInActivity) {
+                            ((SignInActivity) c).signOut(v);
+                        }
                     }
                 });
             } else {
-                SignInButton signInButton = view.findViewById(R.id.sign_in_button);
+                userName.setVisibility(View.GONE);
+                signOutButton.setVisibility(View.GONE);
+                signInButton.setVisibility(View.VISIBLE);
                 signInButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -166,16 +175,5 @@ public class DrawerAdapter extends BaseAdapter {
         }
 
         return view;
-    }
-
-
-    private void signOut(View v) {
-        Log.d(TAG, "signing out...");
-        SignInButton signInButton = v.findViewById(R.id.sign_in_button);
-        signInButton.setVisibility(View.VISIBLE);
-        TextView userName = v.findViewById(R.id.user_name);
-        userName.setVisibility(View.GONE);
-        TextView signOutButton = v.findViewById(R.id.sign_out_button);
-        signOutButton.setVisibility(View.GONE);
     }
 }
