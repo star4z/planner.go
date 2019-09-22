@@ -30,6 +30,8 @@ import kotlinx.android.synthetic.main.toolbar.*
  * For displaying and editing simple lists.
  */
 abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
+    private val tag = "ListActivity"
+
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: LinearLayoutManager
@@ -54,7 +56,7 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
         FileIO.readFiles(this)
 
         data = getData()
-        Log.v("ListActivity", "data=$data")
+        Log.v(tag, "data=$data")
 
         recyclerView = findViewById(R.id.recycler_view)
 
@@ -183,7 +185,7 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
         val isDarkMode = prefs.getBoolean(Settings.darkMode, true)
         colorScheme = if (isDarkMode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
 //        setTheme(colorScheme.theme)
-        Log.d(TAG, "scheme=$isDarkMode")
+        Log.d(tag, "scheme=$isDarkMode")
     }
 
     override fun getColorScheme(): ColorScheme {
