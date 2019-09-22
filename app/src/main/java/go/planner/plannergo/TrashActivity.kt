@@ -28,6 +28,8 @@ import kotlinx.android.synthetic.main.activity_trash.*
  * assignments than would be expected in MainActivity, for example.
  */
 class TrashActivity : AppCompatActivity(), ColorSchemeActivity {
+    private val tag = "TrashActivity"
+
     private lateinit var prefs: SharedPreferences
     private lateinit var colorScheme: ColorScheme
     private var schemeSet = false
@@ -65,7 +67,7 @@ class TrashActivity : AppCompatActivity(), ColorSchemeActivity {
         val darkmode = prefs.getBoolean(Settings.darkMode, true)
         colorScheme = if (darkmode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
 //        setTheme(colorScheme.theme)
-        Log.d(TAG, "scheme=$darkmode")
+        Log.d(tag, "scheme=$darkmode")
     }
 
     override fun getColorScheme(): ColorScheme {
@@ -144,7 +146,7 @@ class TrashActivity : AppCompatActivity(), ColorSchemeActivity {
 
     private fun loadPanels() {
         body.removeAllViews()
-        Log.v("TrashActivity", FileIO.deletedAssignments.toString())
+        Log.v(tag, FileIO.deletedAssignments.toString())
 
         addHeading(R.string.deletion_is_permanent)
         if (FileIO.deletedAssignments.isEmpty())
