@@ -1,7 +1,6 @@
 package go.planner.plannergo;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
@@ -15,8 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -38,8 +35,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCanceledListener;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -117,7 +112,9 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         initNavDrawer();
 
         GoogleSignInOptions gso =
-                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestEmail()
+                        .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
@@ -126,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         super.onStart();
 
         this.account = GoogleSignIn.getLastSignedInAccount(this);
+
     }
 
     /**
@@ -251,19 +249,11 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                                 R.style.LightDialogTheme);
                 alertDialog.setTitle(R.string.delete_all);
                 alertDialog.setMessage(R.string.move_to_trash_note);
-                alertDialog.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        FileIO.deleteAll(assignments, MainActivity.this);
-                        loadPanels(assignments);
-                    }
+                alertDialog.setPositiveButton(R.string.delete, (dialog, which) -> {
+                    FileIO.deleteAll(assignments, MainActivity.this);
+                    loadPanels(assignments);
                 });
-                alertDialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
+                alertDialog.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
                 alertDialog.create().show();
             default:
                 return super.onOptionsItemSelected(item);
@@ -283,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         boolean useDarkMode = sharedPref.getBoolean(Settings.darkMode, true);
         colorScheme = useDarkMode ? ColorScheme.Companion.getSCHEME_DARK() : ColorScheme.Companion.getSCHEME_LIGHT();
 //        setTheme(colorScheme.getTheme());
-        Log.d(TAG, "darkmode=" + useDarkMode);
+        Log.d(TAG, "darkMode=" + useDarkMode);
     }
 
     @Override
@@ -351,33 +341,30 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         mDrawerList.setAdapter(mDrawerAdapter);
 
 
-        mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        mDrawerList.setOnItemClickListener((parent, view, position, id) -> {
 
-                switch (position) {
-                    case iInProgress:
-                        loadPanels(FileIO.inProgressAssignments);
-                        currentScreenIsInProgress = true;
-                        break;
-                    case iCompleted:
-                        loadPanels(FileIO.completedAssignments);
-                        currentScreenIsInProgress = false;
-                        break;
-                    case iTrash:
-                        mDrawerAdapter.setSelectedPos(3);
-                        mDrawerList.setAdapter(mDrawerAdapter);
-                        startActivity(new Intent(MainActivity.this, TrashActivity.class));
-                        overridePendingTransition(0, 0);
-                        break;
-                    case iSettings:
-                        startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                        break;
-                    case iFeedback:
-                        startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
-                }
-                mDrawerLayout.closeDrawers();
+            switch (position) {
+                case iInProgress:
+                    loadPanels(FileIO.inProgressAssignments);
+                    currentScreenIsInProgress = true;
+                    break;
+                case iCompleted:
+                    loadPanels(FileIO.completedAssignments);
+                    currentScreenIsInProgress = false;
+                    break;
+                case iTrash:
+                    mDrawerAdapter.setSelectedPos(3);
+                    mDrawerList.setAdapter(mDrawerAdapter);
+                    startActivity(new Intent(MainActivity.this, TrashActivity.class));
+                    overridePendingTransition(0, 0);
+                    break;
+                case iSettings:
+                    startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                    break;
+                case iFeedback:
+                    startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
             }
+            mDrawerLayout.closeDrawers();
         });
 
         updateUI(account);
@@ -418,12 +405,9 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     @Override
     public void signOut(View view) {
         Log.d(TAG, "Signing out");
-        mGoogleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                account = null;
-                updateUI(null);
-            }
+        mGoogleSignInClient.signOut().addOnCompleteListener(task -> {
+            account = null;
+            updateUI(null);
         });
     }
 
@@ -468,42 +452,22 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             switch (sortIndex) {
                 default:
                 case 0: //sort by date
-                    comparator = new Comparator<Assignment>() {
-                        @Override
-                        public int compare(Assignment o1, Assignment o2) {
-                            return o1.dueDate.compareTo(o2.dueDate);
-                        }
-                    };
+                    comparator = (o1, o2) -> o1.dueDate.compareTo(o2.dueDate);
                     Collections.sort(assignments, comparator);
                     addViewsByDate(assignments);
                     break;
                 case 1: //sort by class
-                    comparator = new Comparator<Assignment>() {
-                        @Override
-                        public int compare(Assignment o1, Assignment o2) {
-                            return o1.className.toUpperCase().compareTo(o2.className.toUpperCase());
-                        }
-                    };
+                    comparator = (o1, o2) -> o1.className.toUpperCase().compareTo(o2.className.toUpperCase());
                     Collections.sort(assignments, comparator);
                     addViewsByClass(assignments);
                     break;
                 case 2: //sort by type
-                    comparator = new Comparator<Assignment>() {
-                        @Override
-                        public int compare(Assignment o1, Assignment o2) {
-                            return o1.type.toUpperCase().compareTo(o2.type.toUpperCase());
-                        }
-                    };
+                    comparator = (o1, o2) -> o1.type.toUpperCase().compareTo(o2.type.toUpperCase());
                     Collections.sort(assignments, comparator);
                     addViewsByType(assignments);
                     break;
                 case 3: //sort by title
-                    comparator = new Comparator<Assignment>() {
-                        @Override
-                        public int compare(Assignment o1, Assignment o2) {
-                            return o1.title.toUpperCase().compareTo(o2.title.toUpperCase());
-                        }
-                    };
+                    comparator = (o1, o2) -> o1.title.toUpperCase().compareTo(o2.title.toUpperCase());
                     Collections.sort(assignments, comparator);
                     addViewsByTitle(assignments);
                     break;
@@ -723,7 +687,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     private TextView addHeading(String text) {
         TextView header = (TextView) getLayoutInflater().inflate(
                 R.layout.view_sort_header,
-                (ViewGroup) findViewById(android.R.id.content),
+                findViewById(android.R.id.content),
                 false
         );
         header.setText((text.equals("") ? getString(R.string.untitled) : text));
