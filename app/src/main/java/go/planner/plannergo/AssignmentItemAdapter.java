@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -106,17 +107,14 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
                 Snackbar.LENGTH_LONG
         );
 
-        snackbar.setAction(R.string.undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeAssignmentStatus(a);
-                dataSet.add(a);
-                if (activity instanceof MainActivity) {
-                    ((MainActivity) activity).loadPanels(
-                            a.completed ? FileIO.completedAssignments : FileIO.inProgressAssignments,
-                            sortIndex
-                    );
-                }
+        snackbar.setAction(R.string.undo, v -> {
+            changeAssignmentStatus(a);
+            dataSet.add(a);
+            if (activity instanceof MainActivity) {
+                ((MainActivity) activity).loadPanels(
+                        a.completed ? FileIO.completedAssignments : FileIO.inProgressAssignments,
+                        sortIndex
+                );
             }
         });
 
@@ -179,6 +177,14 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
         vh.category.setText(a.type);
         vh.className.setText(a.className);
 
+        if (a.priority > 0) {
+            vh.priorityDot.setVisibility(View.VISIBLE);
+            vh.priorityDot.setImageResource(R.drawable.ic_priority_dot_on_24dp);
+        } else {
+            vh.priorityDot.setVisibility(View.GONE);
+            vh.priorityDot.setImageResource(R.drawable.ic_priority_dot_off_24dp);
+        }
+
         SimpleDateFormat dateFormat = (prefs.getBoolean(Settings.timeEnabled, false))
                 ? new SimpleDateFormat("h:mm a EEE, MM/dd/yy", Locale.US)
                 : new SimpleDateFormat("EEE, MM/dd/yy", Locale.US);
@@ -191,6 +197,7 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
     public class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout itemView;
         TextView title, className, date, category;
+        ImageView priorityDot;
 
         ViewHolder(ConstraintLayout itemView) {
             super(itemView);
@@ -200,6 +207,7 @@ public class AssignmentItemAdapter extends RecyclerView.Adapter {
             className = this.itemView.findViewById(R.id.class_name);
             date = this.itemView.findViewById(R.id.date);
             category = this.itemView.findViewById(R.id.category);
+            priorityDot = this.itemView.findViewById(R.id.priority_dot);
 
             int textColor = colorScheme.getColor(activity, Field.MAIN_CARD_TEXT);
             title.setTextColor(textColor);
