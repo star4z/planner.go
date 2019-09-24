@@ -1,15 +1,23 @@
 package go.planner.plannergo
 
+import android.app.Activity
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.*
 import kotlin.collections.ArrayList
 
 @RunWith(AndroidJUnit4::class)
-class FileStorageTest {
+class FileStorageTest{
+    @Before
+    fun setUp() {
+
+    }
+
+
     @Test
     fun testWriteAssignments(){
         // Context of the app under test.
@@ -34,7 +42,7 @@ class FileStorageTest {
             ))
         }
 
-        FileStorage.writeAssignments(appContext, fileName, assignments)
+        FileStorage.writeAssignments(Activity(), fileName, assignments)
     }
 
     @Test
