@@ -6,6 +6,9 @@ import android.content.Intent
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.util.AttributeSet
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -219,8 +222,30 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         return if (stage == 4) {
-            menuInflater.inflate(R.menu.main_menu, menu); true
+            menuInflater.inflate(R.menu.main_menu, menu)
+            for (i in 0 until menu!!.size()) {
+                val item: MenuItem = menu.getItem(i)
+                val s = SpannableString(item.title)
+                s.setSpan(ForegroundColorSpan(colorScheme.getColor(this, Field.DG_HEAD_TEXT)), 0,
+                        s.length, 0)
+                item.title = s
+
+            }
+            true
         } else super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onCreateView(parent: View?, name: String, context: Context, attrs: AttributeSet):
+    View? {
+        if (name == "androidx.appcompat.view.menu.ListMenuItemView" &&
+                parent?.parent is FrameLayout) {
+            val view = parent.parent as View
+            // change options menu bg color
+
+
+            view.setBackgroundColor(colorScheme.getColor(this, Field.DG_BG))
+        }
+        return super.onCreateView(parent, name, context, attrs)
     }
 
     private fun initStage5() {
