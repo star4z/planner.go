@@ -324,11 +324,15 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
                 R.layout.view_list_activity_item,
                 linear_layout, false
         ) as LinearLayout
+        v.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_CARD_BG))
+
+        val color = colorScheme.getColor(this, Field.MAIN_CARD_TEXT)
+
         val tV = v.findViewById<TextView>(R.id.title)
         tV.text = newCategory
+        tV.setTextColor(color)
 
         //TODO: remove tints
-        val color = colorScheme.getColor(this, Field.MAIN_CARD_TEXT)
         v.findViewById<ImageView>(R.id.edit).drawable.setTint(color)
         v.findViewById<ImageView>(R.id.remove).drawable.setTint(color)
 
