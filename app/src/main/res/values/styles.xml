@@ -114,7 +114,7 @@
     </style>
 
     <style name="DarkDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
-        <item name="android:background">@color/darkPrimary</item>
+        <item name="android:background">@color/darkPrimaryDark</item>
         <item name="android:textColor">@color/darkTextPrimary</item>
         <item name="android:textColorPrimary">@color/darkTextSecondary</item>
     </style>
