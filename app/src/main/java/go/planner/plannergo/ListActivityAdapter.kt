@@ -81,6 +81,7 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
                         }
                     }
             val dialog = builder.create()
+            editText.requestFocus()
 
             //disables ability to cancel dialog with method other than cancel button. I don't like it,
             //but I don't see an alternative
