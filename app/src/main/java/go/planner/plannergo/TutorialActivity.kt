@@ -106,6 +106,8 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
 
         recycler_view.visibility = View.GONE
 
+        toolbar.overflowIcon = colorScheme.getDrawable(this, Field.CP_APP_BAR_OPT)
+
         initNavDrawer()
 
         addTextView(R.string.tut_text_06)
