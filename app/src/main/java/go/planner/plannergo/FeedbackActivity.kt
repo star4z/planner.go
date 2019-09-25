@@ -10,13 +10,13 @@ import android.preference.PreferenceManager
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.annotation.StringRes
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.android.billingclient.api.BillingClient
 import go.planner.plannergo.billing.BillingManager
@@ -45,7 +45,7 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
     private lateinit var mBillingManager: BillingManager
     private lateinit var mAcquireFragment: AcquireFragment
 
-    private lateinit var mScreenMain: ConstraintLayout
+    private lateinit var mScreenMain: ScrollView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
