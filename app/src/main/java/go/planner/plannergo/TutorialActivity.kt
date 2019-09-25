@@ -38,6 +38,8 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tutorial2)
 
+        applyColors()
+
         drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         fab.setOnClickListener { initStage1() }
 
@@ -47,10 +49,6 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
 
     private fun initStage1() {
         resetViews()
-
-        toolbar.setBackgroundColor(colorScheme.getColor(this, Field.IP_APP_BAR_BG))
-        toolbar.setTitleTextColor(colorScheme.getColor(this, Field.IP_APP_BAR_TEXT))
-        toolbar.navigationIcon = colorScheme.getDrawable(this, Field.IP_APP_BAR_HAM)
 
         fab.setOnClickListener(null)
 
@@ -384,6 +382,9 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
     override fun applyColors() {
         val navView = findViewById<NavigationView>(R.id.navigation)
         navView.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
+        toolbar.setBackgroundColor(colorScheme.getColor(this, Field.IP_APP_BAR_BG))
+        toolbar.setTitleTextColor(colorScheme.getColor(this, Field.IP_APP_BAR_TEXT))
+        toolbar.navigationIcon = colorScheme.getDrawable(this, Field.IP_APP_BAR_HAM)
         coordinator.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
     }
 }
