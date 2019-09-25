@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_add_dark_grey_24dp"
+            android:src="@drawable/ic_add_black_24dp"
             app:backgroundTint="@color/darkAccent"
             app:fabSize="normal" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
