@@ -216,7 +216,4 @@
     <string name="sign_out">Sign Out</string>
     <string name="sign_in">Sign in</string>
 
-<!-- Google API project info-->
-    <string name="server_client_id">1044060489779–7074n876aftmttc7mu3dgqj39q1cip28.apps.googleusercontent.com</string>
-
 </resources>
