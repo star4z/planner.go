@@ -19,10 +19,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.android.billingclient.api.BillingClient
-import go.planner.plannergo.billing.BillingManager
-import go.planner.plannergo.billing.BillingManager.BILLING_MANAGER_NOT_INITIALIZED
-import go.planner.plannergo.billing.BillingProvider
-import go.planner.plannergo.skulist.AcquireFragment
+import go.planner.plannergo.planner_billing.billing.BillingManager
+import go.planner.plannergo.planner_billing.billing.BillingManager.BILLING_MANAGER_NOT_INITIALIZED
+import go.planner.plannergo.planner_billing.billing.BillingProvider
+import go.planner.plannergo.planner_billing.skulist.AcquireFragment
 import kotlinx.android.synthetic.main.activity_feedback.*
 import kotlinx.android.synthetic.main.toolbar.*
 
