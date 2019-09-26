@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements ColorSchemeActivity, SignInActivity {
@@ -61,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     private FloatingActionButton fab;
     private boolean currentScreenIsInProgress = true;
     private ColorScheme colorScheme;
+
+    private HashSet<RecyclerView.Adapter> adapters = new HashSet<>();
 
     //Quick references
     private LinearLayout parent;
@@ -443,6 +446,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         currentSortIndex = sortIndex;
 
         parent.removeAllViews();
+        adapters.clear();
 
         if (assignments.isEmpty()) {
             addHeading(R.string.empty_assignment_set);
@@ -628,6 +632,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         RecyclerView.Adapter adapter = new AssignmentItemAdapter(assignments, currentSortIndex, this);
         recyclerView.setAdapter(adapter);
 
+        adapters.add(adapter);
+
         recyclerView.setNestedScrollingEnabled(false);
 
         SwipeCallback swipeCallback = new SwipeCallback(this) {
@@ -648,6 +654,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     assert adapter != null;
                     adapter.toggleDone(viewHolder.getAdapterPosition());
                 }
+                checkForEmptyList();
             }
         };
 
@@ -678,6 +685,19 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         });
 
         return recyclerView;
+    }
+
+    private void checkForEmptyList(){
+        boolean isEmpty = true;
+        for (RecyclerView.Adapter adapter: adapters) {
+            if (adapter.getItemCount() > 0) {
+                isEmpty = false;
+            }
+        }
+
+        if (isEmpty) {
+            addHeading(R.string.empty_assignment_set);
+        }
     }
 
     private TextView addHeading(int id) {
