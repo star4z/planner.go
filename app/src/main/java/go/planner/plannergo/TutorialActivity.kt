@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.NavUtils
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -418,4 +419,10 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
         toolbar.navigationIcon = colorScheme.getDrawable(this, Field.IP_APP_BAR_HAM)
         coordinator.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
     }
+
+
+    override fun onBackPressed() {
+        NavUtils.navigateUpTo(this, Intent(this, MainActivity::class.java))
+    }
+
 }
