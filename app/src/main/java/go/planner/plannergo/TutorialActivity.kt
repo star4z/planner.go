@@ -155,7 +155,7 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
             initStage5()
         }
         if (stage == 6 && item?.itemId == android.R.id.home) {
-            startActivity(Intent(this, MainActivity::class.java))
+            NavUtils.navigateUpTo(this, Intent(this, MainActivity::class.java))
         }
         return super.onOptionsItemSelected(item)
     }
