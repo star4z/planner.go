@@ -175,6 +175,7 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
                 }
                 .show()
                 .setCanceledOnTouchOutside(false)
+        editText.requestFocus()
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 
     }
