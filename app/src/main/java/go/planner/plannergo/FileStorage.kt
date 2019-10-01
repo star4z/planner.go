@@ -20,12 +20,11 @@ object FileStorage {
 
     private val TAG = "FileStorage"
 
-    private var inProgressAssignments = ArrayList<Assignment>()
-    private var completedAssignments = ArrayList<Assignment>()
-    private var deletedAssignments = ArrayList<Assignment>()
+    private val assignments = ArrayList<Assignment>()
+    private val deletedAssignments = ArrayList<Assignment>()
 
-    private val classNames = ArrayList<ListItem>()
-    private val types = ArrayList<ListItem>()
+    private val courses = ArrayList<ListItem>()
+    private val categories = ArrayList<ListItem>()
 
     private val ALL_ASSIGNMENTS_FILE_NAME = "planner.assignments.all"
     private val DELETED_ASSIGNMENTS_FILE_NAME = "planner.assignments.deleted"
@@ -63,6 +62,14 @@ object FileStorage {
         readCategories(activity)
         readAssignments(activity, ALL_ASSIGNMENTS_FILE_NAME)
         readDeletedAssignments(activity)
+    }
+
+    internal fun writeFiles(activity: Activity) {
+        Log.v(TAG, "Starting write...")
+        writeCourses(activity)
+        writeCategories(activity)
+        writeAssignments(activity, ALL_ASSIGNMENTS_FILE_NAME, assignments)
+        writeDeletedAssignments(activity)
     }
 
     fun readAssignments(activity: Activity, fileName: String): ArrayList<Assignment> {
@@ -119,15 +126,18 @@ object FileStorage {
     }
 
     private fun readDeletedAssignments(activity: Activity) {
-        deletedAssignments = readAssignments(activity, DELETED_ASSIGNMENTS_FILE_NAME)
+        deletedAssignments.addAll(readAssignments(activity, DELETED_ASSIGNMENTS_FILE_NAME))
+    }
+
+    private fun writeDeletedAssignments(activity: Activity) {
+        writeAssignments(activity, DELETED_ASSIGNMENTS_FILE_NAME, deletedAssignments)
     }
 
     private fun clearAssignments() {
-        inProgressAssignments.clear()
-        completedAssignments.clear()
+        assignments.clear()
         deletedAssignments.clear()
-        types.clear()
-        classNames.clear()
+        categories.clear()
+        courses.clear()
     }
 
     private fun readListItems(activity: Activity, fileName: String): ArrayList<ListItem> {
@@ -180,12 +190,21 @@ object FileStorage {
     }
 
     private fun readCourses(activity: Activity) {
+        courses.addAll(readListItems(activity, COURSES_FILE_NAME))
+    }
 
+    private fun writeCourses(activity: Activity) {
+        writeListItems(activity, COURSES_FILE_NAME, courses)
     }
 
     private fun readCategories(activity: Activity) {
-
+        categories.addAll(readListItems(activity, CATEGORIES_FILE_NAME))
     }
+
+    private fun writeCategories(activity: Activity) {
+        writeListItems(activity, CATEGORIES_FILE_NAME, categories)
+    }
+
 }
 
 
