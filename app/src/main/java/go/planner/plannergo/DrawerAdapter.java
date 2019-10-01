@@ -12,8 +12,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
-
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.SignInButton;
 
@@ -149,26 +147,20 @@ public class DrawerAdapter extends BaseAdapter {
                 userName.setText(account.getEmail());
                 userName.setVisibility(View.VISIBLE);
                 signOutButton.setVisibility(View.VISIBLE);
-                signOutButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.v(TAG, "Clicked sign out button.");
-                        if (c instanceof SignInActivity) {
-                            ((SignInActivity) c).signOut(v);
-                        }
+                signOutButton.setOnClickListener(v -> {
+                    Log.v(TAG, "Clicked sign out button.");
+                    if (c instanceof SignInActivity) {
+                        ((SignInActivity) c).signOut(v);
                     }
                 });
             } else {
                 userName.setVisibility(View.GONE);
                 signOutButton.setVisibility(View.GONE);
                 signInButton.setVisibility(View.VISIBLE);
-                signInButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Log.v(TAG, "Clicked sign in button.");
-                        if (c instanceof SignInActivity) {
-                            ((SignInActivity) c).signIn(v);
-                        }
+                signInButton.setOnClickListener(v -> {
+                    Log.v(TAG, "Clicked sign in button.");
+                    if (c instanceof SignInActivity) {
+                        ((SignInActivity) c).signIn(v);
                     }
                 });
             }

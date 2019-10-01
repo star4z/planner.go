@@ -14,14 +14,12 @@
             android:id="@+id/linear_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/darkPrimary"
             android:orientation="vertical">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
-                android:background="@color/darkPrimary"
                 app:navigationContentDescription="@string/open_nav_menu"
                 app:navigationIcon="@drawable/ic_dehaze_white_24dp"
                 app:title="@string/header_in_progress"
@@ -43,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_add_dark_grey_24dp"
+            android:src="@drawable/ic_add_black_24dp"
             app:backgroundTint="@color/darkAccent"
             app:fabSize="normal" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

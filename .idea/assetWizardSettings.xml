@@ -18,7 +18,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Users/bdphi/AppData/Local/JetBrains/Toolbox/apps/AndroidStudio/ch-0/191.5791312/plugins/android/lib/android.jar!/images/material_design_icons/social/ic_person_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Users/bdphi/AppData/Local/JetBrains/Toolbox/apps/AndroidStudio/ch-0/191.5791312/plugins/android/lib/android.jar!/images/material_design_icons/image/ic_brightness_1_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -29,7 +29,7 @@
                         <option name="values">
                           <map>
                             <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_person_white_24dp" />
+                            <entry key="outputName" value="ic_priority_dot_on_24dp" />
                             <entry key="sourceFile" value="C:\Users\bdphi" />
                           </map>
                         </option>

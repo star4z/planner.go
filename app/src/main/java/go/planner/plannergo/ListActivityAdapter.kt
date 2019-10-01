@@ -63,10 +63,12 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
 
 
             val imm = c.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            val builder = AlertDialog.Builder(c, if (colorScheme == ColorScheme.SCHEME_DARK)
-                R.style.DarkDialogTheme
-            else
-                R.style.LightDialogTheme)
+            val builder = AlertDialog.Builder(c,
+                    if (colorScheme == ColorScheme.SCHEME_DARK)
+                        R.style.DarkDialogTheme
+                    else
+                        R.style.LightDialogTheme
+            )
                     .setTitle(R.string.edit)
                     .setView(editText)
                     .setPositiveButton(R.string.save) { _, _ ->
@@ -81,6 +83,7 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
                         }
                     }
             val dialog = builder.create()
+            editText.requestFocus()
 
             //disables ability to cancel dialog with method other than cancel button. I don't like it,
             //but I don't see an alternative

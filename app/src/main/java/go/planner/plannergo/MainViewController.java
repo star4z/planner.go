@@ -18,13 +18,15 @@ package go.planner.plannergo;
 
 import android.content.SharedPreferences;
 import android.util.Log;
+
 import com.android.billingclient.api.BillingClient.BillingResponse;
 import com.android.billingclient.api.Purchase;
-import go.planner.plannergo.billing.BillingManager;
-import go.planner.plannergo.skulist.row.FiveDollarDelegate;
-import go.planner.plannergo.skulist.row.OneDollarDelegate;
 
 import java.util.List;
+
+import go.planner.plannergo.planner_billing.billing.BillingManager;
+import go.planner.plannergo.planner_billing.skulist.row.FiveDollarDelegate;
+import go.planner.plannergo.planner_billing.skulist.row.OneDollarDelegate;
 
 import static android.content.Context.MODE_PRIVATE;
 

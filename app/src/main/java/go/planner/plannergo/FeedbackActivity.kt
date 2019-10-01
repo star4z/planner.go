@@ -10,19 +10,19 @@ import android.preference.PreferenceManager
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.ScrollView
 import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.annotation.StringRes
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.android.billingclient.api.BillingClient
-import go.planner.plannergo.billing.BillingManager
-import go.planner.plannergo.billing.BillingManager.BILLING_MANAGER_NOT_INITIALIZED
-import go.planner.plannergo.billing.BillingProvider
-import go.planner.plannergo.skulist.AcquireFragment
+import go.planner.plannergo.planner_billing.billing.BillingManager
+import go.planner.plannergo.planner_billing.billing.BillingManager.BILLING_MANAGER_NOT_INITIALIZED
+import go.planner.plannergo.planner_billing.billing.BillingProvider
+import go.planner.plannergo.planner_billing.skulist.AcquireFragment
 import kotlinx.android.synthetic.main.activity_feedback.*
 import kotlinx.android.synthetic.main.toolbar.*
 
@@ -45,7 +45,7 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
     private lateinit var mBillingManager: BillingManager
     private lateinit var mAcquireFragment: AcquireFragment
 
-    private lateinit var mScreenMain: ConstraintLayout
+    private lateinit var mScreenMain: ScrollView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         prefs = PreferenceManager.getDefaultSharedPreferences(this)

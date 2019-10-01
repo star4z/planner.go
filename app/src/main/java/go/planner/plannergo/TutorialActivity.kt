@@ -6,6 +6,9 @@ import android.content.Intent
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.util.AttributeSet
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -13,6 +16,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.NavUtils
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -38,6 +42,8 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tutorial2)
 
+        applyColors()
+
         drawer_layout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         fab.setOnClickListener { initStage1() }
 
@@ -47,10 +53,6 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
 
     private fun initStage1() {
         resetViews()
-
-        toolbar.setBackgroundColor(colorScheme.getColor(this, Field.IP_APP_BAR_BG))
-        toolbar.setTitleTextColor(colorScheme.getColor(this, Field.IP_APP_BAR_TEXT))
-        toolbar.navigationIcon = colorScheme.getDrawable(this, Field.IP_APP_BAR_HAM)
 
         fab.setOnClickListener(null)
 
@@ -108,6 +110,8 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
 
         recycler_view.visibility = View.GONE
 
+        toolbar.overflowIcon = colorScheme.getDrawable(this, Field.CP_APP_BAR_OPT)
+
         initNavDrawer()
 
         addTextView(R.string.tut_text_06)
@@ -151,7 +155,7 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
             initStage5()
         }
         if (stage == 6 && item?.itemId == android.R.id.home) {
-            startActivity(Intent(this, MainActivity::class.java))
+            NavUtils.navigateUpTo(this, Intent(this, MainActivity::class.java))
         }
         return super.onOptionsItemSelected(item)
     }
@@ -219,8 +223,30 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         return if (stage == 4) {
-            menuInflater.inflate(R.menu.main_menu, menu); true
+            menuInflater.inflate(R.menu.main_menu, menu)
+            for (i in 0 until menu!!.size()) {
+                val item: MenuItem = menu.getItem(i)
+                val s = SpannableString(item.title)
+                s.setSpan(ForegroundColorSpan(colorScheme.getColor(this, Field.DG_HEAD_TEXT)), 0,
+                        s.length, 0)
+                item.title = s
+
+            }
+            true
         } else super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onCreateView(parent: View?, name: String, context: Context, attrs: AttributeSet):
+    View? {
+        if (name == "androidx.appcompat.view.menu.ListMenuItemView" &&
+                parent?.parent is FrameLayout) {
+            val view = parent.parent as View
+            // change options menu bg color
+
+
+            view.setBackgroundColor(colorScheme.getColor(this, Field.DG_BG))
+        }
+        return super.onCreateView(parent, name, context, attrs)
     }
 
     private fun initStage5() {
@@ -299,11 +325,15 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
                 R.layout.view_list_activity_item,
                 linear_layout, false
         ) as LinearLayout
+        v.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_CARD_BG))
+
+        val color = colorScheme.getColor(this, Field.MAIN_CARD_TEXT)
+
         val tV = v.findViewById<TextView>(R.id.title)
         tV.text = newCategory
+        tV.setTextColor(color)
 
         //TODO: remove tints
-        val color = colorScheme.getColor(this, Field.MAIN_CARD_TEXT)
         v.findViewById<ImageView>(R.id.edit).drawable.setTint(color)
         v.findViewById<ImageView>(R.id.remove).drawable.setTint(color)
 
@@ -384,6 +414,15 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
     override fun applyColors() {
         val navView = findViewById<NavigationView>(R.id.navigation)
         navView.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
+        toolbar.setBackgroundColor(colorScheme.getColor(this, Field.IP_APP_BAR_BG))
+        toolbar.setTitleTextColor(colorScheme.getColor(this, Field.IP_APP_BAR_TEXT))
+        toolbar.navigationIcon = colorScheme.getDrawable(this, Field.IP_APP_BAR_HAM)
         coordinator.setBackgroundColor(colorScheme.getColor(this, Field.MAIN_BG))
     }
+
+
+    override fun onBackPressed() {
+        NavUtils.navigateUpTo(this, Intent(this, MainActivity::class.java))
+    }
+
 }
