@@ -34,8 +34,6 @@ object FileStorage {
 
     private val folderName = "planner_backups"
 
-    private const val MY_PERMISSIONS_REQUEST_READ_CONTACTS = 12
-
 
     private fun requestAppPermissions(activity: Activity) {
         if (hasReadPermissions(activity) && hasWritePermissions(activity)) {
@@ -67,15 +65,12 @@ object FileStorage {
         readDeletedAssignments(activity)
     }
 
-    inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object : TypeToken<T>() {}.type)
-
-
     fun readAssignments(activity: Activity, fileName: String): ArrayList<Assignment> {
         requestAppPermissions(activity)
 
 
         val root = Environment.getExternalStorageDirectory()
-        val dir = File("${root.absolutePath}/planner_backups/")
+        val dir = File("${root.absolutePath}/${folderName}/")
         Log.d(TAG, "path=${root.absolutePath}")
         Log.d(TAG, "contents=${root.list()}")
         dir.mkdirs()
