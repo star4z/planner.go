@@ -87,7 +87,7 @@ object FileStorage {
 
         val type = object : TypeToken<ArrayList<Assignment>>() {}.type
 
-        val assignments: ArrayList<Assignment> = gson.fromJson<ArrayList<Assignment>>(jsonValue, type)
+        val assignments: ArrayList<Assignment> = gson.fromJson(jsonValue, type)
 
         Log.d(TAG, "assignments=${assignments}")
 
@@ -101,7 +101,7 @@ object FileStorage {
         val jsonValue = gson.toJson(assignments)
 
         val root = Environment.getExternalStorageDirectory()
-        val dir = File("${root.absolutePath}/planner_backups/")
+        val dir = File("${root.absolutePath}/${folderName}/")
         Log.d(TAG, "path=${root.absolutePath}")
         Log.d(TAG, "contents=${root.list()}")
         dir.mkdirs()
@@ -130,8 +130,53 @@ object FileStorage {
         classNames.clear()
     }
 
-    private fun readListItems(activity: Activity, fileName: String) {
+    private fun readListItems(activity: Activity, fileName: String): ArrayList<ListItem> {
+        requestAppPermissions(activity)
 
+
+        val root = Environment.getExternalStorageDirectory()
+        val dir = File("${root.absolutePath}/${folderName}/")
+        Log.d(TAG, "path=${root.absolutePath}")
+        dir.mkdirs()
+        val file = File(dir, "${fileName}.json")
+
+        val fIn = FileInputStream(file)
+        val data = ByteArray(file.length().toInt())
+        fIn.read(data)
+        fIn.close()
+
+        val jsonValue = String(data, Charset.defaultCharset())
+
+        val gson = Gson()
+
+        val type = object : TypeToken<ArrayList<ListItem>>() {}.type
+
+        val assignments: ArrayList<ListItem> = gson.fromJson(jsonValue, type)
+
+        Log.d(TAG, "assignments=${assignments}")
+
+        return assignments
+    }
+
+    private fun writeListItems(activity: Activity, fileName: String, items: ArrayList<ListItem>) {
+        requestAppPermissions(activity)
+
+        val gson = Gson()
+        val jsonValue = gson.toJson(items)
+
+        val root = Environment.getExternalStorageDirectory()
+        val dir = File("${root.absolutePath}/${folderName}/")
+        Log.d(TAG, "path=${root.absolutePath}")
+        dir.mkdirs()
+        val file = File(dir, "${fileName}.json")
+        file.createNewFile()
+
+        val fOut = FileOutputStream(file)
+        val pWriter = PrintWriter(fOut)
+        pWriter.println(jsonValue)
+        pWriter.flush()
+        pWriter.close()
+        fOut.close()
     }
 
     private fun readCourses(activity: Activity) {
