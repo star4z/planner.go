@@ -138,6 +138,10 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         FileIO.readFiles(this);
 
+        FileStorage.INSTANCE.writeAssignments(this, "test", FileIO.inProgressAssignments);
+
+        FileStorage.INSTANCE.readAssignments(this, "test");
+
         checkForColorSchemeUpdate();
 
         //Call GUI setup methods

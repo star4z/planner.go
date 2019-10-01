@@ -20,17 +20,17 @@ object FileStorage {
 
     private val TAG = "FileStorage"
 
-    internal val inProgressAssignments = ArrayList<Assignment>()
-    internal val completedAssignments = ArrayList<Assignment>()
-    internal val deletedAssignments = ArrayList<Assignment>()
+    private var inProgressAssignments = ArrayList<Assignment>()
+    private var completedAssignments = ArrayList<Assignment>()
+    private var deletedAssignments = ArrayList<Assignment>()
 
-    internal val classNames = ArrayList<String>()
-    internal val types = ArrayList<String>()
+    private val classNames = ArrayList<ListItem>()
+    private val types = ArrayList<ListItem>()
 
-    private val NEW_ASSIGNMENTS_FILE_NAME = "planner.assignments.all"
+    private val ALL_ASSIGNMENTS_FILE_NAME = "planner.assignments.all"
     private val DELETED_ASSIGNMENTS_FILE_NAME = "planner.assignments.deleted"
-    private val TYPES_FILE_NAME = "planner.assignments.types"
-    private val CLASSES_FILE_NAME = "planner.assignments.classes"
+    private val CATEGORIES_FILE_NAME = "planner.assignments.categories"
+    private val COURSES_FILE_NAME = "planner.assignments.courses"
 
     private val folderName = "planner_backups"
 
@@ -58,28 +58,13 @@ object FileStorage {
                 PackageManager.PERMISSION_GRANTED
     }
 
-    fun writeAssignments(activity: Activity, fileName: String, assignments: ArrayList<Assignment>) {
-        requestAppPermissions(activity)
-
-        val gson = Gson()
-        val jsonValue = gson.toJson(assignments)
-
-        val root = Environment.getExternalStorageDirectory()
-        val dir = File("${root.absolutePath}/planner_backups/")
-        Log.d(TAG, "path=${root.absolutePath}")
-        Log.d(TAG, "contents=${root.list()}")
-        dir.mkdirs()
-        val file = File(dir, "${fileName}.json")
-        file.createNewFile()
-
-        val fOut = FileOutputStream(file)
-        val pWriter = PrintWriter(fOut)
-        pWriter.println(jsonValue)
-        pWriter.flush()
-        pWriter.close()
-        fOut.close()
-
-        Log.v(TAG, "Wrote assignments to file.")
+    internal fun readFiles(activity: Activity) {
+        Log.v(TAG, "Starting read...")
+        clearAssignments()
+        readClasses(activity)
+        readCategories(activity)
+        readAssignments(activity, ALL_ASSIGNMENTS_FILE_NAME)
+        readDeletedAssignments(activity)
     }
 
     inline fun <reified T> Gson.fromJson(json: String) = this.fromJson<T>(json, object : TypeToken<T>() {}.type)
@@ -112,6 +97,54 @@ object FileStorage {
         Log.d(TAG, "assignments=${assignments}")
 
         return assignments
+    }
+
+    fun writeAssignments(activity: Activity, fileName: String, assignments: ArrayList<Assignment>) {
+        requestAppPermissions(activity)
+
+        val gson = Gson()
+        val jsonValue = gson.toJson(assignments)
+
+        val root = Environment.getExternalStorageDirectory()
+        val dir = File("${root.absolutePath}/planner_backups/")
+        Log.d(TAG, "path=${root.absolutePath}")
+        Log.d(TAG, "contents=${root.list()}")
+        dir.mkdirs()
+        val file = File(dir, "${fileName}.json")
+        file.createNewFile()
+
+        val fOut = FileOutputStream(file)
+        val pWriter = PrintWriter(fOut)
+        pWriter.println(jsonValue)
+        pWriter.flush()
+        pWriter.close()
+        fOut.close()
+
+        Log.v(TAG, "Wrote assignments to file.")
+    }
+
+    private fun readDeletedAssignments(activity: Activity) {
+        deletedAssignments = readAssignments(activity, DELETED_ASSIGNMENTS_FILE_NAME)
+    }
+
+    private fun clearAssignments() {
+        inProgressAssignments.clear()
+        completedAssignments.clear()
+        deletedAssignments.clear()
+        types.clear()
+        classNames.clear()
+    }
+
+    private fun readDataClass(activity: Activity) {
+
+    }
+
+    private fun readClasses(activity: Activity) {
+
+    }
+
+    private fun readCategories(activity: Activity) {
+
     }
 }
 
