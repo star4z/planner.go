@@ -1,10 +1,13 @@
 package go.planner.plannergo
 
-import android.app.Activity
+import android.Manifest
 import android.content.Context
+import android.os.Looper
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.*
@@ -12,9 +15,13 @@ import kotlin.collections.ArrayList
 
 @RunWith(AndroidJUnit4::class)
 class FileStorageTest{
+    @Rule
+    val permissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+
     @Before
     fun setUp() {
-
+        Looper.prepare()
     }
 
 
@@ -42,16 +49,6 @@ class FileStorageTest{
             ))
         }
 
-        FileStorage.writeAssignments(Activity(), fileName, assignments)
-    }
-
-    @Test
-    fun testIsExternalStorageWriteable() {
-        assert(FileStorage.isExternalStorageWritable())
-    }
-
-    @Test
-    fun testIsExternalStorageReadable() {
-        assert(FileStorage.isExternalStorageReadable())
+        FileStorage.writeAssignments(MainActivity(), fileName, assignments)
     }
 }
