@@ -59,7 +59,7 @@ object FileStorage {
     internal fun readFiles(activity: Activity) {
         Log.v(TAG, "Starting read...")
         clearAssignments()
-        readClasses(activity)
+        readCourses(activity)
         readCategories(activity)
         readAssignments(activity, ALL_ASSIGNMENTS_FILE_NAME)
         readDeletedAssignments(activity)
@@ -130,11 +130,11 @@ object FileStorage {
         classNames.clear()
     }
 
-    private fun readDataClass(activity: Activity) {
+    private fun readListItems(activity: Activity, fileName: String) {
 
     }
 
-    private fun readClasses(activity: Activity) {
+    private fun readCourses(activity: Activity) {
 
     }
 
