@@ -215,5 +215,7 @@
     <string name="profile_pic">Profile pic</string>
     <string name="sign_out">Sign Out</string>
     <string name="sign_in">Sign in</string>
+    <string name="import_assignments">Import assignments</string>
+    <string name="export_assignments">Export assignments</string>
 
 </resources>
