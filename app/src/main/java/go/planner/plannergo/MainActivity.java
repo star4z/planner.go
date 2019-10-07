@@ -262,6 +262,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                             FileIO.addAssignment(a);
                         }
                     }
+                    FileIO.writeFiles(this);
                     loadPanels();
                     Toast.makeText(this, R.string.file_read_complete, Toast.LENGTH_LONG).show();
                 } catch (FileNotFoundException e) {
