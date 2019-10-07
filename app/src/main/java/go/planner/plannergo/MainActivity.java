@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -43,6 +44,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -138,16 +140,15 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         FileIO.readFiles(this);
 
-        FileStorage.INSTANCE.writeAssignments(this, "test", FileIO.inProgressAssignments);
+//        FileStorage.INSTANCE.writeAssignments(this, "test", FileIO.inProgressAssignments);
 
-        FileStorage.INSTANCE.readAssignments(this, "test");
+//        FileStorage.INSTANCE.readAssignments(this, "test");
 
         checkForColorSchemeUpdate();
 
         //Call GUI setup methods
         initNavDrawer();
-        loadPanels((currentScreenIsInProgress) ? FileIO.inProgressAssignments : FileIO.completedAssignments, currentSortIndex);
-
+        loadPanels();
 
         //Call super
         super.onResume();
@@ -171,8 +172,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             boolean cTemp = currentScreenIsInProgress;
             currentScreenIsInProgress = intent.getExtras().getBoolean("mode_InProgress", true);
             if (cTemp != currentScreenIsInProgress)
-                loadPanels((currentScreenIsInProgress) ?
-                        FileIO.inProgressAssignments : FileIO.completedAssignments);
+                loadPanels();
         }
 
         super.onNewIntent(intent);
@@ -216,6 +216,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         else
             assignments = FileIO.inProgressAssignments;
 
+        String fileName = "planner.assignments.all";
+
 
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -249,6 +251,30 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 startActivity(new Intent(this, TypeActivity.class));
                 return true;
 
+            case R.id.action_import:
+                try {
+                    ArrayList<Assignment> importedAssignments =
+                            FileStorage.INSTANCE.readAssignments(this, fileName);
+                    for (Assignment a : importedAssignments) {
+                        if (FileIO.inProgressAssignments.contains(a) || FileIO.completedAssignments.contains(a)) {
+                            FileIO.replaceAssignment(this, a);
+                        } else {
+                            FileIO.addAssignment(a);
+                        }
+                    }
+                    loadPanels();
+//                    this.recreate();
+                } catch (FileNotFoundException e) {
+                    Toast.makeText(this, R.string.file_read_error, Toast.LENGTH_LONG).show();
+                }
+                return true;
+            case R.id.action_export:
+                ArrayList<Assignment> exportAssignments =
+                        new ArrayList<>(FileIO.inProgressAssignments.size() + FileIO.completedAssignments.size());
+                exportAssignments.addAll(FileIO.inProgressAssignments);
+                exportAssignments.addAll(FileIO.completedAssignments);
+                FileStorage.INSTANCE.writeAssignments(this, fileName, exportAssignments);
+                return true;
             case R.id.action_delete_all:
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this,
                         colorScheme.equals(ColorScheme.Companion.getSCHEME_DARK()) ?
@@ -262,6 +288,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 });
                 alertDialog.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
                 alertDialog.create().show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -432,6 +459,10 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             myToolbar.setTitleTextColor(colorScheme.getColor(this, Field.CP_APP_BAR_TEXT));
             myToolbar.setOverflowIcon(colorScheme.getDrawable(this, Field.CP_APP_BAR_OPT));
         }
+    }
+
+    void loadPanels() {
+        loadPanels((currentScreenIsInProgress) ? FileIO.inProgressAssignments : FileIO.completedAssignments, currentSortIndex);
     }
 
 
@@ -691,9 +722,9 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         return recyclerView;
     }
 
-    private void checkForEmptyList(){
+    private void checkForEmptyList() {
         boolean isEmpty = true;
-        for (RecyclerView.Adapter adapter: adapters) {
+        for (RecyclerView.Adapter adapter : adapters) {
             if (adapter.getItemCount() > 0) {
                 isEmpty = false;
             }

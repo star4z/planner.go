@@ -43,6 +43,11 @@
     <string name="edit_assignment_types">Edit categories</string>
     <string name="edit_classes">Edit classes</string>
 
+    <string name="file_read_error">Could not find file. Please make sure file is in
+        /root/planner_backups
+        folder.</string>
+    <string name="file_permission_error">Permission denied.</string>
+
     <!--AboutActivity-->
     <string name="store_link"><a href="https://play.google.com/store/apps/details?id=go.planner.plannergo">Play Store listing</a></string>
     <string name="about_text0">© 2018 Benjamin Phillips\nMade with Android Studio\n\nSome assets ©Google under the Apache 2.0 license.</string>

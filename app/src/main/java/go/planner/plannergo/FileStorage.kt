@@ -9,10 +9,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.PrintWriter
+import java.io.*
 import java.nio.charset.Charset
 
 
@@ -72,6 +69,7 @@ object FileStorage {
         writeDeletedAssignments(activity)
     }
 
+    @Throws(FileNotFoundException::class)
     fun readAssignments(activity: Activity, fileName: String): ArrayList<Assignment> {
         requestAppPermissions(activity)
 
