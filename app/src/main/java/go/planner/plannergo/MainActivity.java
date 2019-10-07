@@ -274,8 +274,12 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                         new ArrayList<>(FileIO.inProgressAssignments.size() + FileIO.completedAssignments.size());
                 exportAssignments.addAll(FileIO.inProgressAssignments);
                 exportAssignments.addAll(FileIO.completedAssignments);
-                FileStorage.INSTANCE.writeAssignments(this, fileName, exportAssignments);
-                Toast.makeText(this, R.string.file_save_complete, Toast.LENGTH_LONG).show();
+                try {
+                    FileStorage.INSTANCE.writeAssignments(this, fileName, exportAssignments);
+                    Toast.makeText(this, R.string.file_save_complete, Toast.LENGTH_LONG).show();
+                } catch (FileNotFoundException e) {
+                    Toast.makeText(this, R.string.file_permission_error, Toast.LENGTH_LONG).show();
+                }
                 return true;
             case R.id.action_delete_all:
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this,

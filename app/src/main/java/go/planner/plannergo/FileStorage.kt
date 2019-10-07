@@ -99,6 +99,7 @@ object FileStorage {
         return assignments
     }
 
+    @Throws(FileNotFoundException::class)
     fun writeAssignments(activity: Activity, fileName: String, assignments: ArrayList<Assignment>) {
         requestAppPermissions(activity)
 

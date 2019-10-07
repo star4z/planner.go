@@ -43,9 +43,7 @@
     <string name="edit_assignment_types">Edit categories</string>
     <string name="edit_classes">Edit classes</string>
 
-    <string name="file_read_error">Could not find file. Please make sure file is in
-        /root/planner_backups
-        folder.</string>
+    <string name="file_read_error">Could not read file.</string>
     <string name="file_permission_error">Permission denied.</string>
     <string name="file_save_complete">Saved to /root/planner_backups</string>
     <string name="file_read_complete">Successfully imported assignments</string>
