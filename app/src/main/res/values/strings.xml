@@ -47,6 +47,8 @@
         /root/planner_backups
         folder.</string>
     <string name="file_permission_error">Permission denied.</string>
+    <string name="file_save_complete">Saved to /root/planner_backups</string>
+    <string name="file_read_complete">Successfully imported assignments</string>
 
     <!--AboutActivity-->
     <string name="store_link"><a href="https://play.google.com/store/apps/details?id=go.planner.plannergo">Play Store listing</a></string>
