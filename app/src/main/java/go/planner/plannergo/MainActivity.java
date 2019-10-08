@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.SpannableString;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -39,9 +41,6 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -79,8 +78,9 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount account = null;
 
-    int RC_SIGN_IN = 13;
-
+    final int RC_SIGN_IN = 13;
+    final int RC_GET_DIR = 201;
+    final int RC_GET_FILE = 202;
 
     // drawer indices
     static final int iHeader = 0;
@@ -140,10 +140,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         FileIO.readFiles(this);
 
-//        FileStorage.INSTANCE.writeAssignments(this, "test", FileIO.inProgressAssignments);
-
-//        FileStorage.INSTANCE.readAssignments(this, "test");
-
         checkForColorSchemeUpdate();
 
         //Call GUI setup methods
@@ -197,7 +193,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
     @Override
-    public View onCreateView(View parent, String name, @NotNull Context context, @NotNull AttributeSet attrs) {
+    public View onCreateView(View parent, String name, @NonNull Context context,
+                             @NonNull AttributeSet attrs) {
         if (name.equals("androidx.appcompat.view.menu.ListMenuItemView") &&
                 parent.getParent() instanceof FrameLayout) {
 
@@ -324,6 +321,16 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
 
+
+    private void exportFiles(Uri data) {
+
+    }
+
+    private void importFiles(Uri data) {
+
+    }
+
+
     @NonNull
     @Override
     public ColorScheme getColorScheme() {
@@ -441,12 +448,20 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
+        switch (requestCode){
+            case RC_SIGN_IN:
+                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                handleSignInResult(task);
+                break;
+            case RC_GET_DIR:
+                exportFiles(data.getData());
+                break;
+            case RC_GET_FILE:
+                importFiles(data.getData());
+                break;
         }
     }
 
