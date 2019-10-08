@@ -261,8 +261,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                                     MainActivity.this, fileName);
                             importedAssignments.addAll(temp);
                         } catch (FileNotFoundException e) {
-                            Toast.makeText(MainActivity.this, R.string.file_read_error,
-                                    Toast.LENGTH_LONG).show();
+
                         }
                     }
                 };
@@ -281,6 +280,9 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                         FileIO.writeFiles(MainActivity.this);
                         loadPanels();
                         Toast.makeText(MainActivity.this, R.string.file_read_complete,
+                                Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(MainActivity.this, R.string.file_read_error,
                                 Toast.LENGTH_LONG).show();
                     }
                 };
