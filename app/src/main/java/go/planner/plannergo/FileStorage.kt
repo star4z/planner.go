@@ -71,30 +71,52 @@ object FileStorage {
 
     @Throws(FileNotFoundException::class)
     fun readAssignments(activity: Activity, fileName: String): ArrayList<Assignment> {
-        requestAppPermissions(activity)
 
+        var assignments =  ArrayList<Assignment>()
+        fun onFinish() {
+            if (hasReadPermissions(activity) && hasWritePermissions(activity)) {
+                val root = Environment.getExternalStorageDirectory()
+                val dir = File("${root.absolutePath}/${folderName}/")
+                Log.d(TAG, "path=${root.absolutePath}")
+                Log.d(TAG, "contents=${root.list()}")
+                dir.mkdirs()
+                val file = File(dir, "${fileName}.json")
 
-        val root = Environment.getExternalStorageDirectory()
-        val dir = File("${root.absolutePath}/${folderName}/")
-        Log.d(TAG, "path=${root.absolutePath}")
-        Log.d(TAG, "contents=${root.list()}")
-        dir.mkdirs()
-        val file = File(dir, "${fileName}.json")
+                val fIn = FileInputStream(file)
+                val data = ByteArray(file.length().toInt())
+                fIn.read(data)
+                fIn.close()
 
-        val fIn = FileInputStream(file)
-        val data = ByteArray(file.length().toInt())
-        fIn.read(data)
-        fIn.close()
+                val jsonValue = String(data, Charset.defaultCharset())
 
-        val jsonValue = String(data, Charset.defaultCharset())
+                val gson = Gson()
 
-        val gson = Gson()
+                val type = object : TypeToken<ArrayList<Assignment>>() {}.type
 
-        val type = object : TypeToken<ArrayList<Assignment>>() {}.type
+                assignments = gson.fromJson(jsonValue, type)
 
-        val assignments: ArrayList<Assignment> = gson.fromJson(jsonValue, type)
+                Log.d(TAG, "assignments=${assignments}")
+            } else {
+                throw FileNotFoundException()
+            }
+        }
 
-        Log.d(TAG, "assignments=${assignments}")
+        val notifyingThread: NotifyingThread = object : NotifyingThread() {
+            override fun doRun() {
+                requestAppPermissions(activity)
+            }
+        }
+
+        val listener = object: ThreadCompleteListener {
+            override fun notifyOfThreadComplete(thread: Thread?) {
+                Log.d(TAG, "running")
+                onFinish()
+            }
+        }
+
+        notifyingThread.addListener(listener)
+
+        notifyingThread.run()
 
         return assignments
     }

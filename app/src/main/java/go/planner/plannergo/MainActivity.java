@@ -252,22 +252,42 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 return true;
 
             case R.id.action_import:
-                try {
-                    ArrayList<Assignment> importedAssignments =
-                            FileStorage.INSTANCE.readAssignments(this, fileName);
-                    for (Assignment a : importedAssignments) {
-                        if (FileIO.inProgressAssignments.contains(a) || FileIO.completedAssignments.contains(a)) {
-                            FileIO.replaceAssignment(this, a);
-                        } else {
-                            FileIO.addAssignment(a);
+                ArrayList<Assignment> importedAssignments = new ArrayList<>();
+                NotifyingThread notifyingThread = new NotifyingThread() {
+                    @Override
+                    public void doRun() {
+                        try {
+                            ArrayList<Assignment> temp = FileStorage.INSTANCE.readAssignments(
+                                    MainActivity.this, fileName);
+                            importedAssignments.addAll(temp);
+                        } catch (FileNotFoundException e) {
+                            Toast.makeText(MainActivity.this, R.string.file_read_error,
+                                    Toast.LENGTH_LONG).show();
                         }
                     }
-                    FileIO.writeFiles(this);
-                    loadPanels();
-                    Toast.makeText(this, R.string.file_read_complete, Toast.LENGTH_LONG).show();
-                } catch (FileNotFoundException e) {
-                    Toast.makeText(this, R.string.file_read_error, Toast.LENGTH_LONG).show();
-                }
+                };
+
+                ThreadCompleteListener listener = thread -> {
+                    Log.d(TAG, "running");
+                    Log.d(TAG, "importedAssignments=" + importedAssignments);
+                    if (!importedAssignments.isEmpty()) {
+                        for (Assignment a : importedAssignments) {
+                            if (FileIO.inProgressAssignments.contains(a) || FileIO.completedAssignments.contains(a)) {
+                                FileIO.replaceAssignment(MainActivity.this, a);
+                            } else {
+                                FileIO.addAssignment(a);
+                            }
+                        }
+                        FileIO.writeFiles(MainActivity.this);
+                        loadPanels();
+                        Toast.makeText(MainActivity.this, R.string.file_read_complete,
+                                Toast.LENGTH_LONG).show();
+                    }
+                };
+
+                notifyingThread.addListener(listener);
+
+                notifyingThread.run();
                 return true;
             case R.id.action_export:
                 ArrayList<Assignment> exportAssignments =
