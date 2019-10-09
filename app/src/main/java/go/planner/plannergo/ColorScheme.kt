@@ -9,10 +9,12 @@ enum class Field {
     IP_APP_BAR_TEXT, //in_progress_app_bar_text
     IP_APP_BAR_HAM, // //in_progress_app_bar_hamburger // icon
     IP_APP_BAR_OPT, // //in_progress_app_bar_options //icon
+    IP_APP_BAR_FILTER, //icon
     CP_APP_BAR_BG, // //completed_app_bar_background
     CP_APP_BAR_TEXT, // //completed_app_bar_text
     CP_APP_BAR_HAM, //completed_app_bar_hamburger
     CP_APP_BAR_OPT, //completed_app_bar_options
+    CP_APP_BAR_FILTER,
     TR_APP_BAR_BG, //trash_app_bar_background
     TR_APP_BAR_TEXT, //trash_app_bar_text
     TR_APP_BAR_HAM, //trash_app_bar_hamburger
@@ -102,10 +104,12 @@ class ColorScheme internal constructor(private val colors: HashMap<Field, Int>) 
                     put(Field.IP_APP_BAR_TEXT, R.color.textBlack)
                     put(Field.IP_APP_BAR_HAM, R.drawable.ic_dehaze_black_24dp)
                     put(Field.IP_APP_BAR_OPT, R.drawable.ic_more_vert_black_24dp)
+                    put(Field.IP_APP_BAR_FILTER, R.drawable.ic_filter_list_black_24dp)
                     put(Field.CP_APP_BAR_BG, R.color.nav_color_2_bright)
                     put(Field.CP_APP_BAR_TEXT, R.color.textBlack)
                     put(Field.CP_APP_BAR_HAM, R.drawable.ic_dehaze_black_24dp)
                     put(Field.CP_APP_BAR_OPT, R.drawable.ic_more_vert_black_24dp)
+                    put(Field.CP_APP_BAR_FILTER, R.drawable.ic_filter_list_black_24dp)
                     put(Field.TR_APP_BAR_BG, R.color.nav_color_3_bright)
                     put(Field.TR_APP_BAR_TEXT, R.color.textBlack)
                     put(Field.TR_APP_BAR_HAM, R.drawable.ic_dehaze_black_24dp)
@@ -169,10 +173,12 @@ class ColorScheme internal constructor(private val colors: HashMap<Field, Int>) 
                     put(Field.IP_APP_BAR_TEXT, R.color.nav_color_1_bright)
                     put(Field.IP_APP_BAR_HAM, R.drawable.ic_dehaze_blue_24dp)
                     put(Field.IP_APP_BAR_OPT, R.drawable.ic_more_vert_blue_24dp)
+                    put(Field.IP_APP_BAR_FILTER, R.drawable.ic_filter_list_blue_24dp)
                     put(Field.CP_APP_BAR_BG, R.color.darkPrimaryDark)
                     put(Field.CP_APP_BAR_TEXT, R.color.nav_color_2_bright)
                     put(Field.CP_APP_BAR_HAM, R.drawable.ic_dehaze_purple_24dp)
                     put(Field.CP_APP_BAR_OPT, R.drawable.ic_more_vert_purple_24dp)
+                    put(Field.CP_APP_BAR_FILTER, R.drawable.ic_filter_list_purple_24dp)
                     put(Field.TR_APP_BAR_BG, R.color.darkPrimaryDark)
                     put(Field.TR_APP_BAR_TEXT, R.color.nav_color_3_bright)
                     put(Field.TR_APP_BAR_HAM, R.drawable.ic_dehaze_red_24dp)

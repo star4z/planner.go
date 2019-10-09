@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private DrawerAdapter mDrawerAdapter;
+    private Menu menu;
 
     GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount account = null;
@@ -179,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         Log.v(TAG, "menu=" + menu);
         getMenuInflater().inflate(R.menu.main_menu, menu);
         for (int i = 0; i < menu.size(); i++) {
@@ -192,6 +194,15 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
         updateUI(account);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Log.d(TAG, "Preparing options menu");
+        MenuItem filterItem = menu.findItem(R.id.filters);
+        Field field = currentScreenIsInProgress? Field.IP_APP_BAR_FILTER : Field.CP_APP_BAR_FILTER;
+        filterItem.setIcon(colorScheme.getDrawable(this, field));
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -401,15 +412,13 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
 
         mDrawerList.setOnItemClickListener((parent, view, position, id) -> {
-
+            boolean oldScreenIsInProgress = currentScreenIsInProgress;
             switch (position) {
                 case iInProgress:
                     loadPanels(FileIO.inProgressAssignments);
-                    currentScreenIsInProgress = true;
                     break;
                 case iCompleted:
                     loadPanels(FileIO.completedAssignments);
-                    currentScreenIsInProgress = false;
                     break;
                 case iTrash:
                     mDrawerAdapter.setSelectedPos(3);
@@ -422,6 +431,10 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     break;
                 case iFeedback:
                     startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
+            }
+            if (oldScreenIsInProgress != currentScreenIsInProgress) {
+                Log.d(TAG, "invalidating options menu");
+                invalidateOptionsMenu();
             }
             mDrawerLayout.closeDrawers();
         });
