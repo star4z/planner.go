@@ -224,5 +224,6 @@
     <string name="sign_in">Sign in</string>
     <string name="import_assignments">Import assignments</string>
     <string name="export_assignments">Export assignments</string>
+    <string name="filters">Filters</string>
 
 </resources>
