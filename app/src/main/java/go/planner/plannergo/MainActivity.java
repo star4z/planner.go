@@ -41,6 +41,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -280,8 +281,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         }
     }
 
-
-
     private void exportFiles(Uri data) {
         ArrayList<Assignment> exportAssignments =
                 new ArrayList<>(FileIO.inProgressAssignments.size() + FileIO.completedAssignments.size());
@@ -303,18 +302,22 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
     private void importFiles(Uri data) {
-        ArrayList<Assignment> importedAssignments = FileStorage.INSTANCE.readAssignments(this,
-                data);
-        for (Assignment a : importedAssignments) {
-            if (FileIO.inProgressAssignments.contains(a) || FileIO.completedAssignments.contains(a)) {
-                FileIO.replaceAssignment(this, a);
-            } else {
-                FileIO.addAssignment(a);
+        try {
+            ArrayList<Assignment> importedAssignments = FileStorage.INSTANCE.readAssignments(this,
+                    data);
+            for (Assignment a : importedAssignments) {
+                if (FileIO.inProgressAssignments.contains(a) || FileIO.completedAssignments.contains(a)) {
+                    FileIO.replaceAssignment(this, a);
+                } else {
+                    FileIO.addAssignment(a);
+                }
             }
+            FileIO.writeFiles(this);
+            loadPanels();
+            Toast.makeText(this, R.string.file_read_complete, Toast.LENGTH_LONG).show();
+        } catch (IllegalStateException | JsonSyntaxException e) {
+            Toast.makeText(this, R.string.file_read_error, Toast.LENGTH_LONG).show();
         }
-        FileIO.writeFiles(this);
-        loadPanels();
-        Toast.makeText(this, R.string.file_read_complete, Toast.LENGTH_LONG).show();
     }
 
 
@@ -438,7 +441,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode){
+        switch (requestCode) {
             case RC_SIGN_IN:
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                 handleSignInResult(task);
@@ -455,7 +458,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     importFiles(data.getData());
                 } else {
                     Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
-                }                break;
+                }
+                break;
         }
     }
 

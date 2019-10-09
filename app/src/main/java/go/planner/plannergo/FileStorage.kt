@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.documentfile.provider.DocumentFile
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import java.io.*
 import java.nio.charset.Charset
@@ -125,6 +126,7 @@ object FileStorage {
         return assignments
     }
 
+    @Throws(IllegalStateException::class, JsonSyntaxException::class)
     fun readAssignments(activity: Activity, fileUri: Uri): ArrayList<Assignment> {
         val document = DocumentFile.fromSingleUri(activity, fileUri)
         val contentResolver = activity.contentResolver
