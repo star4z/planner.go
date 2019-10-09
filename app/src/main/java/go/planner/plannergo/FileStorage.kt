@@ -13,6 +13,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.*
 import java.nio.charset.Charset
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 object FileStorage {
@@ -123,8 +125,20 @@ object FileStorage {
         return assignments
     }
 
-    fun readAssignments(activity: Activity, fileUri: Uri) : ArrayList<Assignment> {
-        return ArrayList()
+    fun readAssignments(activity: Activity, fileUri: Uri): ArrayList<Assignment> {
+        val document = DocumentFile.fromSingleUri(activity, fileUri)
+        val contentResolver = activity.contentResolver
+        val fileInStream = contentResolver.openInputStream(document!!.uri)!!
+        val scanner = Scanner(fileInStream)
+        val jsonValue = scanner.nextLine()
+        scanner.close()
+
+        val gson = Gson()
+        val type = object : TypeToken<ArrayList<Assignment>>() {}.type
+        val assignments: ArrayList<Assignment> = gson.fromJson(jsonValue, type)
+
+        Log.d(TAG, "assignments=${assignments}")
+        return assignments
     }
 
     @Throws(FileNotFoundException::class)

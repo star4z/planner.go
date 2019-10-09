@@ -250,49 +250,15 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 return true;
 
             case R.id.action_import:
-                ArrayList<Assignment> importedAssignments = new ArrayList<>();
-                NotifyingThread notifyingThread = new NotifyingThread() {
-                    @Override
-                    public void doRun() {
-                        try {
-                            ArrayList<Assignment> temp = FileStorage.INSTANCE.readAssignments(
-                                    MainActivity.this, fileName);
-                            importedAssignments.addAll(temp);
-                        } catch (FileNotFoundException e) {
-
-                        }
-                    }
-                };
-
-                ThreadCompleteListener listener = thread -> {
-                    Log.d(TAG, "running");
-                    Log.d(TAG, "importedAssignments=" + importedAssignments);
-                    if (!importedAssignments.isEmpty()) {
-                        for (Assignment a : importedAssignments) {
-                            if (FileIO.inProgressAssignments.contains(a) || FileIO.completedAssignments.contains(a)) {
-                                FileIO.replaceAssignment(MainActivity.this, a);
-                            } else {
-                                FileIO.addAssignment(a);
-                            }
-                        }
-                        FileIO.writeFiles(MainActivity.this);
-                        loadPanels();
-                        Toast.makeText(MainActivity.this, R.string.file_read_complete,
-                                Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(MainActivity.this, R.string.file_read_error,
-                                Toast.LENGTH_LONG).show();
-                    }
-                };
-
-                notifyingThread.addListener(listener);
-
-                notifyingThread.run();
+                Intent importIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                importIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                importIntent.setType("application/*");
+                startActivityForResult(Intent.createChooser(importIntent, "Choose file"), RC_GET_FILE);
                 return true;
             case R.id.action_export:
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                intent.addCategory(Intent.CATEGORY_DEFAULT);
-                startActivityForResult(Intent.createChooser(intent, "Choose directory"), RC_GET_DIR);
+                Intent exportIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                exportIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                startActivityForResult(Intent.createChooser(exportIntent, "Choose directory"), RC_GET_DIR);
                 return true;
             case R.id.action_delete_all:
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this,
@@ -332,12 +298,23 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
     private String generateFileName() {
-        SimpleDateFormat sdf = (SimpleDateFormat) SimpleDateFormat.getDateInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy_kkmmss", Locale.getDefault());
         return "planner_backup_" + sdf.format(new Date());
     }
 
     private void importFiles(Uri data) {
-
+        ArrayList<Assignment> importedAssignments = FileStorage.INSTANCE.readAssignments(this,
+                data);
+        for (Assignment a : importedAssignments) {
+            if (FileIO.inProgressAssignments.contains(a) || FileIO.completedAssignments.contains(a)) {
+                FileIO.replaceAssignment(this, a);
+            } else {
+                FileIO.addAssignment(a);
+            }
+        }
+        FileIO.writeFiles(this);
+        loadPanels();
+        Toast.makeText(this, R.string.file_read_complete, Toast.LENGTH_LONG).show();
     }
 
 
@@ -467,11 +444,18 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 handleSignInResult(task);
                 break;
             case RC_GET_DIR:
-                exportFiles(data.getData());
+                if (data != null) {
+                    exportFiles(data.getData());
+                } else {
+                    Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
+                }
                 break;
             case RC_GET_FILE:
-                importFiles(data.getData());
-                break;
+                if (data != null) {
+                    importFiles(data.getData());
+                } else {
+                    Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
+                }                break;
         }
     }
 
