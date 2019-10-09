@@ -27,9 +27,9 @@ import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_tutorial2.*
 import java.io.File
 
-const val TAG = "TutorialActivity"
 
 class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
+    val tag = "TutorialActivity"
 
     private lateinit var mP: MediaPlayer
     private lateinit var touchHelper: ItemTouchHelper
@@ -212,7 +212,7 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
         linear_layout.addView(b)
         views.add(b)
 
-        Log.i(TAG, "millis= $millis")
+        Log.i(tag, "millis= $millis")
 
         b.postDelayed({
             b.visibility = View.VISIBLE
@@ -304,7 +304,7 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
                 val fileName = "planner.assignments.types"
                 val file = File(filesDir, fileName)
                 if (file.createNewFile()) {
-                    Log.v(TAG, "$fileName created")
+                    Log.v(tag, "$fileName created")
                 }
                 if (!FileIO.types.contains(text))
                     FileIO.types.add(text)

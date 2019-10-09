@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.SpannableString;
@@ -18,8 +19,10 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -38,17 +41,17 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.google.gson.JsonSyntaxException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 
@@ -77,8 +80,9 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount account = null;
 
-    int RC_SIGN_IN = 13;
-
+    final int RC_SIGN_IN = 13;
+    final int RC_GET_DIR = 201;
+    final int RC_GET_FILE = 202;
 
     // drawer indices
     static final int iHeader = 0;
@@ -142,8 +146,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
         //Call GUI setup methods
         initNavDrawer();
-        loadPanels((currentScreenIsInProgress) ? FileIO.inProgressAssignments : FileIO.completedAssignments, currentSortIndex);
-
+        loadPanels();
 
         //Call super
         super.onResume();
@@ -167,8 +170,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             boolean cTemp = currentScreenIsInProgress;
             currentScreenIsInProgress = intent.getExtras().getBoolean("mode_InProgress", true);
             if (cTemp != currentScreenIsInProgress)
-                loadPanels((currentScreenIsInProgress) ?
-                        FileIO.inProgressAssignments : FileIO.completedAssignments);
+                loadPanels();
         }
 
         super.onNewIntent(intent);
@@ -193,7 +195,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
     @Override
-    public View onCreateView(View parent, String name, @NotNull Context context, @NotNull AttributeSet attrs) {
+    public View onCreateView(View parent, String name, @NonNull Context context,
+                             @NonNull AttributeSet attrs) {
         if (name.equals("androidx.appcompat.view.menu.ListMenuItemView") &&
                 parent.getParent() instanceof FrameLayout) {
 
@@ -211,6 +214,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             assignments = FileIO.completedAssignments;
         else
             assignments = FileIO.inProgressAssignments;
+
+        String fileName = "planner.assignments.all";
 
 
         switch (item.getItemId()) {
@@ -245,6 +250,17 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 startActivity(new Intent(this, TypeActivity.class));
                 return true;
 
+            case R.id.action_import:
+                Intent importIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                importIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                importIntent.setType("application/*");
+                startActivityForResult(Intent.createChooser(importIntent, "Choose file"), RC_GET_FILE);
+                return true;
+            case R.id.action_export:
+                Intent exportIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                exportIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                startActivityForResult(Intent.createChooser(exportIntent, "Choose directory"), RC_GET_DIR);
+                return true;
             case R.id.action_delete_all:
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this,
                         colorScheme.equals(ColorScheme.Companion.getSCHEME_DARK()) ?
@@ -258,9 +274,49 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 });
                 alertDialog.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
                 alertDialog.create().show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
+        }
+    }
+
+    private void exportFiles(Uri data) {
+        ArrayList<Assignment> exportAssignments =
+                new ArrayList<>(FileIO.inProgressAssignments.size() + FileIO.completedAssignments.size());
+        exportAssignments.addAll(FileIO.inProgressAssignments);
+        exportAssignments.addAll(FileIO.completedAssignments);
+        try {
+            FileStorage.INSTANCE.writeAssignments(this, generateFileName(), data, exportAssignments);
+            String start = getResources().getString(R.string.file_save_complete);
+            String end = data.getPath();
+            Toast.makeText(this, start + end, Toast.LENGTH_LONG).show();
+        } catch (FileNotFoundException e) {
+            Toast.makeText(this, R.string.file_permission_error, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private String generateFileName() {
+        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy_kkmmss", Locale.getDefault());
+        return "planner_backup_" + sdf.format(new Date());
+    }
+
+    private void importFiles(Uri data) {
+        try {
+            ArrayList<Assignment> importedAssignments = FileStorage.INSTANCE.readAssignments(this,
+                    data);
+            for (Assignment a : importedAssignments) {
+                if (FileIO.inProgressAssignments.contains(a) || FileIO.completedAssignments.contains(a)) {
+                    FileIO.replaceAssignment(this, a);
+                } else {
+                    FileIO.addAssignment(a);
+                }
+            }
+            FileIO.writeFiles(this);
+            loadPanels();
+            Toast.makeText(this, R.string.file_read_complete, Toast.LENGTH_LONG).show();
+        } catch (IllegalStateException | JsonSyntaxException e) {
+            Toast.makeText(this, R.string.file_read_error, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -382,12 +438,28 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            handleSignInResult(task);
+        switch (requestCode) {
+            case RC_SIGN_IN:
+                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                handleSignInResult(task);
+                break;
+            case RC_GET_DIR:
+                if (data != null) {
+                    exportFiles(data.getData());
+                } else {
+                    Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
+                }
+                break;
+            case RC_GET_FILE:
+                if (data != null) {
+                    importFiles(data.getData());
+                } else {
+                    Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
+                }
+                break;
         }
     }
 
@@ -428,6 +500,10 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             myToolbar.setTitleTextColor(colorScheme.getColor(this, Field.CP_APP_BAR_TEXT));
             myToolbar.setOverflowIcon(colorScheme.getDrawable(this, Field.CP_APP_BAR_OPT));
         }
+    }
+
+    void loadPanels() {
+        loadPanels((currentScreenIsInProgress) ? FileIO.inProgressAssignments : FileIO.completedAssignments, currentSortIndex);
     }
 
 
@@ -687,9 +763,9 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         return recyclerView;
     }
 
-    private void checkForEmptyList(){
+    private void checkForEmptyList() {
         boolean isEmpty = true;
-        for (RecyclerView.Adapter adapter: adapters) {
+        for (RecyclerView.Adapter adapter : adapters) {
             if (adapter.getItemCount() > 0) {
                 isEmpty = false;
             }
