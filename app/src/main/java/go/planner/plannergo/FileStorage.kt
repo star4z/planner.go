@@ -3,10 +3,12 @@ package go.planner.plannergo
 import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.documentfile.provider.DocumentFile
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.*
@@ -72,7 +74,7 @@ object FileStorage {
     @Throws(FileNotFoundException::class)
     fun readAssignments(activity: Activity, fileName: String): ArrayList<Assignment> {
 
-        var assignments =  ArrayList<Assignment>()
+        var assignments = ArrayList<Assignment>()
         fun onFinish() {
             if (hasReadPermissions(activity) && hasWritePermissions(activity)) {
                 val root = Environment.getExternalStorageDirectory()
@@ -107,7 +109,7 @@ object FileStorage {
             }
         }
 
-        val listener = object: ThreadCompleteListener {
+        val listener = object : ThreadCompleteListener {
             override fun notifyOfThreadComplete(thread: Thread?) {
                 Log.d(TAG, "running")
                 onFinish()
@@ -119,6 +121,10 @@ object FileStorage {
         notifyingThread.run()
 
         return assignments
+    }
+
+    fun readAssignments(activity: Activity, fileUri: Uri) : ArrayList<Assignment> {
+        return ArrayList()
     }
 
     @Throws(FileNotFoundException::class)
@@ -142,6 +148,27 @@ object FileStorage {
         pWriter.flush()
         pWriter.close()
         fOut.close()
+
+        Log.v(TAG, "Wrote assignments to file.")
+    }
+
+    @Throws(FileNotFoundException::class, UnsupportedOperationException::class)
+    fun writeAssignments(activity: Activity, fileName: String, dir: Uri,
+                         assignments: ArrayList<Assignment>) {
+//        requestAppPermissions(activity)
+
+        val gson = Gson()
+        val jsonValue = gson.toJson(assignments)
+
+        val directoryDF = DocumentFile.fromTreeUri(activity, dir)
+        val childDF = directoryDF?.createFile("application/json", fileName)
+        val contentResolver = activity.contentResolver
+        val outputStream = contentResolver.openOutputStream(childDF!!.uri)!!
+        val printWriter = PrintWriter(outputStream)
+        printWriter.println(jsonValue)
+        printWriter.flush()
+        printWriter.close()
+        outputStream.close()
 
         Log.v(TAG, "Wrote assignments to file.")
     }

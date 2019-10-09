@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 
@@ -289,16 +290,9 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 notifyingThread.run();
                 return true;
             case R.id.action_export:
-                ArrayList<Assignment> exportAssignments =
-                        new ArrayList<>(FileIO.inProgressAssignments.size() + FileIO.completedAssignments.size());
-                exportAssignments.addAll(FileIO.inProgressAssignments);
-                exportAssignments.addAll(FileIO.completedAssignments);
-                try {
-                    FileStorage.INSTANCE.writeAssignments(this, fileName, exportAssignments);
-                    Toast.makeText(this, R.string.file_save_complete, Toast.LENGTH_LONG).show();
-                } catch (FileNotFoundException e) {
-                    Toast.makeText(this, R.string.file_permission_error, Toast.LENGTH_LONG).show();
-                }
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                startActivityForResult(Intent.createChooser(intent, "Choose directory"), RC_GET_DIR);
                 return true;
             case R.id.action_delete_all:
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this,
@@ -323,7 +317,23 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
 
     private void exportFiles(Uri data) {
+        ArrayList<Assignment> exportAssignments =
+                new ArrayList<>(FileIO.inProgressAssignments.size() + FileIO.completedAssignments.size());
+        exportAssignments.addAll(FileIO.inProgressAssignments);
+        exportAssignments.addAll(FileIO.completedAssignments);
+        try {
+            FileStorage.INSTANCE.writeAssignments(this, generateFileName(), data, exportAssignments);
+            String start = getResources().getString(R.string.file_save_complete);
+            String end = data.getPath();
+            Toast.makeText(this, start + end, Toast.LENGTH_LONG).show();
+        } catch (FileNotFoundException e) {
+            Toast.makeText(this, R.string.file_permission_error, Toast.LENGTH_LONG).show();
+        }
+    }
 
+    private String generateFileName() {
+        SimpleDateFormat sdf = (SimpleDateFormat) SimpleDateFormat.getDateInstance();
+        return "planner_backup_" + sdf.format(new Date());
     }
 
     private void importFiles(Uri data) {
