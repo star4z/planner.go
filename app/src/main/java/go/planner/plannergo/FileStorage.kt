@@ -171,13 +171,12 @@ object FileStorage {
     @Throws(FileNotFoundException::class, UnsupportedOperationException::class)
     fun writeAssignments(activity: Activity, fileName: String, dir: Uri,
                          assignments: ArrayList<Assignment>) {
-//        requestAppPermissions(activity)
 
         val gson = Gson()
         val jsonValue = gson.toJson(assignments)
 
         val directoryDF = DocumentFile.fromTreeUri(activity, dir)
-        val childDF = directoryDF?.createFile("application/json", fileName)
+        val childDF = directoryDF?.createFile("application/json", "$fileName.json")
         val contentResolver = activity.contentResolver
         val outputStream = contentResolver.openOutputStream(childDF!!.uri)!!
         val printWriter = PrintWriter(outputStream)
