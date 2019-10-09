@@ -14,6 +14,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -183,25 +184,34 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         this.menu = menu;
         Log.v(TAG, "menu=" + menu);
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        setMenuBackground(menu);
+
+        updateUI(account);
+        return true;
+    }
+
+    private void setMenuBackground(Menu menu) {
         for (int i = 0; i < menu.size(); i++) {
             MenuItem item = menu.getItem(i);
             SpannableString s = new SpannableString(item.getTitle());
             s.setSpan(new ForegroundColorSpan(colorScheme.getColor(this, Field.DG_HEAD_TEXT)), 0,
                     s.length(), 0);
             item.setTitle(s);
-
         }
-
-        updateUI(account);
-        return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         Log.d(TAG, "Preparing options menu");
+
         MenuItem filterItem = menu.findItem(R.id.filters);
+
         Field field = currentScreenIsInProgress? Field.IP_APP_BAR_FILTER : Field.CP_APP_BAR_FILTER;
         filterItem.setIcon(colorScheme.getDrawable(this, field));
+
+        SubMenu submenu = filterItem.getSubMenu();
+        setMenuBackground(submenu);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
