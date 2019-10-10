@@ -185,8 +185,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         Log.v(TAG, "menu=" + menu);
         getMenuInflater().inflate(R.menu.main_menu, menu);
         setMenuBackground(menu);
-
-        updateUI(account);
         return true;
     }
 
