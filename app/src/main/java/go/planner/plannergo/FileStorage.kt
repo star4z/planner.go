@@ -176,7 +176,7 @@ object FileStorage {
         val jsonValue = gson.toJson(assignments)
 
         val directoryDF = DocumentFile.fromTreeUri(activity, dir)
-        val childDF = directoryDF?.createFile("application/json", "$fileName.json")
+        val childDF = directoryDF?.createFile("application/json", fileName)
         val contentResolver = activity.contentResolver
         val outputStream = contentResolver.openOutputStream(childDF!!.uri)!!
         val printWriter = PrintWriter(outputStream)

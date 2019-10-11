@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
         MenuItem filterItem = menu.findItem(R.id.filters);
 
-        Field field = currentScreenIsInProgress? Field.IP_APP_BAR_FILTER : Field.CP_APP_BAR_FILTER;
+        Field field = currentScreenIsInProgress ? Field.IP_APP_BAR_FILTER : Field.CP_APP_BAR_FILTER;
         filterItem.setIcon(colorScheme.getDrawable(this, field));
 
         SubMenu submenu = filterItem.getSubMenu();
@@ -306,10 +306,11 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         exportAssignments.addAll(FileIO.inProgressAssignments);
         exportAssignments.addAll(FileIO.completedAssignments);
         try {
-            FileStorage.INSTANCE.writeAssignments(this, generateFileName(), data, exportAssignments);
+            String fileName = generateFileName();
+            FileStorage.INSTANCE.writeAssignments(this, fileName, data, exportAssignments);
             String start = getResources().getString(R.string.file_save_complete);
-            String end = data.getPath();
-            Toast.makeText(this, start + end, Toast.LENGTH_LONG).show();
+            String end = FileUtil.getFullPathFromTreeUri(data, this);
+            Toast.makeText(this, start + " " + end + "/" + fileName, Toast.LENGTH_LONG).show();
         } catch (FileNotFoundException e) {
             Toast.makeText(this, R.string.file_permission_error, Toast.LENGTH_LONG).show();
         }
@@ -317,7 +318,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
     private String generateFileName() {
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy_kkmmss", Locale.getDefault());
-        return "planner_backup_" + sdf.format(new Date());
+        return "planner_backup_" + sdf.format(new Date()) + ".json";
     }
 
     private void importFiles(Uri data) {
