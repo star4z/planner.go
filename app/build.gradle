@@ -48,7 +48,12 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     testImplementation "com.google.truth:truth:1.0"
 
-
+    implementation('com.google.api-client:google-api-client-android:1.26.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
 }
 
 apply plugin: 'kotlin-android'
