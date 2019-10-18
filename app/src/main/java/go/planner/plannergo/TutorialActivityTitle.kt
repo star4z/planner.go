@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NavUtils
 
 class TutorialActivityTitle : AppCompatActivity() {
 
@@ -17,6 +18,6 @@ class TutorialActivityTitle : AppCompatActivity() {
     }
 
     fun onQuit(@Suppress("UNUSED_PARAMETER") v: View) {
-        startActivity(Intent(this, MainActivity::class.java))
+        NavUtils.navigateUpTo(this, Intent(this, MainActivity::class.java))
     }
 }
