@@ -43,7 +43,7 @@
     <string name="edit_assignment_types">Edit categories</string>
     <string name="edit_classes">Edit classes</string>
 
-<!--    Import/Export toast messages-->
+    <!--    Import/Export toast messages-->
     <string name="file_read_error">Could not read file.</string>
     <string name="file_permission_error">Permission denied.</string>
     <string name="file_save_complete">Saved to</string>
@@ -226,4 +226,6 @@
     <string name="export_assignments">Export assignments</string>
     <string name="filters">Filters</string>
 
+    <!--    Google api stuff-->
+    <string name="login_error">Error logging in.</string>
 </resources>

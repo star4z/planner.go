@@ -39,9 +39,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.File;
@@ -81,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
     GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount account = null;
+    private DriveServiceHelper mDriveServiceHelper;
+
 
     final int RC_SIGN_IN = 13;
     final int RC_GET_DIR = 201;
@@ -123,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         GoogleSignInOptions gso =
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestEmail()
+                        .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
                         .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
@@ -489,12 +498,29 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
+            GoogleAccountCredential credential =
+                    GoogleAccountCredential.usingOAuth2(
+                            this, Collections.singleton(DriveScopes.DRIVE_FILE));
+            credential.setSelectedAccount(account.getAccount());
+            Drive googleDriveService =
+                    new Drive.Builder(
+                            AndroidHttp.newCompatibleTransport(),
+                            new GsonFactory(),
+                            credential)
+                            .setApplicationName(getApplicationInfo().name)
+                            .build();
+
+            // The DriveServiceHelper encapsulates all REST API and SAF functionality.
+            // Its instantiation is required before handling any onClick actions.
+            mDriveServiceHelper = new DriveServiceHelper(googleDriveService);
+
             // Signed in successfully, show authenticated UI.
             updateUI(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            Toast.makeText(this, R.string.login_error, Toast.LENGTH_LONG).show();
             updateUI(null);
         }
     }
