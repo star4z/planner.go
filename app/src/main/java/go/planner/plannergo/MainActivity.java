@@ -50,6 +50,8 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.gson.JsonSyntaxException;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -83,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private DrawerAdapter mDrawerAdapter;
-    private Menu menu;
 
     GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount account = null;
@@ -190,7 +191,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
         Log.v(TAG, "menu=" + menu);
         getMenuInflater().inflate(R.menu.main_menu, menu);
         setMenuBackground(menu);
@@ -236,14 +236,14 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NotNull MenuItem item) {
         final ArrayList<Assignment> assignments;
         if (getTitle().toString().equals(getResources().getString(R.string.header_completed)))
             assignments = FileIO.completedAssignments;
         else
             assignments = FileIO.inProgressAssignments;
 
-        String fileName = "planner.assignments.all";
+//        String fileName = "planner.assignments.all";
 
 
         switch (item.getItemId()) {
@@ -501,7 +501,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             GoogleAccountCredential credential =
                     GoogleAccountCredential.usingOAuth2(
                             this, Collections.singleton(DriveScopes.DRIVE_FILE));
-            credential.setSelectedAccount(account.getAccount());
+            credential.setSelectedAccount(account != null ? account.getAccount() : null);
             Drive googleDriveService =
                     new Drive.Builder(
                             AndroidHttp.newCompatibleTransport(),
