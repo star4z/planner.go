@@ -228,4 +228,6 @@
 
     <!--    Google api stuff-->
     <string name="login_error">Error logging in.</string>
+    <string name="import_from_drive">Import from Drive</string>
+    <string name="export_to_drive">Export to Drive</string>
 </resources>

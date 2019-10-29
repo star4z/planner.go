@@ -289,6 +289,10 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 exportIntent.addCategory(Intent.CATEGORY_DEFAULT);
                 startActivityForResult(Intent.createChooser(exportIntent, "Choose directory"), RC_GET_DIR);
                 return true;
+            case R.id.action_drive_import:
+                return true;
+            case R.id.action_drive_export:
+                return true;
             case R.id.action_delete_all:
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this,
                         colorScheme.equals(ColorScheme.Companion.getSCHEME_DARK()) ?
