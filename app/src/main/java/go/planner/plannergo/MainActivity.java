@@ -90,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     private GoogleSignInAccount account = null;
     private DriveServiceHelper mDriveServiceHelper;
 
+    private DriveStorage driveStorage;
+
 
     final int RC_SIGN_IN = 13;
     final int RC_GET_DIR = 201;
@@ -143,6 +145,13 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
         this.account = GoogleSignIn.getLastSignedInAccount(this);
 
+        Log.i(TAG, "account=" + account);
+
+        if (account != null) {
+            Drive mDriveService = getDriveService(account);
+            driveStorage = new DriveStorage(mDriveService);
+            mDriveServiceHelper = new DriveServiceHelper(mDriveService);
+        }
     }
 
     /**
@@ -290,8 +299,16 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 startActivityForResult(Intent.createChooser(exportIntent, "Choose directory"), RC_GET_DIR);
                 return true;
             case R.id.action_drive_import:
+
                 return true;
             case R.id.action_drive_export:
+                if (driveStorage != null) {
+                    driveStorage.createBackup(generateFileName(), getAssignments())
+                            .addOnSuccessListener(this::readFile)
+                            .addOnFailureListener(Throwable::printStackTrace);
+                } else {
+                    Log.d(TAG, "driveStorage was not initialized.");
+                }
                 return true;
             case R.id.action_delete_all:
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this,
@@ -314,10 +331,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     }
 
     private void exportFiles(Uri data) {
-        ArrayList<Assignment> exportAssignments =
-                new ArrayList<>(FileIO.inProgressAssignments.size() + FileIO.completedAssignments.size());
-        exportAssignments.addAll(FileIO.inProgressAssignments);
-        exportAssignments.addAll(FileIO.completedAssignments);
+        ArrayList<Assignment> exportAssignments = getAssignments();
         try {
             String fileName = generateFileName();
             FileStorage.INSTANCE.writeAssignments(this, fileName, data, exportAssignments);
@@ -327,6 +341,15 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         } catch (FileNotFoundException e) {
             Toast.makeText(this, R.string.file_permission_error, Toast.LENGTH_LONG).show();
         }
+    }
+
+    @NotNull
+    private ArrayList<Assignment> getAssignments() {
+        ArrayList<Assignment> exportAssignments =
+                new ArrayList<>(FileIO.inProgressAssignments.size() + FileIO.completedAssignments.size());
+        exportAssignments.addAll(FileIO.inProgressAssignments);
+        exportAssignments.addAll(FileIO.completedAssignments);
+        return exportAssignments;
     }
 
     private String generateFileName() {
@@ -353,6 +376,25 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         }
     }
 
+    /**
+     * Retrieves the title and content of a file identified by {@code fileId} and populates the UI.
+     */
+    private void readFile(String fileId) {
+        if (mDriveServiceHelper != null) {
+            Log.d(TAG, "Reading file " + fileId);
+
+            mDriveServiceHelper.readFile(fileId)
+                    .addOnSuccessListener(nameAndContent -> {
+                        String name = nameAndContent.first;
+                        String content = nameAndContent.second;
+
+                        Log.d(TAG, "name=" + name);
+                        Log.d(TAG, "content=" + content);
+                    })
+                    .addOnFailureListener(exception ->
+                            Log.e(TAG, "Couldn't read file.", exception));
+        }
+    }
 
     @NonNull
     @Override
@@ -502,21 +544,12 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
-            GoogleAccountCredential credential =
-                    GoogleAccountCredential.usingOAuth2(
-                            this, Collections.singleton(DriveScopes.DRIVE_FILE));
-            credential.setSelectedAccount(account != null ? account.getAccount() : null);
-            Drive googleDriveService =
-                    new Drive.Builder(
-                            AndroidHttp.newCompatibleTransport(),
-                            new GsonFactory(),
-                            credential)
-                            .setApplicationName(getApplicationInfo().name)
-                            .build();
+            Drive googleDriveService = getDriveService(account);
 
             // The DriveServiceHelper encapsulates all REST API and SAF functionality.
             // Its instantiation is required before handling any onClick actions.
             mDriveServiceHelper = new DriveServiceHelper(googleDriveService);
+            driveStorage = new DriveStorage(googleDriveService);
 
             // Signed in successfully, show authenticated UI.
             updateUI(account);
@@ -527,6 +560,19 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             Toast.makeText(this, R.string.login_error, Toast.LENGTH_LONG).show();
             updateUI(null);
         }
+    }
+
+    private Drive getDriveService(GoogleSignInAccount account) {
+        GoogleAccountCredential credential =
+                GoogleAccountCredential.usingOAuth2(
+                        this, Collections.singleton(DriveScopes.DRIVE_FILE));
+        credential.setSelectedAccount(account != null ? account.getAccount() : null);
+        return new Drive.Builder(
+                AndroidHttp.newCompatibleTransport(),
+                new GsonFactory(),
+                credential)
+                .setApplicationName(getApplicationInfo().name)
+                .build();
     }
 
     @Override
