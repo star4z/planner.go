@@ -210,13 +210,14 @@
     <string name="pick_an_option_below">Pick an option below</string>
     <string name="essays">Essays</string>
     <string name="studying">Studying</string>
+
     <string name="everything_else">Everything else</string>
     <string name="add_new_item">Add new item</string>
     <string name="profile_pic">Profile pic</string>
     <string name="sign_out">Sign Out</string>
     <string name="sign_in">Sign in</string>
-    <string name="import_assignments">Import assignments</string>
-    <string name="export_assignments">Export assignments</string>
+    <string name="import_assignments">Import from local storage</string>
+    <string name="export_assignments">Export to local storage</string>
     <string name="filters">Filters</string>
 
     <!--    Import/Export toast messages-->

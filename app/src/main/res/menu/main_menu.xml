@@ -7,7 +7,8 @@
         android:icon="@drawable/ic_filter_list_white_24dp"
         app:showAsAction="ifRoom">
         <menu>
-            <group android:id="@+id/display">
+            <group android:id="@+id/display"
+                android:checkableBehavior="single">
                 <item
                     android:id="@+id/action_sort_by_date"
                     android:title="@string/sort_date"

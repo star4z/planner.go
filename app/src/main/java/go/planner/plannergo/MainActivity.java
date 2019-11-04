@@ -231,6 +231,9 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         SubMenu submenu = filterItem.getSubMenu();
         setMenuBackground(submenu);
 
+        MenuItem defaultSortItem = submenu.findItem(R.id.action_sort_by_date);
+        defaultSortItem.setChecked(true);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -268,18 +271,22 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 //                return true;
 
             case R.id.action_sort_by_date:
+                item.setChecked(true);
                 loadPanels(assignments, 0);
                 return true;
 
             case R.id.action_sort_by_class:
+                item.setChecked(true);
                 loadPanels(assignments, 1);
                 return true;
 
             case R.id.action_sort_by_type:
+                item.setChecked(true);
                 loadPanels(assignments, 2);
                 return true;
 
             case R.id.action_sort_by_title:
+                item.setChecked(true);
                 loadPanels(assignments, 3);
                 return true;
 
