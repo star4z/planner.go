@@ -43,13 +43,6 @@
     <string name="edit_assignment_types">Edit categories</string>
     <string name="edit_classes">Edit classes</string>
 
-    <!--    Import/Export toast messages-->
-    <string name="file_read_error">Could not read file.</string>
-    <string name="file_permission_error">Permission denied.</string>
-    <string name="file_save_complete">Saved to</string>
-    <string name="file_read_complete">Successfully imported assignments</string>
-    <string name="cancelled">Cancelled action.</string>
-
     <!--AboutActivity-->
     <string name="store_link"><a href="https://play.google.com/store/apps/details?id=go.planner.plannergo">Play Store listing</a></string>
     <string name="about_text0">© 2018 Benjamin Phillips\nMade with Android Studio\n\nSome assets ©Google under the Apache 2.0 license.</string>
@@ -226,8 +219,16 @@
     <string name="export_assignments">Export assignments</string>
     <string name="filters">Filters</string>
 
+    <!--    Import/Export toast messages-->
+    <string name="file_read_error">Could not read file.</string>
+    <string name="file_permission_error">Permission denied.</string>
+    <string name="file_save_complete">Saved to</string>
+    <string name="file_read_complete">Successfully imported assignments</string>
+    <string name="cancelled">Cancelled action.</string>
+
     <!--    Google api stuff-->
     <string name="login_error">Error logging in.</string>
     <string name="import_from_drive">Import from Drive</string>
     <string name="export_to_drive">Export to Drive</string>
+    <string name="no_files">Could not find any backups.</string>
 </resources>

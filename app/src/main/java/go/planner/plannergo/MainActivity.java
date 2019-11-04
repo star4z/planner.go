@@ -48,6 +48,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.FileList;
 import com.google.gson.JsonSyntaxException;
 
 import org.jetbrains.annotations.NotNull;
@@ -63,12 +64,13 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements ColorSchemeActivity, SignInActivity {
 
     private static final String TAG = "MainActivity";
 
-    //Settings data
+    //Settings mData
     private SharedPreferences sharedPref;
     private int currentSortIndex = 0;
     private FloatingActionButton fab;
@@ -96,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     final int RC_SIGN_IN = 13;
     final int RC_GET_DIR = 201;
     final int RC_GET_FILE = 202;
+    public static final int RC_PICK_FILE = 301;
 
     // drawer indices
     static final int iHeader = 0;
@@ -159,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
      */
     @Override
     protected void onResume() {
-        //Update data
+        //Update mData
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         FileIO.readFiles(this);
 
@@ -177,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
      * Since this is a single-top activity, when a startActivity(MainActivity) is called, this
      * method handles any updates, rather than restarting the activity
      *
-     * @param intent contains any data that may modify the way the activity runs
+     * @param intent contains any mData that may modify the way the activity runs
      */
     @Override
     protected void onNewIntent(Intent intent) {
@@ -299,7 +302,11 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 startActivityForResult(Intent.createChooser(exportIntent, "Choose directory"), RC_GET_DIR);
                 return true;
             case R.id.action_drive_import:
-
+                if (mDriveServiceHelper != null && driveStorage != null) {
+                    mDriveServiceHelper.queryFiles()
+                            .addOnSuccessListener(this::openFilePicker)
+                            .addOnFailureListener(Throwable::printStackTrace);
+                }
                 return true;
             case R.id.action_drive_export:
                 if (driveStorage != null) {
@@ -328,6 +335,41 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    private void openFilePicker(FileList fileList) {
+        Log.d(TAG, "fileList=" + fileList);
+        Log.d(TAG, "fileList.size()=" + fileList.size());
+
+        if (fileList.size() <= 0) {
+            Toast.makeText(this, R.string.no_files, Toast.LENGTH_LONG).show();
+        } else if (fileList.getFiles().size() == 1) {
+            Toast.makeText(this, R.string.file_read_complete, Toast.LENGTH_LONG).show();
+            com.google.api.services.drive.model.File file = fileList.getFiles().get(0);
+            importDriveBackup(file.getId());
+        } else {
+            ArrayList<String> fileNames = new ArrayList<>();
+            ArrayList<String> ids = new ArrayList<>();
+            for (com.google.api.services.drive.model.File file : fileList.getFiles()) {
+                fileNames.add(file.getName());
+                ids.add(file.getId());
+            }
+            Intent intent = new Intent(this, DriveFilePickerActivity.class);
+            intent.putStringArrayListExtra(DriveFilePickerActivity.DATA_KEY, fileNames);
+            intent.putStringArrayListExtra(DriveFilePickerActivity.DATA_IDS, ids);
+            startActivityForResult(intent, RC_PICK_FILE);
+        }
+    }
+
+    private void importDriveBackup(String fileId) {
+        Objects.requireNonNull(driveStorage.readFile(fileId))
+                .addOnSuccessListener(allAssignments -> {
+                    addOrReplaceAssignments(allAssignments);
+                    FileIO.writeFiles(this);
+                    loadPanels();
+                    Toast.makeText(this, R.string.file_read_complete, Toast.LENGTH_LONG).show();
+                })
+                .addOnFailureListener(Throwable::printStackTrace);
     }
 
     private void exportFiles(Uri data) {
@@ -361,18 +403,22 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         try {
             ArrayList<Assignment> importedAssignments = FileStorage.INSTANCE.readAssignments(this,
                     data);
-            for (Assignment a : importedAssignments) {
-                if (FileIO.inProgressAssignments.contains(a) || FileIO.completedAssignments.contains(a)) {
-                    FileIO.replaceAssignment(this, a);
-                } else {
-                    FileIO.addAssignment(a);
-                }
-            }
+            addOrReplaceAssignments(importedAssignments);
             FileIO.writeFiles(this);
             loadPanels();
             Toast.makeText(this, R.string.file_read_complete, Toast.LENGTH_LONG).show();
         } catch (IllegalStateException | JsonSyntaxException e) {
             Toast.makeText(this, R.string.file_read_error, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void addOrReplaceAssignments(ArrayList<Assignment> importedAssignments) {
+        for (Assignment a : importedAssignments) {
+            if (FileIO.inProgressAssignments.contains(a) || FileIO.completedAssignments.contains(a)) {
+                FileIO.replaceAssignment(this, a);
+            } else {
+                FileIO.addAssignment(a);
+            }
         }
     }
 
@@ -533,6 +579,21 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             case RC_GET_FILE:
                 if (data != null) {
                     importFiles(data.getData());
+                } else {
+                    Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
+                }
+            case RC_PICK_FILE:
+                if (data != null) {
+                    int position = Objects.requireNonNull(data.getExtras()).getInt("item_no");
+
+                    //Ideally, this can be done w/o re-querying the files
+                    mDriveServiceHelper.queryFiles()
+                            .addOnSuccessListener(fileList -> {
+                                String fileId = fileList.getFiles().get(position).getId();
+                                importDriveBackup(fileId);
+                            })
+                            .addOnFailureListener(Throwable::printStackTrace);
+
                 } else {
                     Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
                 }

@@ -16,18 +16,17 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_list.*
 
 
-class ListActivityAdapter internal constructor(private val data: ArrayList<String>, private val c: ListActivity, private val mRecyclerView: RecyclerView)
+open class ListActivityAdapter internal constructor(private val data: ArrayList<String>, private
+val c: ListActivity, private val mRecyclerView: RecyclerView)
     : RecyclerView.Adapter<ListActivityAdapter.ViewHolder>() {
 
     /**
      * Provides reference points for the views in a view_list_activity_item
      */
     class ViewHolder(val v: View) : RecyclerView.ViewHolder(v) {
-
         val textView: TextView = v.findViewById(R.id.title)
         val edit: ImageView = v.findViewById(R.id.edit)
         val remove: ImageView = v.findViewById(R.id.remove)
-
     }
 
 
@@ -41,16 +40,7 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
 
         val colorScheme = c.getColorScheme()
 
-        val bg = c.getDrawable(R.drawable.bg_list_item)
-        bg?.setTint(colorScheme.getColor(parent.context, Field.MAIN_CARD_BG))
-        view.background = bg
-
-        //create ViewHolder from layout and attach OnClickListeners
-        val holder = ViewHolder(view)
-        holder.textView.setTextColor(colorScheme.getColor(parent.context, Field.MAIN_CARD_TEXT))
-        // TODO: replace tints
-        holder.edit.drawable.setTint(colorScheme.getColor(parent.context, Field.MAIN_CARD_TEXT))
-        holder.remove.drawable.setTint(colorScheme.getColor(parent.context, Field.MAIN_CARD_TEXT))
+        val holder = createViewHolder(colorScheme, parent, view)
 
         holder.edit.setOnClickListener {
             val editText = c.layoutInflater.inflate(
@@ -98,6 +88,20 @@ class ListActivityAdapter internal constructor(private val data: ArrayList<Strin
             notifyItemRemoved(holder.adapterPosition)
             FileIO.writeFiles(c)
         }
+        return holder
+    }
+
+    protected fun createViewHolder(colorScheme: ColorScheme, parent: ViewGroup, view: LinearLayout): ViewHolder {
+        val bg = c.getDrawable(R.drawable.bg_list_item)
+        bg?.setTint(colorScheme.getColor(parent.context, Field.MAIN_CARD_BG))
+        view.background = bg
+
+        //create ViewHolder from layout and attach OnClickListeners
+        val holder = ViewHolder(view)
+        holder.textView.setTextColor(colorScheme.getColor(parent.context, Field.MAIN_CARD_TEXT))
+        // TODO: replace tints
+        holder.edit.drawable.setTint(colorScheme.getColor(parent.context, Field.MAIN_CARD_TEXT))
+        holder.remove.drawable.setTint(colorScheme.getColor(parent.context, Field.MAIN_CARD_TEXT))
         return holder
     }
 

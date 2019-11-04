@@ -32,10 +32,10 @@ import kotlinx.android.synthetic.main.toolbar.*
 abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
     private val tag = "ListActivity"
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
+    protected lateinit var recyclerView: RecyclerView
+    protected lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: LinearLayoutManager
-    private lateinit var data: ArrayList<String>
+    protected lateinit var mData: ArrayList<String>
 
     private lateinit var prefs: SharedPreferences
 
@@ -55,13 +55,13 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
 
         FileIO.readFiles(this)
 
-        data = getData()
-        Log.v(tag, "data=$data")
+        mData = getData()
+        Log.v(tag, "mData=$mData")
 
         recyclerView = findViewById(R.id.recycler_view)
 
         viewManager = LinearLayoutManager(this)
-        viewAdapter = ListActivityAdapter(data, this, recyclerView)
+        viewAdapter = ListActivityAdapter(mData, this, recyclerView)
 
 
 
@@ -122,8 +122,8 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
                         .setMessage("You will not be able to undo this action.")
                         .setPositiveButton("Yes") { _, _ ->
                             run {
-                                val size = data.size
-                                data.clear()
+                                val size = mData.size
+                                mData.clear()
                                 FileIO.writeFiles(this)
                                 viewAdapter.notifyItemRangeChanged(0, size)
                             }
@@ -161,13 +161,13 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
                 .setView(editText)
                 .setPositiveButton(R.string.save) { _: DialogInterface, _: Int ->
                     run {
-                        if (data.contains(editText.text.toString())) {
+                        if (mData.contains(editText.text.toString())) {
                             val text = R.string.no_duplicates
                             Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
                         } else {
-                            data.add(editText.text.toString())
+                            mData.add(editText.text.toString())
                             FileIO.writeFiles(this)
-                            viewAdapter.notifyItemInserted(data.size - 1)
+                            viewAdapter.notifyItemInserted(mData.size - 1)
                         }
                         imm.hideSoftInputFromWindow(editText.windowToken, 0)
                     }
