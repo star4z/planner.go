@@ -144,6 +144,10 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
 
     abstract fun onEdit(oldString: String, newString: String)
 
+    open fun onRemove(position: Int) {
+        FileIO.writeFiles(this)
+    }
+
     fun addNew(@Suppress("UNUSED_PARAMETER") view: View) {
         val editText = layoutInflater.inflate(
                 R.layout.dialog_edit_text,

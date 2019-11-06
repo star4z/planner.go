@@ -90,6 +90,8 @@
             android:parentActivityName=".MainActivity" />
         <activity android:name=".DriveFilePickerActivity"
             android:parentActivityName=".MainActivity"/>
+        <activity android:name=".DriveFileManagementActivity"
+            android:parentActivityName=".MainActivity"/>
     </application>
 
 </manifest>

@@ -1,6 +1,5 @@
 package go.planner.plannergo
 
-import androidx.core.util.Pair
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.api.client.http.ByteArrayContent
@@ -43,8 +42,7 @@ class DriveStorage(drive: Drive) {
     }
 
     /**
-     * Opens the file identified by `fileId` and returns a [Pair] of its name and
-     * contents.
+     * Opens the file identified by `fileId` and returns the contents
      */
     fun readFile(fileId: String?): Task<ArrayList<Assignment>>? {
         return Tasks.call(mExecutor, Callable<ArrayList<Assignment>> {
@@ -60,6 +58,12 @@ class DriveStorage(drive: Drive) {
                 val type = object : TypeToken<ArrayList<Assignment>>() {}.type
                 gson.fromJson(jsonValue, type)
             }
+        })
+    }
+
+    fun deleteFile(fileId: String?): Task<Unit>? {
+        return Tasks.call ( mExecutor, Callable<Unit>{
+            mDriveService!!.files().delete(fileId).execute()
         })
     }
 }

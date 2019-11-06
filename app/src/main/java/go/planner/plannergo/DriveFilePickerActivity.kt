@@ -7,9 +7,8 @@ import kotlinx.android.synthetic.main.activity_list.*
 import kotlinx.android.synthetic.main.toolbar.*
 
 
-class DriveFilePickerActivity: ListActivity() {
+open class DriveFilePickerActivity: ListActivity() {
     companion object {
-        const val DATA_IDS = "idsList"
         const val DATA_KEY = "fileNameList"
     }
 

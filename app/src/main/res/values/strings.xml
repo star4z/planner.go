@@ -232,4 +232,7 @@
     <string name="import_from_drive">Import from Drive</string>
     <string name="export_to_drive">Export to Drive</string>
     <string name="no_files">Could not find any backups.</string>
+    <string name="manage_drive_backups">Manage drive backups</string>
+    <string name="delete_file_success">Successfully deleted files.</string>
+    <string name="delete_file_fail">Error deleting files.</string>
 </resources>

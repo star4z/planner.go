@@ -1,8 +1,7 @@
 package go.planner.plannergo
 
-import android.graphics.Color
 import android.os.Bundle
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils.navigateUpFromSameTask

@@ -85,8 +85,9 @@ val c: ListActivity, private val mRecyclerView: RecyclerView)
 
         holder.remove.setOnClickListener {
             data.remove(holder.textView.text as String)
-            notifyItemRemoved(holder.adapterPosition)
-            FileIO.writeFiles(c)
+            val position = holder.adapterPosition
+            notifyItemRemoved(position)
+            c.onRemove(position)
         }
         return holder
     }

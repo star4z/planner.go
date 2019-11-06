@@ -7,7 +7,6 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
@@ -30,6 +29,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -63,6 +63,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -99,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     final int RC_GET_DIR = 201;
     final int RC_GET_FILE = 202;
     public static final int RC_PICK_FILE = 301;
+    public static final int RC_DELETE_BACKUPS = 303;
 
     // drawer indices
     static final int iHeader = 0;
@@ -338,6 +340,13 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 alertDialog.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
                 alertDialog.create().show();
                 return true;
+            case R.id.action_drive_manage:
+                if (mDriveServiceHelper != null) {
+                    mDriveServiceHelper.queryFiles()
+                            .addOnSuccessListener(this::openFileManager)
+                            .addOnFailureListener(Throwable::printStackTrace);
+                }
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -355,17 +364,27 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             com.google.api.services.drive.model.File file = fileList.getFiles().get(0);
             importDriveBackup(file.getId());
         } else {
-            ArrayList<String> fileNames = new ArrayList<>();
-            ArrayList<String> ids = new ArrayList<>();
-            for (com.google.api.services.drive.model.File file : fileList.getFiles()) {
-                fileNames.add(file.getName());
-                ids.add(file.getId());
-            }
+            ArrayList<String> fileNames = getFileNames(fileList);
             Intent intent = new Intent(this, DriveFilePickerActivity.class);
             intent.putStringArrayListExtra(DriveFilePickerActivity.DATA_KEY, fileNames);
-            intent.putStringArrayListExtra(DriveFilePickerActivity.DATA_IDS, ids);
             startActivityForResult(intent, RC_PICK_FILE);
         }
+    }
+
+    @NotNull
+    private ArrayList<String> getFileNames(FileList fileList) {
+        ArrayList<String> fileNames = new ArrayList<>();
+        for (com.google.api.services.drive.model.File file : fileList.getFiles()) {
+            fileNames.add(file.getName());
+        }
+        return fileNames;
+    }
+
+    private void openFileManager(FileList fileList) {
+        ArrayList<String> fileNames = getFileNames(fileList);
+        Intent intent = new Intent(this, DriveFileManagementActivity.class);
+        intent.putStringArrayListExtra(DriveFilePickerActivity.DATA_KEY, fileNames);
+        startActivityForResult(intent, RC_DELETE_BACKUPS);
     }
 
     private void importDriveBackup(String fileId) {
@@ -605,6 +624,34 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
                 }
                 break;
+            case RC_DELETE_BACKUPS:
+                if (data != null) {
+                    ArrayList<Integer> positionsToRemove = Objects.requireNonNull(data.getExtras())
+                            .getIntegerArrayList(DriveFileManagementActivity.OBJECTS_TO_REMOVE_KEY);
+                    assert positionsToRemove != null;
+                    mDriveServiceHelper.queryFiles()
+                            .addOnSuccessListener(fileList -> {
+                                List<com.google.api.services.drive.model.File> files = fileList.getFiles();
+                                for (int pos : positionsToRemove) {
+                                    String fileId = files.get(pos).getId();
+                                    Objects.requireNonNull(driveStorage.deleteFile(fileId))
+                                            .addOnFailureListener(Throwable::printStackTrace);
+                                    files.remove(pos);
+                                }
+
+                                Toast.makeText(this, R.string.delete_file_success,
+                                        Toast.LENGTH_LONG).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                e.printStackTrace();
+                                Toast.makeText(this, R.string.delete_file_fail,
+                                        Toast.LENGTH_LONG).show();
+                            });
+
+
+                } else {
+                    Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
+                }
         }
     }
 
