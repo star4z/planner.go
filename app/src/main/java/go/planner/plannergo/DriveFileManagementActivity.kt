@@ -9,15 +9,12 @@ class DriveFileManagementActivity: DriveFilePickerActivity() {
         const val OBJECTS_TO_REMOVE_KEY = "objectsToRemove"
     }
 
-    val positionsToRemove = ArrayList<Int>()
-    lateinit var copyData: ArrayList<String>
+    private val positionsToRemove = ArrayList<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewAdapter = ListDeletionAdapter(this, mData, recyclerView)
         recyclerView.adapter = viewAdapter
-
-        copyData = ArrayList(getData())
     }
 
     override fun onRemove(position: Int) {
