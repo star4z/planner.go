@@ -331,6 +331,13 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     Log.d(TAG, "driveStorage was not initialized.");
                 }
                 return true;
+            case R.id.action_drive_manage:
+                if (mDriveServiceHelper != null) {
+                    mDriveServiceHelper.queryFiles()
+                            .addOnSuccessListener(this::openFileManager)
+                            .addOnFailureListener(Throwable::printStackTrace);
+                }
+                return true;
             case R.id.action_delete_all:
                 final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this,
                         colorScheme.equals(ColorScheme.Companion.getSCHEME_DARK()) ?
@@ -345,13 +352,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 alertDialog.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
                 alertDialog.create().show();
                 return true;
-            case R.id.action_drive_manage:
-                if (mDriveServiceHelper != null) {
-                    mDriveServiceHelper.queryFiles()
-                            .addOnSuccessListener(this::openFileManager)
-                            .addOnFailureListener(Throwable::printStackTrace);
-                }
-                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -386,10 +387,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
         if (fileList.size() <= 0) {
             Toast.makeText(this, R.string.no_files, Toast.LENGTH_LONG).show();
-        } else if (fileList.getFiles().size() == 1) {
-            Toast.makeText(this, R.string.file_read_complete, Toast.LENGTH_LONG).show();
-            com.google.api.services.drive.model.File file = fileList.getFiles().get(0);
-            importDriveBackup(file.getId());
         } else {
             ArrayList<String> fileNames = getFileNames(fileList);
             Intent intent = new Intent(this, DriveFilePickerActivity.class);
