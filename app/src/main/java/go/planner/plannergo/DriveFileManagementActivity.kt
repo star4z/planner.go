@@ -3,6 +3,7 @@ package go.planner.plannergo
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import kotlinx.android.synthetic.main.toolbar.*
 
 class DriveFileManagementActivity: DriveFilePickerActivity() {
     companion object {
@@ -30,6 +31,10 @@ class DriveFileManagementActivity: DriveFilePickerActivity() {
         intent.putIntegerArrayListExtra(OBJECTS_TO_REMOVE_KEY, positionsToRemove)
         setResult(MainActivity.RC_PICK_FILE, intent)
         finish()
+    }
+
+    override fun initToolbar() {
+        toolbar.title = "Manage Drive backups"
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
