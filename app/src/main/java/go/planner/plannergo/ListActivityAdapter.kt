@@ -84,10 +84,25 @@ val c: ListActivity, private val mRecyclerView: RecyclerView)
         }
 
         holder.remove.setOnClickListener {
-            data.remove(holder.textView.text as String)
-            val position = holder.adapterPosition
-            notifyItemRemoved(position)
-            c.onRemove(position)
+            val currentTitle = holder.textView.text
+            val title = if (currentTitle.isNullOrEmpty()) "This" else "'$currentTitle'"
+            AlertDialog.Builder(c, if (colorScheme == ColorScheme.SCHEME_DARK)
+                R.style.DarkDialogTheme
+            else
+                R.style.LightDialogTheme)
+                    .setTitle(R.string.perm_delete_check)
+                    .setMessage("$title ${c.getString(R.string.gone_forever)}")
+                    .setPositiveButton(R.string.delete) { _, _ ->
+                        run {
+                            data.remove(holder.textView.text as String)
+                            val position = holder.adapterPosition
+                            notifyItemRemoved(position)
+                            c.onRemove(position)
+                        }
+                    }
+                    .setNegativeButton(R.string.keep, null)
+                    .show()
+
         }
         return holder
     }
