@@ -320,8 +320,13 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             case R.id.action_drive_export:
                 if (driveStorage != null) {
                     driveStorage.createBackup(generateFileName(), getAssignments())
-                            .addOnSuccessListener(this::readFile)
-                            .addOnFailureListener(Throwable::printStackTrace);
+                            .addOnSuccessListener(f -> Toast.makeText(this, R.string.drive_export_success,
+                                    Toast.LENGTH_LONG).show())
+                            .addOnFailureListener(e -> {
+                                e.printStackTrace();
+                                Toast.makeText(this, R.string.drive_export_failure,
+                                        Toast.LENGTH_LONG).show();
+                            });
                 } else {
                     Log.d(TAG, "driveStorage was not initialized.");
                 }
@@ -351,6 +356,28 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    private void exportFiles(Uri data) {
+        ArrayList<Assignment> exportAssignments = getAssignments();
+        try {
+            String fileName = generateFileName();
+            FileStorage.INSTANCE.writeAssignments(this, fileName, data, exportAssignments);
+            String start = getResources().getString(R.string.file_save_complete);
+            String end = FileUtil.getFullPathFromTreeUri(data, this);
+            Toast.makeText(this, start + " " + end + "/" + fileName, Toast.LENGTH_LONG).show();
+        } catch (FileNotFoundException e) {
+            Toast.makeText(this, R.string.file_permission_error, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @NotNull
+    private ArrayList<Assignment> getAssignments() {
+        ArrayList<Assignment> exportAssignments =
+                new ArrayList<>(FileIO.inProgressAssignments.size() + FileIO.completedAssignments.size());
+        exportAssignments.addAll(FileIO.inProgressAssignments);
+        exportAssignments.addAll(FileIO.completedAssignments);
+        return exportAssignments;
     }
 
     private void openFilePicker(FileList fileList) {
@@ -398,27 +425,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 .addOnFailureListener(Throwable::printStackTrace);
     }
 
-    private void exportFiles(Uri data) {
-        ArrayList<Assignment> exportAssignments = getAssignments();
-        try {
-            String fileName = generateFileName();
-            FileStorage.INSTANCE.writeAssignments(this, fileName, data, exportAssignments);
-            String start = getResources().getString(R.string.file_save_complete);
-            String end = FileUtil.getFullPathFromTreeUri(data, this);
-            Toast.makeText(this, start + " " + end + "/" + fileName, Toast.LENGTH_LONG).show();
-        } catch (FileNotFoundException e) {
-            Toast.makeText(this, R.string.file_permission_error, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    @NotNull
-    private ArrayList<Assignment> getAssignments() {
-        ArrayList<Assignment> exportAssignments =
-                new ArrayList<>(FileIO.inProgressAssignments.size() + FileIO.completedAssignments.size());
-        exportAssignments.addAll(FileIO.inProgressAssignments);
-        exportAssignments.addAll(FileIO.completedAssignments);
-        return exportAssignments;
-    }
 
     private String generateFileName() {
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy_kkmmss", Locale.getDefault());
@@ -445,26 +451,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             } else {
                 FileIO.addAssignment(a);
             }
-        }
-    }
-
-    /**
-     * Retrieves the title and content of a file identified by {@code fileId} and populates the UI.
-     */
-    private void readFile(String fileId) {
-        if (mDriveServiceHelper != null) {
-            Log.d(TAG, "Reading file " + fileId);
-
-            mDriveServiceHelper.readFile(fileId)
-                    .addOnSuccessListener(nameAndContent -> {
-                        String name = nameAndContent.first;
-                        String content = nameAndContent.second;
-
-                        Log.d(TAG, "name=" + name);
-                        Log.d(TAG, "content=" + content);
-                    })
-                    .addOnFailureListener(exception ->
-                            Log.e(TAG, "Couldn't read file.", exception));
         }
     }
 
@@ -644,7 +630,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                             })
                             .addOnFailureListener(e -> {
                                 e.printStackTrace();
-                                Toast.makeText(this, R.string.delete_file_fail,
+                                Toast.makeText(this, R.string.delete_file_failure,
                                         Toast.LENGTH_LONG).show();
                             });
 

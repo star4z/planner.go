@@ -234,5 +234,7 @@
     <string name="no_files">Could not find any backups.</string>
     <string name="manage_drive_backups">Manage drive backups</string>
     <string name="delete_file_success">Successfully deleted files.</string>
-    <string name="delete_file_fail">Error deleting files.</string>
+    <string name="delete_file_failure">Error deleting files.</string>
+    <string name="drive_export_success">Saved to Drive.</string>
+    <string name="drive_export_failure">Could not save to Drive.</string>
 </resources>
