@@ -7,7 +7,6 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.os.Bundle
-import androidx.preference.PreferenceManager
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
@@ -21,6 +20,7 @@ import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_list.*
@@ -111,8 +111,8 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
         return super.onCreateView(parent, name, context, attrs)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
             R.id.empty_trash -> {
                 AlertDialog.Builder(this, if (colorScheme == ColorScheme.SCHEME_DARK)
                     R.style.DarkDialogTheme
@@ -172,6 +172,7 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
                             mData.add(editText.text.toString())
                             FileIO.writeFiles(this)
                             viewAdapter.notifyItemInserted(mData.size - 1)
+                            listIsEmpty(false)
                         }
                         imm.hideSoftInputFromWindow(editText.windowToken, 0)
                     }
@@ -184,6 +185,10 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
         editText.requestFocus()
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 
+    }
+
+    fun listIsEmpty(state: Boolean) {
+        recycler_view_label.visibility = if (state) View.VISIBLE else View.GONE
     }
 
     override fun setColorScheme() {

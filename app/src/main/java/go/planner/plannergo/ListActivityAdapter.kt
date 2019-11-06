@@ -13,7 +13,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.activity_list.*
 
 
 open class ListActivityAdapter internal constructor(private val data: ArrayList<String>, private
@@ -98,6 +97,7 @@ val c: ListActivity, private val mRecyclerView: RecyclerView)
                             val position = holder.adapterPosition
                             notifyItemRemoved(position)
                             c.onRemove(position)
+                            emptyListCheck()
                         }
                     }
                     .setNegativeButton(R.string.keep, null)
@@ -133,12 +133,12 @@ val c: ListActivity, private val mRecyclerView: RecyclerView)
      * Determines the length of the array
      */
     override fun getItemCount(): Int {
-        if (data.size == 0) {
-            c.recycler_view_label.setText(R.string.empty_list)
-        } else {
-            c.recycler_view_label.text = ""
-        }
+        emptyListCheck()
         return data.size
+    }
+
+    private fun emptyListCheck() {
+        c.listIsEmpty(data.isEmpty())
     }
 
     /**

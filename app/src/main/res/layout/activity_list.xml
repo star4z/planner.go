@@ -18,7 +18,9 @@
         android:contentDescription="@string/empty_list_content_descr"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
         android:background="@android:color/transparent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        android:text="@string/empty_list"
+        android:visibility="gone"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -30,7 +32,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintTop_toBottomOf="@id/recycler_view_label"
         app:layout_constraintVertical_bias="1.0" />
 
 
