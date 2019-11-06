@@ -7,7 +7,7 @@ import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
