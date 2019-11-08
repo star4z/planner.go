@@ -127,6 +127,7 @@
     <string name="pref_notify">Notify me at </string>
     <string name="pref_days_before">Days before deadline</string>
     <string name="pref_2_notifs">I want two notifications</string>
+    <string name="pref_drive_single_mode">Drive single backup mode</string>
 
     <!--TrashActivity-->
     <string name="deletion_is_permanent">Assignments in the trash are permanently deleted after 30 days.</string>
@@ -237,4 +238,5 @@
     <string name="delete_file_failure">Error deleting files.</string>
     <string name="drive_export_success">Saved to Drive.</string>
     <string name="drive_export_failure">Could not save to Drive.</string>
+    <string name="drive_login_error">You must be logged in to use Drive storage.</string>
 </resources>

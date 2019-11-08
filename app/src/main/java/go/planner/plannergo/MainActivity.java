@@ -315,11 +315,14 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     mDriveServiceHelper.queryFiles()
                             .addOnSuccessListener(this::openFilePicker)
                             .addOnFailureListener(Throwable::printStackTrace);
+                } else {
+                    Toast.makeText(this, R.string.drive_login_error, Toast.LENGTH_LONG).show();
                 }
                 return true;
             case R.id.action_drive_export:
+                boolean singleDriveMode = sharedPref.getBoolean(Settings.driveSingleMode, false);
                 if (driveStorage != null) {
-                    driveStorage.createBackup(generateFileName(), getAssignments())
+                    driveStorage.createBackup(generateFileName(), getAssignments(), singleDriveMode)
                             .addOnSuccessListener(f -> Toast.makeText(this, R.string.drive_export_success,
                                     Toast.LENGTH_LONG).show())
                             .addOnFailureListener(e -> {
@@ -329,6 +332,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                             });
                 } else {
                     Log.d(TAG, "driveStorage was not initialized.");
+                    Toast.makeText(this, R.string.drive_login_error, Toast.LENGTH_LONG).show();
                 }
                 return true;
             case R.id.action_drive_manage:
@@ -336,6 +340,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     mDriveServiceHelper.queryFiles()
                             .addOnSuccessListener(this::openFileManager)
                             .addOnFailureListener(Throwable::printStackTrace);
+                } else {
+                    Toast.makeText(this, R.string.drive_login_error, Toast.LENGTH_LONG).show();
                 }
                 return true;
             case R.id.action_delete_all:
@@ -385,8 +391,14 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         Log.d(TAG, "fileList=" + fileList);
         Log.d(TAG, "fileList.size()=" + fileList.size());
 
+        boolean singleDriveMode = sharedPref.getBoolean(Settings.driveSingleMode, false);
+
         if (fileList.size() <= 0) {
             Toast.makeText(this, R.string.no_files, Toast.LENGTH_LONG).show();
+        } else if (singleDriveMode) {
+            Toast.makeText(this, R.string.file_read_complete, Toast.LENGTH_LONG).show();
+            com.google.api.services.drive.model.File file = fileList.getFiles().get(0);
+            importDriveBackup(file.getId());
         } else {
             ArrayList<String> fileNames = getFileNames(fileList);
             Intent intent = new Intent(this, DriveFilePickerActivity.class);
@@ -424,6 +436,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
 
     private String generateFileName() {
+        @SuppressWarnings("SpellCheckingInspection")
         SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy_kkmmss", Locale.getDefault());
         return "planner_backup_" + sdf.format(new Date()) + ".json";
     }
@@ -591,6 +604,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 } else {
                     Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
                 }
+                break;
             case RC_PICK_FILE:
                 if (data != null) {
                     int position = Objects.requireNonNull(data.getExtras()).getInt("item_no");
@@ -635,6 +649,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 } else {
                     Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
                 }
+                break;
         }
     }
 
