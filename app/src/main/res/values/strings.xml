@@ -39,7 +39,7 @@
     <string name="sort_class">Alphabetically by class</string>
     <string name="sort_title">Alphabetically by title</string>
     <string name="sort_type">Group by category</string>
-    <string name="clear_all">Clear all</string>
+    <string name="delete_all">Delete all</string>
     <string name="edit_assignment_types">Edit categories</string>
     <string name="edit_classes">Edit classes</string>
 
@@ -99,7 +99,7 @@
     <string name="no_duplicates">You can\'t have duplicates!</string>
 
     <!--MainActivity delete all dialog-->
-    <string name="delete_all">Are you sure you want to delete all assignments?</string>
+    <string name="delete_all_check">Are you sure you want to delete all assignments?</string>
     <string name="move_to_trash_note">They will be moved to trash and deleted after 30 days</string>
     <string name="empty_assignment_set">There are no assignments.\nTo create a new assignment, press the +</string>
 

@@ -347,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                         colorScheme.equals(ColorScheme.Companion.getSCHEME_DARK()) ?
                                 R.style.DarkDialogTheme :
                                 R.style.LightDialogTheme);
-                alertDialog.setTitle(R.string.delete_all);
+                alertDialog.setTitle(R.string.delete_all_check);
                 alertDialog.setMessage(R.string.move_to_trash_note);
                 alertDialog.setPositiveButton(R.string.delete, (dialog, which) -> {
                     FileIO.deleteAll(assignments, MainActivity.this);
