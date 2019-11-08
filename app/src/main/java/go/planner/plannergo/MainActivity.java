@@ -91,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
     GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount account = null;
-    private DriveServiceHelper mDriveServiceHelper;
 
     private DriveStorage driveStorage;
 
@@ -155,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         if (account != null) {
             Drive mDriveService = getDriveService(account);
             driveStorage = new DriveStorage(mDriveService);
-            mDriveServiceHelper = new DriveServiceHelper(mDriveService);
         }
     }
 
@@ -311,8 +309,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 startActivityForResult(Intent.createChooser(exportIntent, "Choose directory"), RC_GET_DIR);
                 return true;
             case R.id.action_drive_import:
-                if (mDriveServiceHelper != null && driveStorage != null) {
-                    mDriveServiceHelper.queryFiles()
+                if (driveStorage != null) {
+                    driveStorage.queryFiles()
                             .addOnSuccessListener(this::openFilePicker)
                             .addOnFailureListener(Throwable::printStackTrace);
                 } else {
@@ -336,8 +334,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 }
                 return true;
             case R.id.action_drive_manage:
-                if (mDriveServiceHelper != null) {
-                    mDriveServiceHelper.queryFiles()
+                if (driveStorage != null) {
+                    driveStorage.queryFiles()
                             .addOnSuccessListener(this::openFileManager)
                             .addOnFailureListener(Throwable::printStackTrace);
                 } else {
@@ -610,7 +608,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     int position = Objects.requireNonNull(data.getExtras()).getInt("item_no");
 
                     //Ideally, this can be done w/o re-querying the files
-                    mDriveServiceHelper.queryFiles()
+                    driveStorage.queryFiles()
                             .addOnSuccessListener(fileList -> {
                                 String fileId = fileList.getFiles().get(position).getId();
                                 importDriveBackup(fileId);
@@ -626,7 +624,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     ArrayList<Integer> positionsToRemove = Objects.requireNonNull(data.getExtras())
                             .getIntegerArrayList(DriveFileManagementActivity.OBJECTS_TO_REMOVE_KEY);
                     assert positionsToRemove != null;
-                    mDriveServiceHelper.queryFiles()
+                    driveStorage.queryFiles()
                             .addOnSuccessListener(fileList -> {
                                 List<com.google.api.services.drive.model.File> files = fileList.getFiles();
                                 for (int pos : positionsToRemove) {
@@ -658,10 +656,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             Drive googleDriveService = getDriveService(account);
-
-            // The DriveServiceHelper encapsulates all REST API and SAF functionality.
-            // Its instantiation is required before handling any onClick actions.
-            mDriveServiceHelper = new DriveServiceHelper(googleDriveService);
             driveStorage = new DriveStorage(googleDriveService);
 
             // Signed in successfully, show authenticated UI.
