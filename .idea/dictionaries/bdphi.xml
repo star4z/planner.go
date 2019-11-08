@@ -2,8 +2,13 @@
   <dictionary name="bdphi">
     <words>
       <w>bdphi</w>
+      <w>descr</w>
       <w>gson</w>
+      <w>inapp</w>
       <w>notif</w>
+      <w>notifs</w>
+      <w>shmancy</w>
+      <w>skus</w>
     </words>
   </dictionary>
 </component>

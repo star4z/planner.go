@@ -71,8 +71,8 @@ class DriveStorage(drive: Drive) {
                                 Log.d(TAG, "${file.name},c=${file.createdTime},m=${file
                                         .modifiedTime}")
                             }
-                            if (files.size > 5) {
-                                for (i in 5 until files.size) {
+                            if (files.size > MAX_DRIVE_BACKUPS) {
+                                for (i in MAX_DRIVE_BACKUPS until files.size) {
                                     deleteFile(files[i].id)
                                 }
                             }
