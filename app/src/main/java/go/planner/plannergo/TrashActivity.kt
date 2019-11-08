@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.preference.PreferenceManager
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
@@ -20,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_trash.*
 
@@ -64,10 +64,10 @@ class TrashActivity : AppCompatActivity(), ColorSchemeActivity {
     }
 
     override fun setColorScheme() {
-        val darkmode = prefs.getBoolean(Settings.darkMode, true)
-        colorScheme = if (darkmode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
+        val darkMode = prefs.getBoolean(Settings.darkMode, true)
+        colorScheme = if (darkMode) ColorScheme.SCHEME_DARK else ColorScheme.SCHEME_LIGHT
 //        setTheme(colorScheme.theme)
-        Log.d(tag, "scheme=$darkmode")
+        Log.d(tag, "scheme=$darkMode")
     }
 
     override fun getColorScheme(): ColorScheme {
@@ -169,7 +169,6 @@ class TrashActivity : AppCompatActivity(), ColorSchemeActivity {
                 val className = nextView.findViewById<TextView>(R.id.className)
                 className.text = assignment.className
                 className.setTextColor(textColor)
-                //TODO: replace icon tinting
                 nextView.findViewById<ImageView>(R.id.restore).drawable.setTint(textColor)
                 nextView.findViewById<ImageView>(R.id.delete).drawable.setTint(textColor)
 
@@ -252,8 +251,8 @@ class TrashActivity : AppCompatActivity(), ColorSchemeActivity {
         return super.onCreateView(parent, name, context, attrs)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
             android.R.id.home -> {
                 mDrawerLayout.openDrawer(GravityCompat.START)
                 return true

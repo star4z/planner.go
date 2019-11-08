@@ -146,15 +146,15 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (stage == 2) {
             drawer_layout.openDrawer(GravityCompat.START)
             return true
         }
-        if (stage == 4 && item?.itemId == R.id.action_open_types) {
+        if (stage == 4 && item.itemId == R.id.action_open_types) {
             initStage5()
         }
-        if (stage == 6 && item?.itemId == android.R.id.home) {
+        if (stage == 6 && item.itemId == android.R.id.home) {
             NavUtils.navigateUpTo(this, Intent(this, MainActivity::class.java))
         }
         return super.onOptionsItemSelected(item)
@@ -333,7 +333,6 @@ class TutorialActivity : AppCompatActivity(), ColorSchemeActivity {
         tV.text = newCategory
         tV.setTextColor(color)
 
-        //TODO: remove tints
         v.findViewById<ImageView>(R.id.edit).drawable.setTint(color)
         v.findViewById<ImageView>(R.id.remove).drawable.setTint(color)
 

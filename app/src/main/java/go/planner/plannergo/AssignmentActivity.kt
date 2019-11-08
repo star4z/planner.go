@@ -8,7 +8,6 @@ import android.content.SharedPreferences
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import androidx.preference.PreferenceManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -16,6 +15,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
+import androidx.preference.PreferenceManager
 import go.planner.plannergo.FileIO.getAssignment
 import kotlinx.android.synthetic.main.activity_assignment.*
 import java.text.SimpleDateFormat
@@ -155,7 +155,6 @@ abstract class AssignmentActivity : AppCompatActivity(), ColorSchemeActivity {
         if (!promptSave || oldAssignment.compareFields(getAssignment()))
             navigateUpTo(Intent(this, MainActivity::class.java))
         else {
-            //TODO: add don't ask me again option
             val style = if (colorScheme == ColorScheme.SCHEME_DARK)
                 R.style.DarkDialogTheme
             else

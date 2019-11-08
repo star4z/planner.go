@@ -115,7 +115,6 @@ val c: ListActivity, private val mRecyclerView: RecyclerView)
         //create ViewHolder from layout and attach OnClickListeners
         val holder = ViewHolder(view)
         holder.textView.setTextColor(colorScheme.getColor(parent.context, Field.MAIN_CARD_TEXT))
-        // TODO: replace tints
         holder.edit.drawable.setTint(colorScheme.getColor(parent.context, Field.MAIN_CARD_TEXT))
         holder.remove.drawable.setTint(colorScheme.getColor(parent.context, Field.MAIN_CARD_TEXT))
         return holder
