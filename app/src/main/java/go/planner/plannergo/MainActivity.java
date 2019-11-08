@@ -593,30 +593,34 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 if (data != null) {
                     exportFiles(data.getData());
                 } else {
-                    Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
+                   onCancelledAction();
                 }
                 break;
             case RC_GET_FILE:
                 if (data != null) {
                     importFiles(data.getData());
                 } else {
-                    Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
+                    onCancelledAction();
                 }
                 break;
             case RC_PICK_FILE:
                 if (data != null) {
-                    int position = Objects.requireNonNull(data.getExtras()).getInt("item_no");
+                    int position =
+                            Objects.requireNonNull(data.getExtras()).getInt(ListPickerAdapter.ITEM_NO, -1);
 
-                    //Ideally, this can be done w/o re-querying the files
-                    driveStorage.queryFiles()
-                            .addOnSuccessListener(fileList -> {
-                                String fileId = fileList.getFiles().get(position).getId();
-                                importDriveBackup(fileId);
-                            })
-                            .addOnFailureListener(Throwable::printStackTrace);
-
+                    if (position > -1) {
+                        //Ideally, this can be done w/o re-querying the files
+                        driveStorage.queryFiles()
+                                .addOnSuccessListener(fileList -> {
+                                    String fileId = fileList.getFiles().get(position).getId();
+                                    importDriveBackup(fileId);
+                                })
+                                .addOnFailureListener(Throwable::printStackTrace);
+                    } else {
+                        onCancelledAction();
+                    }
                 } else {
-                    Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
+                    onCancelledAction();
                 }
                 break;
             case RC_DELETE_BACKUPS:
@@ -627,17 +631,21 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     Log.d(TAG, "positionsToRemove=" + positionsToRemove);
                     driveStorage.queryFiles()
                             .addOnSuccessListener(fileList -> {
-                                List<com.google.api.services.drive.model.File> files = fileList.getFiles();
-                                Log.d(TAG, "files size = " + files.size());
-                                for (int pos : positionsToRemove) {
-                                    String fileId = files.get(pos).getId();
-                                    Objects.requireNonNull(driveStorage.deleteFile(fileId))
-                                            .addOnFailureListener(Throwable::printStackTrace);
-                                    files.remove(pos);
-                                }
+                                if (!positionsToRemove.isEmpty()) {
+                                    List<com.google.api.services.drive.model.File> files = fileList.getFiles();
+                                    Log.d(TAG, "files size = " + files.size());
+                                    for (int pos : positionsToRemove) {
+                                        String fileId = files.get(pos).getId();
+                                        Objects.requireNonNull(driveStorage.deleteFile(fileId))
+                                                .addOnFailureListener(Throwable::printStackTrace);
+                                        files.remove(pos);
+                                    }
 
-                                Toast.makeText(this, R.string.delete_file_success,
-                                        Toast.LENGTH_LONG).show();
+                                    Toast.makeText(this, R.string.delete_file_success,
+                                            Toast.LENGTH_LONG).show();
+                                } else {
+                                    onCancelledAction();
+                                }
                             })
                             .addOnFailureListener(e -> {
                                 e.printStackTrace();
@@ -647,7 +655,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
 
                 } else {
-                    Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
+                    onCancelledAction();
                 }
                 break;
         }
@@ -669,6 +677,10 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             Toast.makeText(this, R.string.login_error, Toast.LENGTH_LONG).show();
             updateUI(null);
         }
+    }
+
+    private void onCancelledAction() {
+        Toast.makeText(this, R.string.cancelled, Toast.LENGTH_LONG).show();
     }
 
     private Drive getDriveService(GoogleSignInAccount account) {

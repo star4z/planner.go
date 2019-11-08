@@ -10,6 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 class ListPickerAdapter(data: ArrayList<String>, private val c: ListActivity,
                         mRecyclerView: RecyclerView): ListActivityAdapter(data, c, mRecyclerView) {
 
+    companion object {
+        const val ITEM_NO = "item_no"
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.view_list_activity_item, parent, false) as LinearLayout
@@ -23,8 +27,7 @@ class ListPickerAdapter(data: ArrayList<String>, private val c: ListActivity,
 
         view.setOnClickListener {
             val intent = Intent()
-            intent.putExtra("item_no", holder.adapterPosition)
-            intent.extras!!.putAll(c.intent.extras)
+            intent.putExtra(ITEM_NO, holder.adapterPosition)
             c.setResult(MainActivity.RC_PICK_FILE, intent)
             c.finish()
         }
