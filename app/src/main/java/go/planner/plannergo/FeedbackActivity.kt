@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
-import androidx.preference.PreferenceManager
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -18,6 +17,7 @@ import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
 import com.android.billingclient.api.BillingClient
 import go.planner.plannergo.planner_billing.billing.BillingManager
 import go.planner.plannergo.planner_billing.billing.BillingManager.BILLING_MANAGER_NOT_INITIALIZED
@@ -69,12 +69,9 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
             AcquireFragment()
         }
 
-
         mBillingManager = BillingManager(this, @Suppress("INACCESSIBLE_TYPE") mViewController.updateListener)
 
         mScreenMain = findViewById(R.id.screen_main)
-
-
     }
 
     override fun onResume() {
@@ -145,7 +142,6 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
             startActivity(Intent(Intent.ACTION_VIEW,
                     Uri.parse("http://play.google.com/store/apps/details?id=$packageName")))
         }
-
     }
 
     /**
