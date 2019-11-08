@@ -3,19 +3,32 @@ package go.planner.plannergo
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
+import kotlinx.android.synthetic.main.activity_list.*
 import kotlinx.android.synthetic.main.toolbar.*
 
-class DriveFileManagementActivity: DriveFilePickerActivity() {
+open class DriveFileManagementActivity : ListActivity() {
+
     companion object {
         const val OBJECTS_TO_REMOVE_KEY = "objectsToRemove"
+        const val DATA_KEY = "fileNameList"
     }
 
     private val positionsToRemove = ArrayList<Int>()
 
+    override fun getData(): ArrayList<String> {
+        return intent.extras?.getStringArrayList(DATA_KEY)!!
+    }
+
+    override fun onEdit(oldString: String, newString: String) {}
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         viewAdapter = ListDeletionAdapter(this, mData, recyclerView)
         recyclerView.adapter = viewAdapter
+        fab.visibility = View.GONE
     }
 
     override fun onRemove(position: Int) {
@@ -40,7 +53,12 @@ class DriveFileManagementActivity: DriveFilePickerActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> saveAndExit()
+            R.id.empty_trash -> removeAll()
         }
         return true
+    }
+
+    override fun onRemoveAll() {
+        repeat(mData.size) { positionsToRemove.add(0) }
     }
 }

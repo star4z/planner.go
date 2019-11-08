@@ -624,9 +624,11 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     ArrayList<Integer> positionsToRemove = Objects.requireNonNull(data.getExtras())
                             .getIntegerArrayList(DriveFileManagementActivity.OBJECTS_TO_REMOVE_KEY);
                     assert positionsToRemove != null;
+                    Log.d(TAG, "positionsToRemove=" + positionsToRemove);
                     driveStorage.queryFiles()
                             .addOnSuccessListener(fileList -> {
                                 List<com.google.api.services.drive.model.File> files = fileList.getFiles();
+                                Log.d(TAG, "files size = " + files.size());
                                 for (int pos : positionsToRemove) {
                                     String fileId = files.get(pos).getId();
                                     Objects.requireNonNull(driveStorage.deleteFile(fileId))

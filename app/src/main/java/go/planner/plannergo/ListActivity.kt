@@ -104,8 +104,6 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
                 parent?.parent is FrameLayout) {
             val view = parent.parent as View
             // change options menu bg color
-
-
             view.setBackgroundColor(colorScheme.getColor(this, Field.DG_BG))
         }
         return super.onCreateView(parent, name, context, attrs)
@@ -114,22 +112,7 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.empty_trash -> {
-                AlertDialog.Builder(this, if (colorScheme == ColorScheme.SCHEME_DARK)
-                    R.style.DarkDialogTheme
-                else
-                    R.style.LightDialogTheme)
-                        .setTitle("Are you sure you want to delete all items?")
-                        .setMessage("You will not be able to undo this action.")
-                        .setPositiveButton("Yes") { _, _ ->
-                            run {
-                                val size = mData.size
-                                mData.clear()
-                                FileIO.writeFiles(this)
-                                viewAdapter.notifyItemRangeChanged(0, size)
-                            }
-                        }
-                        .setNegativeButton("No", null)
-                        .show()
+                removeAll()
                 true
             }
             android.R.id.home -> {
@@ -140,6 +123,29 @@ abstract class ListActivity : AppCompatActivity(), ColorSchemeActivity {
                 consume { return super.onOptionsItemSelected(item) }
             }
         }
+    }
+
+    fun removeAll() {
+        AlertDialog.Builder(this, if (colorScheme == ColorScheme.SCHEME_DARK)
+            R.style.DarkDialogTheme
+        else
+            R.style.LightDialogTheme)
+                .setTitle("Are you sure you want to delete all items?")
+                .setMessage("You will not be able to undo this action.")
+                .setPositiveButton("Yes") { _, _ ->
+                    run {
+                        onRemoveAll()
+                        val size = mData.size
+                        mData.clear()
+                        viewAdapter.notifyItemRangeChanged(0, size)
+                    }
+                }
+                .setNegativeButton("No", null)
+                .show()
+    }
+
+    open fun onRemoveAll() {
+        FileIO.writeFiles(this)
     }
 
     abstract fun onEdit(oldString: String, newString: String)
