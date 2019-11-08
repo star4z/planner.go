@@ -17,12 +17,13 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 class DriveStorage(drive: Drive) {
+    @Suppress("PrivatePropertyName")
     private val TAG = this.javaClass.simpleName
 
     private val mExecutor: Executor = Executors.newSingleThreadExecutor() as Executor
     private val mDriveService: Drive? = drive
 
-    private val MAX_DRIVE_BACKUPS = 5 //only used if singleDriveMode is enabled
+    private val maxDriveBackups = 5 //only used if singleDriveMode is enabled
 
     /**
      * Returns a [FileList] containing all the visible files in the user's My Drive.
@@ -71,8 +72,8 @@ class DriveStorage(drive: Drive) {
                                 Log.d(TAG, "${file.name},c=${file.createdTime},m=${file
                                         .modifiedTime}")
                             }
-                            if (files.size > MAX_DRIVE_BACKUPS) {
-                                for (i in MAX_DRIVE_BACKUPS until files.size) {
+                            if (files.size > maxDriveBackups) {
+                                for (i in maxDriveBackups until files.size) {
                                     deleteFile(files[i].id)
                                 }
                             }
