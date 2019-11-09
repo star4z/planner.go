@@ -113,7 +113,7 @@
     <string name="default_type">Category</string>
     <string name="enter_title_of_assignment">Enter title</string>
 
-    <!--SettingsActivity-->
+    <!--Preferences-->
     <string name="pref_dark_mode">Dark mode</string>
     <string name="pref_color_scheme">Color Scheme</string>
     <string name="pref_class_colors">Color code titles by class</string>
@@ -129,6 +129,7 @@
     <string name="pref_days_before">Days before deadline</string>
     <string name="pref_2_notifs">I want two notifications</string>
     <string name="pref_drive_single_mode">Drive single backup mode</string>
+    <string name="pref_drive_single_mode_summary">Drive import skips dialog and imports the most recent backup.\nLimits stored assignments to 5.</string>
 
     <!--TrashActivity-->
     <string name="deletion_is_permanent">Assignments in the trash are permanently deleted after 30 days.</string>
