@@ -111,8 +111,8 @@ public class MainActivity extends BillingActivity implements ColorSchemeActivity
     static final int iSettings = 4;
     static final int iFeedback = 5;
     static final int iSignIn = 6;
-    static final int iDonate = 7;
-    static final int iRateAndReview = 8;
+    static final int iRateAndReview = 7;
+    static final int iDonate = 8;
 
     /**
      * Runs the first time this instance of the activity becomes active
