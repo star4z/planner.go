@@ -1,5 +1,6 @@
 package go.planner.plannergo;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,7 +25,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
@@ -67,7 +67,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity implements ColorSchemeActivity, SignInActivity {
+import go.planner.plannergo.planner_billing.BillingActivity;
+
+public class MainActivity extends BillingActivity implements ColorSchemeActivity,
+        SignInActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -94,7 +97,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
 
     private DriveStorage driveStorage;
 
-
     final int RC_SIGN_IN = 13;
     final int RC_GET_DIR = 201;
     final int RC_GET_FILE = 202;
@@ -109,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
     static final int iSettings = 4;
     static final int iFeedback = 5;
     static final int iSignIn = 6;
+    static final int iDonate = 7;
+    static final int iRateAndReview = 8;
 
     /**
      * Runs the first time this instance of the activity becomes active
@@ -132,8 +136,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         fab = findViewById(R.id.fab);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         setSupportActionBar(myToolbar);
-
-        initNavDrawer();
 
         GoogleSignInOptions gso =
                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -561,6 +563,13 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                     break;
                 case iFeedback:
                     startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
+                    break;
+                case iDonate:
+                    openDonationDialog(view);
+                    break;
+                case iRateAndReview:
+                    gotoAppRating();
+                    break;
             }
             if (oldScreenIsInProgress != currentScreenIsInProgress) {
                 Log.d(TAG, "invalidating options menu");
@@ -572,12 +581,27 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         updateUI(account);
     }
 
-
     @Override
     public void signIn(View view) {
         Log.v(TAG, "Signing in...");
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    public void gotoAppRating() {
+        Uri uri = Uri.parse("market://details?id=" + this.getPackageName());
+        Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
+        // To count with Play market backstack, After pressing back button,
+        // to taken back to our application, we need to add following flags to intent.
+        goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
+                Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
+                Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        try {
+            startActivity(goToMarket);
+        } catch (ActivityNotFoundException e) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://play.google.com/store/apps/details?id=" + this.getPackageName())));
+        }
     }
 
     @Override
@@ -593,7 +617,7 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
                 if (data != null) {
                     exportFiles(data.getData());
                 } else {
-                   onCancelledAction();
+                    onCancelledAction();
                 }
                 break;
             case RC_GET_FILE:
@@ -730,7 +754,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
         loadPanels(assignments, 0);
     }
 
-
     void loadPanels(ArrayList<Assignment> assignments, int sortIndex) {
         if (sharedPref.getBoolean(Settings.notifEnabled, true))
             NotificationAlarms.setNotificationTimers(this);
@@ -774,7 +797,6 @@ public class MainActivity extends AppCompatActivity implements ColorSchemeActivi
             }
         }
     }
-
 
     private void addViewsByDate(ArrayList<Assignment> assignments) {
         Calendar today = Calendar.getInstance();

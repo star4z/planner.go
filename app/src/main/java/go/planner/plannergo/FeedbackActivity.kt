@@ -5,24 +5,14 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.ScrollView
 import android.widget.Toast
-import androidx.annotation.Nullable
-import androidx.annotation.StringRes
-import androidx.annotation.UiThread
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
-import com.android.billingclient.api.BillingClient
-import go.planner.plannergo.planner_billing.billing.BillingManager
-import go.planner.plannergo.planner_billing.billing.BillingManager.BILLING_MANAGER_NOT_INITIALIZED
-import go.planner.plannergo.planner_billing.billing.BillingProvider
-import go.planner.plannergo.planner_billing.skulist.AcquireFragment
+import go.planner.plannergo.planner_billing.BillingActivity
 import kotlinx.android.synthetic.main.activity_feedback.*
 import kotlinx.android.synthetic.main.toolbar.*
 
@@ -31,19 +21,11 @@ import kotlinx.android.synthetic.main.toolbar.*
  * Labeled "Help and Feedback" in the app.
  * Uses billing library methods.
  */
-class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivity {
+class FeedbackActivity : BillingActivity(), ColorSchemeActivity {
+
     private lateinit var prefs: SharedPreferences
     private lateinit var colorScheme: ColorScheme
     private var schemeSet = false
-
-    // Debug tag, for logging
-    private val tag = "BaseGamePlayActivity"
-
-    private val dialogTag = "dialog"
-
-    private lateinit var mViewController: MainViewController
-    private lateinit var mBillingManager: BillingManager
-    private lateinit var mAcquireFragment: AcquireFragment
 
     private lateinit var mScreenMain: ScrollView
 
@@ -56,30 +38,12 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
         toolbar.navigationIcon = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_white_24dp)
         setSupportActionBar(toolbar)
 
-        mViewController = MainViewController(this)
-
-        //This only threw this error when applying changes while FeedbackActivity was active.
-        //No apparent way to make it break this way in the wild, but the catch is there just to be safe.
-        mAcquireFragment = try {
-            if (savedInstanceState != null)
-                supportFragmentManager.findFragmentByTag(dialogTag) as AcquireFragment
-            else
-                AcquireFragment()
-        } catch (e: TypeCastException) {
-            AcquireFragment()
-        }
-
-        mBillingManager = BillingManager(this, @Suppress("INACCESSIBLE_TYPE") mViewController.updateListener)
-
         mScreenMain = findViewById(R.id.screen_main)
     }
 
     override fun onResume() {
         super.onResume()
         checkForColorSchemeUpdate()
-        if (mBillingManager.billingClientResponseCode == BillingClient.BillingResponse.OK) {
-            mBillingManager.queryPurchases()
-        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -91,25 +55,9 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
         }
         return true
     }
-    override fun getBillingManager(): BillingManager {
-        return mBillingManager
-    }
 
     fun replayTutorial(@Suppress("UNUSED_PARAMETER") view: View) {
         startActivity(Intent(this, TutorialActivityTitle::class.java))
-    }
-
-    fun openDonationDialog(@Suppress("UNUSED_PARAMETER") view: View) {
-        Log.d(tag, "Donation button clicked")
-        if (!::mAcquireFragment.isInitialized) {
-            mAcquireFragment = AcquireFragment()
-        }
-
-        if (!isAcquireFragmentShown()) {
-            mAcquireFragment.show(supportFragmentManager, dialogTag)
-            if (mBillingManager.billingClientResponseCode > BILLING_MANAGER_NOT_INITIALIZED)
-                mAcquireFragment.onManagerReady(this)
-        }
     }
 
     fun openAboutActivity(@Suppress("UNUSED_PARAMETER") view: View) {
@@ -141,51 +89,6 @@ class FeedbackActivity : AppCompatActivity(), BillingProvider, ColorSchemeActivi
         } catch (e: ActivityNotFoundException) {
             startActivity(Intent(Intent.ACTION_VIEW,
                     Uri.parse("http://play.google.com/store/apps/details?id=$packageName")))
-        }
-    }
-
-    /**
-     * Show an alert dialog to the user
-     * @param messageId String id to display inside the alert dialog
-     * @param optionalParam Optional attribute for the string
-     */
-    @UiThread
-    fun alert(@StringRes messageId: Int, @Nullable optionalParam: Any?) {
-        if (Looper.getMainLooper().thread !== Thread.currentThread()) {
-            throw RuntimeException("Dialog could be shown only from the main thread")
-        }
-
-        val bld = AlertDialog.Builder(this)
-        bld.setNeutralButton("OK", null)
-
-        if (optionalParam == null) {
-            bld.setMessage(messageId)
-        } else {
-            bld.setMessage(resources.getString(messageId, optionalParam))
-        }
-
-        bld.create().show()
-    }
-
-    fun onBillingManagerSetupFinished() {
-        mAcquireFragment.onManagerReady(this)
-    }
-
-    private fun isAcquireFragmentShown(): Boolean {
-        return !::mAcquireFragment.isInitialized && mAcquireFragment.isVisible
-    }
-
-    override fun isOneDollarDonor(): Boolean {
-        return mViewController.isOneDollarDonor
-    }
-
-    override fun isFiveDollarDonor(): Boolean {
-        return mViewController.isFiveDollarDonor
-    }
-
-    fun showRefreshedUi(){
-        if (::mAcquireFragment.isInitialized) {
-            mAcquireFragment.refreshUI()
         }
     }
 

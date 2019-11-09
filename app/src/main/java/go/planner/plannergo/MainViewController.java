@@ -24,6 +24,7 @@ import com.android.billingclient.api.Purchase;
 
 import java.util.List;
 
+import go.planner.plannergo.planner_billing.BillingActivity;
 import go.planner.plannergo.planner_billing.billing.BillingManager;
 import go.planner.plannergo.planner_billing.skulist.row.FiveDollarDelegate;
 import go.planner.plannergo.planner_billing.skulist.row.OneDollarDelegate;
@@ -37,13 +38,13 @@ public class MainViewController {
     private static final String TAG = "MainViewController";
 
     private final UpdateListener mUpdateListener;
-    private FeedbackActivity mActivity;
+    private BillingActivity mActivity;
 
     //Tracks if purchased various donation levels
     private boolean isOneDollarDonor;
     private boolean isFiveDollarDonor;
 
-    public MainViewController(FeedbackActivity activity) {
+    public MainViewController(BillingActivity activity) {
         mUpdateListener = new UpdateListener();
         mActivity = activity;
         loadData();
@@ -64,7 +65,7 @@ public class MainViewController {
     /**
      * Handler to billing updates
      */
-    private class UpdateListener implements BillingManager.BillingUpdatesListener {
+    public class UpdateListener implements BillingManager.BillingUpdatesListener {
         @Override
         public void onBillingClientSetupFinished() {
             mActivity.onBillingManagerSetupFinished();
