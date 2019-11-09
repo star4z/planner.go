@@ -199,7 +199,7 @@
     <string name="error_no_skus">We didn\'t find any SKUs to display&#8230; Check your internet
         connection and make sure your Google Developer Console was setup correctly.</string>
     <string name="error_billing_unavailable">Billing unavailable. Make sure your Google Play app
-        is setup correctly</string>
+        is setup correctly.</string>
     <string name="error_billing_default">Billing unavailable. Please check your device.</string>
     <string name="open_nav_menu">Open navigation menu</string>
     <string name="empty_list">List is empty.</string>
