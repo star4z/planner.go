@@ -8,8 +8,8 @@
         <item>@drawable/ic_settings_grey_24dp</item>
         <item>@drawable/ic_feedback_grey_24dp</item>
         <item>-1</item>
-        <item>@drawable/ic_attach_money_grey_24dp</item>
         <item>@drawable/ic_rate_review_grey_24dp</item>
+        <item>@drawable/ic_attach_money_grey_24dp</item>
     </integer-array>
 
     <string name="help_and_feedback"><![CDATA[Help & Feedback]]></string>
@@ -24,7 +24,7 @@
         <!--        empty for sign-in button-->
         <!--suppress CheckTagEmptyBody -->
         <item></item>
-        <item>Donate</item>
-        <item>Rate &amp; Review</item>
+        <item>@string/rate_and_review</item>
+        <item>@string/donate</item>
     </string-array>
 </resources>
