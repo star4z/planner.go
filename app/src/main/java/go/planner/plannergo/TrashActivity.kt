@@ -1,6 +1,5 @@
 package go.planner.plannergo
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -21,7 +20,16 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.preference.PreferenceManager
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions.Builder
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
+import com.google.android.gms.tasks.Task
 import com.google.android.material.navigation.NavigationView
+import com.google.api.services.drive.DriveScopes
 import go.planner.plannergo.planner_billing.BillingActivity
 import kotlinx.android.synthetic.main.activity_trash.*
 
@@ -29,17 +37,24 @@ import kotlinx.android.synthetic.main.activity_trash.*
  * Displays deleted assignments. Does not do any sorting in order to handle larger quantities of
  * assignments than would be expected in MainActivity, for example.
  */
-class TrashActivity : BillingActivity(), ColorSchemeActivity {
+class TrashActivity : BillingActivity(), ColorSchemeActivity, SignInActivity {
     init {
         tag = "TrashActivity"
     }
+
     private lateinit var prefs: SharedPreferences
     private lateinit var colorScheme: ColorScheme
     private var schemeSet = false
 
     private lateinit var mDrawerLayout: DrawerLayout
+    private lateinit var mDrawerAdapter: DrawerAdapter
+    private lateinit var mDrawerList: ListView
 
-    @SuppressLint("NewApi")
+    private var mGoogleSignInClient: GoogleSignInClient? = null
+    private var account: GoogleSignInAccount? = null
+
+    private val signInRC = 13
+
     override fun onCreate(savedInstanceState: Bundle?) {
         prefs = PreferenceManager.getDefaultSharedPreferences(this)
         setColorScheme()
@@ -47,9 +62,21 @@ class TrashActivity : BillingActivity(), ColorSchemeActivity {
         setContentView(R.layout.activity_trash)
 
         setSupportActionBar(toolbar)
-        toolbar.title = "Trash"
 
         FileIO.readFiles(this)
+
+        val gso: GoogleSignInOptions? = Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestScopes(Scope(DriveScopes.DRIVE_FILE))
+                .build()
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso!!)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        account = GoogleSignIn.getLastSignedInAccount(this)
+        Log.i(tag, "account=$account")
     }
 
     override fun onResume() {
@@ -59,11 +86,26 @@ class TrashActivity : BillingActivity(), ColorSchemeActivity {
         invalidateOptionsMenu()
         setUpNavDrawer()
 
+        updateUI(account)
+
         FileIO.readFiles(this)
 
         loadPanels()
 
+        toolbar.setTitle(R.string.trash)
+
         super.onResume()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        when (requestCode) {
+            signInRC -> {
+                val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
+                handleSignInResult(task)
+            }
+        }
     }
 
     override fun setColorScheme() {
@@ -98,6 +140,13 @@ class TrashActivity : BillingActivity(), ColorSchemeActivity {
         schemeSet = true
     }
 
+    private fun updateUI(account: GoogleSignInAccount?) {
+        Log.d(tag, "" + account)
+        this.account = account
+        mDrawerAdapter.account = account
+        mDrawerList.adapter = mDrawerAdapter
+    }
+
     private fun setUpNavDrawer() {
         val drawerOptions = resources.getStringArray(R.array.drawer_options_array)
         val tArray = resources.obtainTypedArray(R.array.drawer_icons_array)
@@ -109,9 +158,9 @@ class TrashActivity : BillingActivity(), ColorSchemeActivity {
         tArray.recycle()
 
         mDrawerLayout = findViewById(R.id.drawer_layout)
-        val mDrawerList = findViewById<ListView>(R.id.drawer_list)
+        mDrawerList = findViewById(R.id.drawer_list)
 
-        val mDrawerAdapter = DrawerAdapter(this, drawerOptions, drawerIcons, 3)
+        mDrawerAdapter = DrawerAdapter(this, drawerOptions, drawerIcons, 3)
         mDrawerList.adapter = mDrawerAdapter
 
 
@@ -148,6 +197,38 @@ class TrashActivity : BillingActivity(), ColorSchemeActivity {
                 DrawerAdapter.iDonate -> openDonationDialog(view)
             }
             mDrawerLayout.closeDrawers()
+        }
+    }
+
+
+    override fun signIn(view: View?) {
+        Log.v(tag, "Signing in...")
+        val signInIntent = mGoogleSignInClient!!.signInIntent
+        startActivityForResult(signInIntent, signInRC)
+    }
+
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account = completedTask.getResult(ApiException::class.java)
+
+            // Signed in successfully, show authenticated UI.
+            updateUI(account!!)
+        } catch (e: ApiException) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+
+            Log.w(tag, "signInResult:failed code=" + e.statusCode)
+            Toast.makeText(this, R.string.login_error, Toast.LENGTH_LONG).show()
+            updateUI(null)
+        }
+    }
+
+
+    override fun signOut(view: View?) {
+        Log.d(tag, "Signing out")
+        mGoogleSignInClient!!.signOut().addOnCompleteListener {
+            account = null
+            updateUI(null)
         }
     }
 
