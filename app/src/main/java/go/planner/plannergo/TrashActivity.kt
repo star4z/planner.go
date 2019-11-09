@@ -2,9 +2,11 @@ package go.planner.plannergo
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -15,21 +17,22 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationView
+import go.planner.plannergo.planner_billing.BillingActivity
 import kotlinx.android.synthetic.main.activity_trash.*
 
 /**
  * Displays deleted assignments. Does not do any sorting in order to handle larger quantities of
  * assignments than would be expected in MainActivity, for example.
  */
-class TrashActivity : AppCompatActivity(), ColorSchemeActivity {
-    private val tag = "TrashActivity"
-
+class TrashActivity : BillingActivity(), ColorSchemeActivity {
+    init {
+        tag = "TrashActivity"
+    }
     private lateinit var prefs: SharedPreferences
     private lateinit var colorScheme: ColorScheme
     private var schemeSet = false
@@ -112,9 +115,9 @@ class TrashActivity : AppCompatActivity(), ColorSchemeActivity {
         mDrawerList.adapter = mDrawerAdapter
 
 
-        mDrawerList.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
+        mDrawerList.onItemClickListener = AdapterView.OnItemClickListener { _, view, position, _ ->
             when (position) {
-                1 -> {
+                DrawerAdapter.iInProgress -> {
                     mDrawerAdapter.setSelectedPos(1)
                     mDrawerList.adapter = mDrawerAdapter
                     val intent = Intent(this, MainActivity::class.java).apply {
@@ -125,7 +128,7 @@ class TrashActivity : AppCompatActivity(), ColorSchemeActivity {
                     startActivity(intent)
                     overridePendingTransition(0, 0)
                 }
-                2 -> {
+                DrawerAdapter.iCompleted -> {
                     mDrawerAdapter.setSelectedPos(2)
                     mDrawerList.adapter = mDrawerAdapter
                     val intent = Intent(this, MainActivity::class.java).apply {
@@ -136,11 +139,31 @@ class TrashActivity : AppCompatActivity(), ColorSchemeActivity {
                     startActivity(intent)
                     overridePendingTransition(0, 0)
                 }
-                3 -> loadPanels()
-                4 -> startActivity(Intent(this@TrashActivity, SettingsActivity::class.java))
-                5 -> startActivity(Intent(this@TrashActivity, FeedbackActivity::class.java))
+                DrawerAdapter.iTrash -> loadPanels()
+                DrawerAdapter.iSettings -> startActivity(Intent(this@TrashActivity,
+                        SettingsActivity::class.java))
+                DrawerAdapter.iFeedback -> startActivity(Intent(this@TrashActivity,
+                        FeedbackActivity::class.java))
+                DrawerAdapter.iRateAndReview -> gotoAppRating()
+                DrawerAdapter.iDonate -> openDonationDialog(view)
             }
             mDrawerLayout.closeDrawers()
+        }
+    }
+
+    private fun gotoAppRating() {
+        val uri: Uri? = Uri.parse("market://details?id=" + this.packageName)
+        val goToMarket = Intent(Intent.ACTION_VIEW, uri)
+        // To count with Play market backstack, After pressing back button,
+        // to taken back to our application, we need to add following flags to intent.
+        goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY or
+                Intent.FLAG_ACTIVITY_NEW_DOCUMENT or
+                Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+        try {
+            startActivity(goToMarket)
+        } catch (e: ActivityNotFoundException) {
+            startActivity(Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://play.google.com/store/apps/details?id=" + this.packageName)))
         }
     }
 

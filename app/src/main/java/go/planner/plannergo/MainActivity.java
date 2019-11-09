@@ -103,17 +103,6 @@ public class MainActivity extends BillingActivity implements ColorSchemeActivity
     public static final int RC_PICK_FILE = 301;
     public static final int RC_DELETE_BACKUPS = 303;
 
-    // drawer indices
-    static final int iHeader = 0;
-    static final int iInProgress = 1;
-    static final int iCompleted = 2;
-    static final int iTrash = 3;
-    static final int iSettings = 4;
-    static final int iFeedback = 5;
-    static final int iSignIn = 6;
-    static final int iRateAndReview = 7;
-    static final int iDonate = 8;
-
     /**
      * Runs the first time this instance of the activity becomes active
      *
@@ -546,28 +535,28 @@ public class MainActivity extends BillingActivity implements ColorSchemeActivity
         mDrawerList.setOnItemClickListener((parent, view, position, id) -> {
             boolean oldScreenIsInProgress = currentScreenIsInProgress;
             switch (position) {
-                case iInProgress:
+                case DrawerAdapter.iInProgress:
                     loadPanels(FileIO.inProgressAssignments);
                     break;
-                case iCompleted:
+                case DrawerAdapter.iCompleted:
                     loadPanels(FileIO.completedAssignments);
                     break;
-                case iTrash:
+                case DrawerAdapter.iTrash:
                     mDrawerAdapter.setSelectedPos(3);
                     mDrawerList.setAdapter(mDrawerAdapter);
                     startActivity(new Intent(MainActivity.this, TrashActivity.class));
                     overridePendingTransition(0, 0);
                     break;
-                case iSettings:
+                case DrawerAdapter.iSettings:
                     startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                     break;
-                case iFeedback:
+                case DrawerAdapter.iFeedback:
                     startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
                     break;
-                case iDonate:
+                case DrawerAdapter.iDonate:
                     openDonationDialog(view);
                     break;
-                case iRateAndReview:
+                case DrawerAdapter.iRateAndReview:
                     gotoAppRating();
                     break;
             }

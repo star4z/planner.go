@@ -21,6 +21,16 @@ import com.google.android.gms.common.SignInButton;
  */
 
 public class DrawerAdapter extends BaseAdapter {
+    // drawer indices
+    static final int iHeader = 0;
+    static final int iInProgress = 1;
+    static final int iCompleted = 2;
+    static final int iTrash = 3;
+    static final int iSettings = 4;
+    static final int iFeedback = 5;
+    static final int iSignIn = 6;
+    static final int iRateAndReview = 7;
+    static final int iDonate = 8;
     private static final String TAG = "DrawerAdapter";
 
     private String[] drawerOptions;
@@ -89,9 +99,9 @@ public class DrawerAdapter extends BaseAdapter {
         ColorScheme scheme = ((ColorSchemeActivity) c).getColorScheme();
 
 
-        if (position == MainActivity.iHeader) {
+        if (position == iHeader) {
             view = inflater.inflate(R.layout.view_drawer_header, parent, false);
-        } else if (position == MainActivity.iSignIn) {
+        } else if (position == iSignIn) {
             view = inflater.inflate(R.layout.view_drawer_sign_in_button, parent, false);
         } else if (position == selectedPos) {
             view = inflater.inflate(R.layout.view_drawer_list_item_selected, parent, false);
@@ -101,7 +111,7 @@ public class DrawerAdapter extends BaseAdapter {
 
         view.setBackgroundColor(scheme.getColor(c, Field.DW_BG));
 
-        if (position != MainActivity.iSignIn) {
+        if (position != iSignIn) {
 
             TextView text = view.findViewById(R.id.nBar_item_text);
             ImageView icon = view.findViewById(R.id.nBar_item_icon);
@@ -114,17 +124,17 @@ public class DrawerAdapter extends BaseAdapter {
 
 
             switch (position) {
-                case MainActivity.iHeader:
+                case iHeader:
                     view.setBackgroundColor(scheme.getColor(c, Field.DW_HEAD_BG));
                     text.setTextColor(scheme.getColor(c,Field.DW_HEAD_TEXT));
                     break;
-                case MainActivity.iInProgress:
+                case iInProgress:
                     text.setTextColor(scheme.getColor(c, Field.DW_IP_TEXT));
                     break;
-                case MainActivity.iCompleted:
+                case iCompleted:
                     text.setTextColor(scheme.getColor(c, Field.DW_CP_TEXT));
                     break;
-                case MainActivity.iTrash:
+                case iTrash:
                     text.setTextColor(scheme.getColor(c, Field.DW_TR_TEXT));
                     break;
                 default:
